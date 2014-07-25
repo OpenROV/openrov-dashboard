@@ -1,0 +1,26 @@
+{
+  "name": "OpenROV-Dashboard",
+  "author": "OpenROV team (http://www.openrov.com)",
+  "description": "The ROV control panel for interacting with other services on the ROV",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/OpenROV/openrov-dashboard.git"
+  },
+  "dependencies": {
+    "express": "= 3.4.8",
+    "ejs": "~0.8.3",
+    "nconf" : "",
+    "forever-monitor" : "",
+	  "optimist" : "",
+    "lazy" : ">= 1.0.11",
+    "sync" : "",
+    "jquery-file-upload-middleware" : ""
+  },
+  "bundleDependencies": [
+    "express"
+  ],
+  "engines": {
+    "node": ">= 0.10.15"
+  }
+}
