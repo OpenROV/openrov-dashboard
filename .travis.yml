@@ -1,3 +1,16 @@
 language: node_js
 node_js:
   - 0.8
+env:
+  global:
+  - VERSION_NUMBER="`git describe --tags | sed 's/^[a-z,A-Z]*//'`"
+  - REAL_GIT_BRANCH="`git for-each-ref --format='%(objectname) %(refname:short)' refs/heads
+    | grep $TRAVIS_COMMIT | awk '{print $2}'`"
+after_success:
+- echo version_number $VERSION_NUMBER
+- echo real_get_branch $REAL_GIT_BRANCH
+- mkdir build
+- 'fpm -f -m info@openrov.com -s dir -t deb -a all -n openrov-dashboard -v
+  $VERSION_NUMBER-$REAL_GIT_BRANCH --description ''OpenROV Dashboard'' .=/opt/openrov/dashboard '
+- cp *.deb build/openrov-dashboard_latest-${REAL_GIT_BRANCH}_all.deb
+- mv *.deb build/
