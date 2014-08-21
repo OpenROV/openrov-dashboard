@@ -1,4 +1,5 @@
-var config = require('./lib/config'), express = require('express'), app = express(), server = app.listen(config.port), io = require('socket.io').listen(server), path = require('path'), fs = require('fs'), EventEmitter = require('events').EventEmitter, DashboardEngine = require('./lib/DashboardEngine');
+var config = require('./lib/config');
+var express = require('express'), app = express(), server = app.listen(config.port), io = require('socket.io').listen(server), path = require('path'), DashboardEngine = require(config.DashboardEnginePath);
 var PluginLoader = require('./lib/PluginLoader');
 
 // Keep track of plugins js and css to load them in the view
@@ -44,7 +45,6 @@ function addPluginAssets(result) {
 
 var loader = new PluginLoader();
 loader.loadPlugins(path.join(__dirname, 'plugins'), '/plugin', deps, addPluginAssets);
-
 
 io.sockets.on('connection', function (socket) {
   // redirecting messages to socket-ios

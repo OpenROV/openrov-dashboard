@@ -5,4 +5,7 @@
  *
  */
 var argv = require('optimist').argv;
-module.exports = { port: process.env.PORT || argv.port || 80 };
+module.exports = {
+  port: process.env.PORT || argv.port || 80,
+  DashboardEnginePath : './lib/DashboardEngine' + (process.env.USE_MOCK === 'true' ? '-mock' : '')
+};
