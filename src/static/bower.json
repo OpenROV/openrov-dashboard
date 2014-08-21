@@ -1,0 +1,20 @@
+{
+  "name": "OpenROV Dashboard",
+  "version": "2.5.0",
+  "homepage": "https://github.com/codewithpassion/openrov-dashboard",
+  "authors": [
+    "codewithpassion <dominik.fretz@gmail.com>"
+  ],
+  "main": "app.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.2.0"
+  }
+}
