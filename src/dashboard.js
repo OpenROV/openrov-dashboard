@@ -1,4 +1,6 @@
 var config = require('./lib/config'), express = require('express'), app = express(), server = app.listen(config.port), io = require('socket.io').listen(server), path = require('path'), fs = require('fs'), EventEmitter = require('events').EventEmitter, DashboardEngine = require('./lib/DashboardEngine');
+var PluginLoader = require('./lib/PluginLoader');
+
 // Keep track of plugins js and css to load them in the view
 var scripts = [], styles = [];
 app.configure(function () {
@@ -31,42 +33,19 @@ var deps = {
     socket: undefined
   };
 // Load the plugins
-var dir = path.join(__dirname, 'plugins');
-function getFilter(ext) {
-  return function (filename) {
-    return filename.match(new RegExp('\\.' + ext + '$', 'i'));
-  };
+function addPluginAssets(result) {
+  scripts = scripts.concat(result.scripts);
+  styles = styles.concat(result.styles);
+  result.assets.forEach(
+    function(asset) {
+      app.use(asset.path, express.static(asset.assets));
+    });
 }
-fs.readdir(dir, function (err, files) {
-  if (err) {
-    throw err;
-  }
-  files.filter(function (file) {
-    return fs.statSync(path.join(dir, file)).isDirectory();
-  }).forEach(function (plugin) {
-    console.log('Loading ' + plugin + ' plugin.');
-    // Load the backend code
-    var pluginPath = path.join(dir, plugin);
-    require(pluginPath)(plugin, deps);
-    // Add the public assets to a static route
-    assets = path.join(dir, plugin, 'public');
-    if (fs.existsSync(assets)) {
-      app.use('/plugin/' + plugin, express.static(assets));
-    }
-    // Add the js to the view
-    if (fs.existsSync(js = path.join(assets, 'js'))) {
-      fs.readdirSync(js).filter(getFilter('js')).forEach(function (script) {
-        scripts.push('/plugin/' + plugin + '/js/' + script);
-      });
-    }
-    // Add the css to the view
-    if (fs.existsSync(css = path.join(assets, 'css'))) {
-      fs.readdirSync(css).filter(getFilter('css')).forEach(function (style) {
-        styles.push('/plugin/' + plugin + '/css/' + style);
-      });
-    }
-  });
-});
+
+var loader = new PluginLoader();
+loader.loadPlugins(path.join(__dirname, 'plugins'), '/plugin', deps, addPluginAssets);
+
+
 io.sockets.on('connection', function (socket) {
   // redirecting messages to socket-ios
   dashboardEngine.on('message', function (message) {
