@@ -14,7 +14,7 @@
     <option data-bind="value: $data.name, text: $data.name"></option>
   </select>
   <ul class="list-unstyled" data-bind="foreach: availableSoftware">
-    <li><span data-bind="text: $data.name"></span> <a class="btn btn-small">Install</a> </li>
+    <li><span data-bind="text: $data.name"></span> <a class="btn btn-small" data-bind="click: $data.install">Install</a> </li>
   </ul>
 
 </div>
