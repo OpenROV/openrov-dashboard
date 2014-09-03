@@ -3,13 +3,17 @@
   var Services;
   Services = function (dashboard) {
 
+    var servicesViewModel = { visible: ko.observable(true) };
     // Add required UI elements
     $('#sidebar').append(
       '<div id="services-sidebar" data-bind="template: { name: \'sidebarElementTemplate\' }"></div>');
-    var viewModel = { description: 'Service', click: function(){ alert('foo'); }};
-    ko.applyBindings(viewModel, document.getElementById('services-sidebar'));
+    var viewModel = { description: 'Services', click: function(){
+      servicesViewModel.visible(!servicesViewModel.visible());
+    }};
+    ko.applyBindings(viewModel, $('#services-sidebar')[0]);
 
-    $('#main-row').append('<div id="services" class=""></div>');
+    $('#main-row').append('<div id="services" data-bind="visible: visible"></div>');
+    ko.applyBindings(servicesViewModel, $('#services')[0]);
     console.log('Loaded Services plugin.');
   };
   window.Dashboard.plugins.push(Services);
