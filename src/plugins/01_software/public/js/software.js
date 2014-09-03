@@ -21,12 +21,23 @@
       viewModel.installOutput(viewModel.installOutput() + status);
     });
     viewModel.refresh();
-    dashboard.viewModel.software = viewModel;
+    var vm =  { software: viewModel };
     // Add required UI elements
-    $('#menu-bar').append('<li><a href="#software-dialog" class="btn btn-link" data-toggle="modal">Software versions</a></li>');
-    $('body').append('<div id="software"></div>');
-    $('#software').load('plugin/99_software/plugin.html', function () {
-      //ko.applyBindings(dashboard.viewModel);
+
+    var softwareViewModel = { visible: ko.observable(false) };
+    // Add required UI elements
+    $('#sidebar').append('<div id="software-sidebar" data-bind="template: { name: \'sidebarElementTemplate\' }"></div>');
+
+    var sideBarViewModel = { description: 'Software', click: function(){
+      softwareViewModel.visible(!softwareViewModel.visible());
+    }};
+    ko.applyBindings(sideBarViewModel , $('#software-sidebar')[0]);
+
+    $('#main-row').append('<div id="software" data-bind="visible: visible"><div id="software-content"></div></div>');
+
+    ko.applyBindings(softwareViewModel, $('#software')[0]);
+    $('#software-content').load('plugin/01_software/plugin.html', function () {
+      ko.applyBindings(vm, $('#software')[0]);
     });
     console.log('Loaded Software plugin.');
   };

@@ -5,8 +5,7 @@
 
     var servicesViewModel = { visible: ko.observable(true) };
     // Add required UI elements
-    $('#sidebar').append(
-      '<div id="services-sidebar" data-bind="template: { name: \'sidebarElementTemplate\' }"></div>');
+    $('#sidebar').append('<div id="services-sidebar" data-bind="template: { name: \'sidebarElementTemplate\' }"></div>');
     var viewModel = { description: 'Services', click: function(){
       servicesViewModel.visible(!servicesViewModel.visible());
     }};

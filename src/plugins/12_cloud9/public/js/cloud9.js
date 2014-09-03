@@ -17,7 +17,7 @@
     });
     // Add required UI elements
     $('#services').append('<div id="cloud9"></div>');
-    $('#cloud9').load('plugin/02_cloud9/plugin.html', function () {
+    $('#cloud9').load('plugin/12_cloud9/plugin.html', function () {
       ko.applyBindings({cloud9: viewModel}, $('#cloud9')[0]);
     });
     setInterval(viewModel.requestStatus, 3000);
