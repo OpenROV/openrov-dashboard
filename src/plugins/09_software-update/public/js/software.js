@@ -36,7 +36,7 @@
     $('#main-row').append('<div id="software" data-bind="visible: visible"><div id="software-content"></div></div>');
 
     ko.applyBindings(softwareViewModel, $('#software')[0]);
-    $('#software-content').load('plugin/01_software/plugin.html', function () {
+    $('#software-content').load('plugin/09_software-update/plugin.html', function () {
       ko.applyBindings(vm, $('#software')[0]);
     });
     console.log('Loaded Software plugin.');
