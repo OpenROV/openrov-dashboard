@@ -1,6 +1,7 @@
 (function (window, $, undefined) {
   'use strict';
   var Software;
+  return;
   Software = function (dashboard) {
     var viewModel = {
         packages: ko.observableArray(),
