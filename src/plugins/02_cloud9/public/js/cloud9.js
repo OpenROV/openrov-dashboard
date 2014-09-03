@@ -12,14 +12,13 @@
     viewModel.stop = function () {
       dashboard.socket.emit('stop-cloud9');
     };
-    dashboard.viewModel.cloud9 = viewModel;
     dashboard.socket.on('status-cloud9', function (status) {
       viewModel.status(status);
     });
     // Add required UI elements
-    $('#main-row').append('<div id="cloud9"></div>');
+    $('#services').append('<div id="cloud9"></div>');
     $('#cloud9').load('plugin/02_cloud9/plugin.html', function () {
-      ko.applyBindings(dashboard.viewModel);
+      ko.applyBindings({cloud9: viewModel}, $('#cloud9')[0]);
     });
     setInterval(viewModel.requestStatus, 3000);
     viewModel.requestStatus();

@@ -26,7 +26,7 @@
     $('#menu-bar').append('<li><a href="#software-dialog" class="btn btn-link" data-toggle="modal">Software versions</a></li>');
     $('body').append('<div id="software"></div>');
     $('#software').load('plugin/99_software/plugin.html', function () {
-      ko.applyBindings(dashboard.viewModel);
+      //ko.applyBindings(dashboard.viewModel);
     });
     console.log('Loaded Software plugin.');
   };

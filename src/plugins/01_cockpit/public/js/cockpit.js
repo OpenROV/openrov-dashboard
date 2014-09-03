@@ -12,14 +12,13 @@
     viewModel.stop = function () {
       dashboard.socket.emit('stop-cockpit');
     };
-    dashboard.viewModel.cockpit = viewModel;
     dashboard.socket.on('status-cockpit', function (status) {
       viewModel.status(status);
     });
     // Add required UI elements
-    $('#main-row').append('<div id="cockpit"></div>');
+    $('#services').append('<div id="cockpit"></div>');
     $('#cockpit').load('plugin/01_cockpit/plugin.html', function () {
-      ko.applyBindings(dashboard.viewModel);
+      ko.applyBindings({cockpit: viewModel}, $('#cockpit')[0]);
     });
     setInterval(viewModel.requestStatus, 3000);
     viewModel.requestStatus();

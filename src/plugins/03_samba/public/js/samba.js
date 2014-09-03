@@ -17,9 +17,9 @@
       viewModel.status(status);
     });
     // Add required UI elements
-    $('#main-row').append('<div id="samba"></div>');
+    $('#services').append('<div id="samba"></div>');
     $('#samba').load('plugin/03_samba/plugin.html', function () {
-      ko.applyBindings(dashboard.viewModel);
+      ko.applyBindings({samba: viewModel}, $('#samba')[0]);
     });
     setInterval(viewModel.requestStatus, 3000);
     viewModel.requestStatus();
