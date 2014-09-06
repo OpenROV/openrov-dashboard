@@ -17,5 +17,6 @@
   <ul class="list-unstyled" data-bind="foreach: availableSoftware">
     <li><span data-bind="text: $data.name"></span> <a class="btn btn-small" data-bind="click: $data.install">Install</a> </li>
   </ul>
+  <button class="btn btn-sm" data-bind="click: getBranches">Get Branches</button>
 
 </div>

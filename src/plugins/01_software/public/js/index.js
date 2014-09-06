@@ -15,16 +15,15 @@
     ko.applyBindings(vm, $('#software')[0]);
 
     var softwareViewModel = {
-      branches: [ {name: "master"}, {name: "development"} ],
+      branches: ko.observableArray(),
       selectedBranch: "development",
       installedSoftware: ko.observableArray(),
       availableSoftware: [
         { name: "openrov-software-2.0", install: install },
         { name: "openrov-software-dashboard-2.0", install: install },
       ],
-      refreshInstalled: function() {
-        loadInstalled();
-      }
+      refreshInstalled: loadInstalled,
+      getBranches: getBranches
     };
     $('#software-content').load('plugin/01_software/plugin.html', function () {
       ko.applyBindings(softwareViewModel, $('#software-content')[0]);
@@ -43,6 +42,36 @@
 
     function install(item) {
       alert(item.name);
+    }
+
+    function getBranches() {
+      getBranchesFromS3(function(branches) {
+        softwareViewModel.branches.removeAll();
+        branches.forEach(function(branch) {
+          softwareViewModel.branches.push( { name: branch }); });
+      });
+    }
+
+    function getBranchesFromS3(callback) {
+      var branches = [];
+      var bucketName = { Bucket: 'openrov-deb-repository' };
+      var s3 = new AWS.S3({ region: 'us-west-2', params: bucketName });
+      s3.makeUnauthenticatedRequest('listObjects', {
+        Prefix: 'dists/'
+      }, function (err, data) {
+        if (err) {
+          alert(err); //TODO fix error handling
+        }
+        else {
+          data.Contents.forEach(function(item) {
+            var parts = item.Key.split("/");
+            if (branches.indexOf(parts[1]) === -1) {
+              branches.push(parts[1]);
+            }
+          });
+        }
+        callback(branches);
+      });
     }
 
     console.log('Loaded Software plugin.');
