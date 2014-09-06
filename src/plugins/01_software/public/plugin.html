@@ -1,22 +1,38 @@
 <div>
   <h2>Currently installed software versions</h2>
   <ul data-bind="foreach: installedSoftware">
-    <li data-bind="text: $data.package + ' - ' + $data.version"></li>
+    <li>
+      <span data-bind="text: $data.item.package + ' - ' + $data.item.version"></span>
+      <button type="button" class="btn btn-primary btn-xs" data-bind="click: uninstall">Uninstall</button>
+    </li>
   </ul>
   <button class="btn btn-sm" data-bind="click: refreshInstalled">Refresh</button>
 
 </div>
 <div>
   <h2>Available software</h2>
-  <label for="branches" class="control-label">
-    <strong>Available branches:</strong>
-  </label>
-  <select id="branches" class="dropdown" data-bind="foreach: branches">
-    <option data-bind="value: $data.name, text: $data.name"></option>
-  </select>
-  <ul class="list-unstyled" data-bind="foreach: availableSoftware">
-    <li><span data-bind="text: $data.name"></span> <a class="btn btn-small" data-bind="click: $data.install">Install</a> </li>
-  </ul>
-  <button class="btn btn-sm" data-bind="click: getBranches">Get Branches</button>
-
+  <div class="row">
+    <form class="form-horizontal" role="form">
+      <div class="form-group">
+        <label for="branches" class="col-sm-1 control-label">Branches:</label>
+        <div class="col-sm-6">
+          <select class="form-control" id="branches" data-bind="options: branches,
+                           optionsText: 'name',
+                           value: selectedBranch,
+                           optionsCaption: 'Select...'"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="softwareList" class="col-sm-1 control-label">Packages:</label>
+        <div class="col-sm-6">
+          <ul id="softwareList" data-bind="foreach: availableSoftware">
+            <li>
+              <span data-bind="text: $data.name"></span>
+              <button type="button" class="btn btn-primary btn-xs" data-bind="click: install">Install</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>

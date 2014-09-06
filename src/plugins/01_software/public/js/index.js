@@ -16,35 +16,39 @@
 
     var softwareViewModel = {
       branches: ko.observableArray(),
-      selectedBranch: "development",
+      selectedBranch: ko.observable(),
       installedSoftware: ko.observableArray(),
       availableSoftware: [
         { name: "openrov-software-2.0", install: install },
         { name: "openrov-software-dashboard-2.0", install: install },
       ],
-      refreshInstalled: loadInstalled,
-      getBranches: getBranches
+      refreshInstalled: loadInstalled
     };
     $('#software-content').load('plugin/01_software/plugin.html', function () {
       ko.applyBindings(softwareViewModel, $('#software-content')[0]);
     });
 
     loadInstalled();
+    loadBranches();
 
     function loadInstalled() {
       $.get('plugin/software/installed/', function (data) {
         softwareViewModel.installedSoftware.removeAll();
         data.forEach(function (item) {
-          softwareViewModel.installedSoftware.push(item);
+          softwareViewModel.installedSoftware.push({item: item, uninstall: uninstall});
         });
       });
     }
 
     function install(item) {
-      alert(item.name);
+      alert('Install ' + item.name);
     }
 
-    function getBranches() {
+    function uninstall(item) {
+      alert('Uninstall ' + item.item.package);
+    }
+
+    function loadBranches() {
       getBranchesFromS3(function(branches) {
         softwareViewModel.branches.removeAll();
         branches.forEach(function(branch) {
