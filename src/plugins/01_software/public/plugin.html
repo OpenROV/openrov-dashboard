@@ -3,6 +3,7 @@
   <ul data-bind="foreach: installedSoftware">
     <li data-bind="text: $data.package + ' - ' + $data.version"></li>
   </ul>
+  <button class="btn btn-sm" data-bind="click: refreshInstalled">Refresh</button>
 
 </div>
 <div>

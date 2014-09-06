@@ -21,16 +21,25 @@
       availableSoftware: [
         { name: "openrov-software-2.0", install: install },
         { name: "openrov-software-dashboard-2.0", install: install },
-      ]
+      ],
+      refreshInstalled: function() {
+        loadInstalled();
+      }
     };
     $('#software-content').load('plugin/01_software/plugin.html', function () {
       ko.applyBindings(softwareViewModel, $('#software-content')[0]);
     });
 
-    $.get('plugin/software/installed/', function (data) {
-      softwareViewModel.installedSoftware.removeAll();
-      data.forEach(function(item) { softwareViewModel.installedSoftware.push(item); });
-    });
+    loadInstalled();
+
+    function loadInstalled() {
+      $.get('plugin/software/installed/', function (data) {
+        softwareViewModel.installedSoftware.removeAll();
+        data.forEach(function (item) {
+          softwareViewModel.installedSoftware.push(item);
+        });
+      });
+    }
 
     function install(item) {
       alert(item.name);
