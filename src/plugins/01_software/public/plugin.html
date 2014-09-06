@@ -1,7 +1,7 @@
 <div>
   <h2>Currently installed software versions</h2>
   <ul data-bind="foreach: installedSoftware">
-    <li data-bind="text: $data.name"></li>
+    <li data-bind="text: $data.package + ' - ' + $data.version"></li>
   </ul>
 
 </div>

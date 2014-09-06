@@ -16,6 +16,22 @@ var Dpkg = function () {
       };
     });
   };
+  dpkg.packagesAsync = function (callback) {
+    var dpkgProcess = cp.spawn('dpkg', [
+        '-l',
+        'openrov-*'
+      ]);
+    var input = Lazy(dpkgProcess.stdout).lines.map(String).skip(5).filter(function (line) {
+      return line !== '0';
+    }).map(function (line) {
+      var fields = line.trim().split(/\s+/, 3);
+      return {
+        package: fields[1],
+        version: fields[2]
+      };
+    });
+    input.join(function(items) { callback(items); });
+  };
   dpkg.install = function (path) {
     var dpkgProcess = cp.spawn('dpkg', [
         '-i',
