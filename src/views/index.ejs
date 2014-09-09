@@ -13,11 +13,7 @@
 
 
     <script type="text/html" id="sidebarElementTemplate">
-      <div class="row">
-        <div class="col-lg-12">
-          <a class="btn btn-primary btn-inverse" data-bind="text: $data.description, click: $data.click"></a>
-        </div>
-      </div>
+      <a class="btn btn-primary btn-inverse" data-bind="text: $data.description, click: $data.click"></a>
     </script>
 
   </head>
@@ -27,15 +23,17 @@
           <div class="container navbar-left">
             <div id="menu">
               <p class="navbar-header"><a class="navbar-brand" href="#"><img src="themes/OpenROV/img/logo.png" class="logo"/>&nbsp;Dashboard</a></p>
-              <ul class="navbar nav-tabs" id="menu-bar">
-              </ul>
+              <!--<ul class="nav nav-pills nav-stacked" id="menu-bar">-->
+              <!--</ul>-->
             </div>
           </div>
         </div>
         
       <!-- Main ROW -->
       <div id="content" class="row full-height">
-        <div id="sidebar" class="col-lg-1 full-height">
+        <div class="col-lg-1 full-height" id="sidebar-container">
+          <ul id="sidebar"  class="nav nav-pills nav-stacked" id="menu-bar">
+          </ul>
         </div>
         <div id="main-row" class="col-lg-11 full-height">
         </div>
@@ -44,18 +42,16 @@
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-        <!--<script type='text/javascript' src="bower_components/jquery/dist/jquery.min.js"></script>-->
-        <script type='text/javascript' src="js/libs/jquery.min.js"></script>
+        <script type='text/javascript' src="bower_components/jquery/dist/jquery.min.js"></script>
         <script type='text/javascript' src="bower_components/jquery-ui/jquery-ui.min.js"></script>
         <script type='text/javascript' src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script type='text/javascript' src="bower_components/aws-sdk/dist/aws-sdk.min.js"></script>
-        <script type='text/javascript' src="js/libs/mousetrap.min.js"></script>
-        <script type='text/javascript' src='js/libs/knockout-2.1.0.js'></script>
+        <script type='text/javascript' src='bower_components/knockout/dist/knockout.js'></script>
+        <script type='text/javascript' src="bower_components/mousetrap/mousetrap.min.js"></script>
         <script type='text/javascript' src='js/DashboardViewModel.js'></script>
         <script type='text/javascript' src='js/Dashboard.js'></script>
         <script type='text/javascript' src='js/ProcessModel.js'></script>
-    	<script type='text/javascript' src="js/blackbox.js"></script>
-	    <script src="/socket.io/socket.io.js"></script>
+	      <script src="/socket.io/socket.io.js"></script>
 
 <% for(var i=0; i<scripts.length; i++) { %>
   <script type="text/javascript" src="<%= scripts[i] %>"></script>
@@ -72,7 +68,6 @@
 
             console.log('Applying bindings');
 
-            //ko.applyBindings(dashboard.viewModel);
           });
         </script>
   </body>

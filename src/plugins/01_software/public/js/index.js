@@ -9,7 +9,7 @@
     }};
 
     // Add required UI elements
-    $('#sidebar').append('<div id="software-sidebar" data-bind="template: { name: \'sidebarElementTemplate\' }"></div>');
+    $('#sidebar').append('<li id="software-sidebar" data-bind="template: { name: \'sidebarElementTemplate\' }"></li>');
     $('#main-row').append('<div id="software" data-bind="visible: visible"><div id="software-content"></div></div>');
     ko.applyBindings(sidebarVm, $('#software-sidebar')[0]);
     ko.applyBindings(vm, $('#software')[0]);
