@@ -3,7 +3,7 @@
   <ul data-bind="foreach: installedSoftware">
     <li>
       <span data-bind="text: $data.item.package + ' - ' + $data.item.version"></span>
-      <button type="button" class="btn btn-primary btn-xs" data-bind="click: uninstall">Uninstall</button>
+      <button type="button" class="btn btn-primary btn-xs" data-bind="click: $parent.uninstall">Uninstall</button>
     </li>
   </ul>
   <button class="btn btn-sm" data-bind="click: refreshInstalled">Refresh</button>
@@ -28,7 +28,7 @@
           <ul id="softwareList" data-bind="foreach: availableSoftware">
             <li>
               <span data-bind="text: $data.name"></span>
-              <button type="button" class="btn btn-primary btn-xs" data-bind="click: install">Install</button>
+              <button type="button" class="btn btn-primary btn-xs" data-bind="click: $parent.install">Install</button>
             </li>
           </ul>
         </div>

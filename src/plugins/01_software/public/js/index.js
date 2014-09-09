@@ -19,10 +19,13 @@
       selectedBranch: ko.observable(),
       installedSoftware: ko.observableArray(),
       availableSoftware: [
-        { name: "openrov-software-2.0", install: install },
-        { name: "openrov-software-dashboard-2.0", install: install },
+        { name: "openrov-software-2.0"},
+        { name: "openrov-software-dashboard-2.0"},
       ],
-      refreshInstalled: loadInstalled
+      refreshInstalled: loadInstalled,
+      install: install,
+      uninstall: uninstall
+
     };
     $('#software-content').load('plugin/01_software/plugin.html', function () {
       ko.applyBindings(softwareViewModel, $('#software-content')[0]);
@@ -35,7 +38,7 @@
       $.get('plugin/software/installed/', function (data) {
         softwareViewModel.installedSoftware.removeAll();
         data.forEach(function (item) {
-          softwareViewModel.installedSoftware.push({item: item, uninstall: uninstall});
+          softwareViewModel.installedSoftware.push({item: item});
         });
       });
     }
