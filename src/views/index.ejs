@@ -13,7 +13,7 @@
 
 
     <script type="text/html" id="sidebarElementTemplate">
-      <a class="btn btn-primary btn-inverse" data-bind="text: $data.description, click: $data.click"></a>
+      <a class="" data-bind="text: $data.description, click: $data.click"></a>
     </script>
 
   </head>
@@ -32,7 +32,7 @@
       <!-- Main ROW -->
       <div id="content" class="row full-height">
         <div class="col-lg-1 full-height" id="sidebar-container">
-          <ul id="sidebar"  class="nav nav-pills nav-stacked" id="menu-bar">
+          <ul id="sidebar"  class="nav nav-pills nav-stacked" role="tablist" id="menu-bar">
           </ul>
         </div>
         <div id="main-row" class="col-lg-11 full-height">
@@ -68,6 +68,10 @@
 
             console.log('Applying bindings');
 
+          });
+
+          $(document).ready(function(){
+            $('#sidebar-container').height($(window).height());
           });
         </script>
   </body>
