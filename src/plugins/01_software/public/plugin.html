@@ -1,9 +1,8 @@
 <div>
   <h2>Currently installed software versions</h2>
-  <ul data-bind="foreach: installedSoftware">
-    <li>
-      <span data-bind="text: $data.item.package + ' - ' + $data.item.version"></span>
-      <button type="button" class="btn btn-primary btn-xs" data-bind="click: $parent.uninstall">Uninstall</button>
+  <ul>
+    <li ng-repeat="item in installedSoftware">
+      {{ item.package }} - {{ item.version }}
     </li>
   </ul>
   <button class="btn btn-sm" data-bind="click: refreshInstalled">Refresh</button>

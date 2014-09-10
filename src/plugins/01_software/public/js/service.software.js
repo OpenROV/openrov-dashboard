@@ -5,7 +5,7 @@ angular.module('Software.services', []).
 
     software.loadInstalledSoftware = function() {
       return $http({
-        method: 'JSON',
+        method: 'GET',
         url: 'plugin/software/installed/'
       });
     };
