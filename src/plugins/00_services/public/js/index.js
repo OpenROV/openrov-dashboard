@@ -16,4 +16,5 @@
     console.log('Loaded Services plugin.');
   };
   window.Dashboard.plugins.push(Services);
+
 }(window, jQuery));

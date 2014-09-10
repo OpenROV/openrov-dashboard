@@ -9,12 +9,10 @@ module.exports = function(name, deps) {
       dpkg.packagesAsync(function(items) {
         resp.send(items);
       });
-//      var installed = [
-//        { name: "openrov-software-1.0" },
-//        { name: "openrov-software-dashboard-1.0" },
-//      ];
-//      resp.send(installed);
     }
   );
 
+  this.ngModule = 'DashboardApp.Software';
+  console.log("Loaded Services plugin");
+  return this;
 };
