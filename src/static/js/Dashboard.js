@@ -1,5 +1,4 @@
 (function (window, document) {
-  var hostname = document.location.hostname ? document.location.hostname : 'localhost';
   var Dashboard = function Dashboard(csocket, viewModel) {
     this.socket = csocket;
     this.sendUpdateEnabled = true;
