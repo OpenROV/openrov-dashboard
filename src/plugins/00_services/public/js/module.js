@@ -1,11 +1,12 @@
 angular.module('DashboardApp.Services', [
-  'ngRoute'
+  'Services.controllers',
+  'ui.router'
 ])
-  .config(['$routeProvider', function($routeProvider) {
-    $routeProvider.
-      when(
-        "/services",
-        { templateUrl: "plugin/00_services/plugin.html", controller: "servicesController" }
-      );
-    }]
-  );
+  .config(function($stateProvider) {
+    $stateProvider
+      .state('services', {
+        url: '/services',
+        templateUrl: 'plugin/00_services/plugin.html'
+      });
+  }
+);

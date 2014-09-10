@@ -1,3 +1,3 @@
-angular.module('DashboardApp.controllers', []).
+angular.module('Software.controllers', []).
   controller('servicesController', function($scope) {
   });

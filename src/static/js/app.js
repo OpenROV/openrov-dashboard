@@ -12,9 +12,8 @@ angular.module('DashboardApp', [
   'DashboardApp.controllers',
   'DashboardApp.services',
   'DashboardApp.subModules',
-  'ngRoute'
+  'ui.router'
 ]).
-  config(['$routeProvider', function($routeProvider) {
-    $routeProvider.
-      otherwise({redirectTo: '/'});
-  }]);
+  config(function($urlRouterProvider) {
+    $urlRouterProvider.otherwise('/software');
+  });

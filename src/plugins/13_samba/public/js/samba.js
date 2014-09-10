@@ -19,7 +19,7 @@
     // Add required UI elements
     $('#services').append('<div id="samba"></div>');
     $('#samba').load('plugin/13_samba/plugin.html', function () {
-      ko.applyBindings({samba: viewModel}, $('#samba')[0]);
+      //ko.applyBindings({samba: viewModel}, $('#samba')[0]);
     });
     setInterval(viewModel.requestStatus, 3000);
     viewModel.requestStatus();

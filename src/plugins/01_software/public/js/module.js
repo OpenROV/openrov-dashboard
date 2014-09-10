@@ -1,11 +1,14 @@
 angular.module('DashboardApp.Software', [
-  'ngRoute'
+  'Software.controllers',
+  'ui.router'
 ])
-  .config(['$routeProvider', function($routeProvider) {
-    $routeProvider.
-      when(
-      "/software",
-      { templateUrl: "plugin/01_software/plugin.html", controller: "softwareController" }
-    );
-  }]
+  .config(function($stateProvider) {
+    $stateProvider
+      .state('software', {
+        url: '/software',
+        templateUrl: 'plugin/01_software/plugin.html',
+        controller: 'softwareController'
+      });
+  }
 );
+
