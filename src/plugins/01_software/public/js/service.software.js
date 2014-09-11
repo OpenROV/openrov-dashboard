@@ -10,5 +10,12 @@ angular.module('Software.services', []).
       });
     };
 
+    software.getLatestVersion = function(packageName) {
+      return $http({
+        method: 'GET',
+        url: 'plugin/software/latestversion/' + packageName
+      });
+    };
+
     return software;
   });

@@ -5,7 +5,7 @@
       {{ item.package }} - {{ item.version }}
     </li>
   </ul>
-  <button class="btn btn-sm" data-bind="click: refreshInstalled">Refresh</button>
+  <button class="btn btn-sm" ng-click="loadInstalledSoftware()">Refresh</button>
 
 </div>
 <div>
@@ -15,7 +15,10 @@
       <div class="form-group">
         <label for="branches" class="col-sm-1 control-label">Branches:</label>
         <div class="col-sm-2">
-            <select class="form-control" id="branches" ng-model="selectedBranch" ng-options="branch for branch in branches">
+            <select class="form-control" id="branches"
+                    ng-model="selectedBranch"
+                    ng-options="branch for branch in branches"
+                    ng-change="loadVersions()">
               <option value="">-- Select Branch --</option>
             </select>
         </div>
@@ -23,10 +26,10 @@
       <div class="form-group">
         <label for="softwareList" class="col-sm-1 control-label">Packages:</label>
         <div class="col-sm-6">
-          <ul id="softwareList" data-bind="foreach: availableSoftware">
-            <li>
-              <span data-bind="text: $data.name"></span>
-              <button type="button" class="btn btn-primary btn-xs" data-bind="click: $parent.install">Install</button>
+          <ul id="softwareList" >
+            <li ng-repeat="item in latestVersions">
+              {{ item.package }} - {{ item.version }}
+              <!--<button type="button" class="btn btn-primary btn-xs" data-bind="click: $parent.install">Install</button>-->
             </li>
           </ul>
         </div>
