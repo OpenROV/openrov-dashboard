@@ -22,7 +22,7 @@ angular.module('Software.services', []).
         method: 'POST',
         url: 'plugin/software/install/' + packageName + '/' + version + '/' + branch
       });
-    }
+    };
 
     return software;
   });

@@ -3,7 +3,7 @@
   var Software;
   Software = function (dashboard) {
 
-    var sidebarVm = { description: 'Software', url: '/software' };
+    var sidebarVm = { description: 'Software', sref: 'software' };
 
     // Add required UI elements
     $('#sidebar').append('<li id="software-sidebar" data-bind="template: { name: \'sidebarElementTemplate\' }"></li>');

@@ -11,14 +11,15 @@
         <link rel="stylesheet" href="<%= assets.styles[i] %>">
 <% } %>
 
-
-    <script type="text/html" id="sidebarElementTemplate">
-      <a class="" data-bind="text: $data.description, click: $data.click"></a>
-    </script>
-
   </head>
 
   <body ng-app="DashboardApp" class="full-height">
+
+    <script type="text/html" id="sidebarElementTemplate">
+      <a class="" data-bind="text: $data.description, attr: { 'ui-sref': $data.sref }"></a>
+    </script>
+
+
         <div class="navbar navbar-inverse navbar-fixed-top">
           <div class="container navbar-left">
             <div id="menu">
