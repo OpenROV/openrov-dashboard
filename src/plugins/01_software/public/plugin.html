@@ -25,9 +25,15 @@
       </div>
       <div class="checkbox">
         <label>
-          <input type="checkbox" ng-model="showAllVersions" ng-change="loadVersions()">Show all versions
+          <input type="checkbox" ng-model="showNewVersions" ng-change="loadVersions()">Show only updates
         </label>
       </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="showOnlyLatest" ng-change="loadVersions()">Show latest versions only
+        </label>
+      </div>
+
     </form>
   </div>
   <br>

@@ -5,7 +5,8 @@ angular.module('Software.controllers', ['Software.services']).
       $scope.branches = branches;
     });
 
-    $scope.showAllVersions = false;
+    $scope.showNewVersions = true;
+    $scope.showOnlyLatest = true;
     $scope.selectedBranch = undefined;
     $scope.installResult = '';
     $scope.latestVersions = [];
@@ -16,21 +17,6 @@ angular.module('Software.controllers', ['Software.services']).
       });
     };
 
-    function getNewVersionFilter(item) {
-      return function (installed) {
-        if (installed.package === item.package && installed.version !== item.version) {
-          if (!$scope.showAllVersions) {
-            var index = $scope.latestVersions
-              .map(function(latest) {return latest.package})
-              .indexOf(item.package);
-            return index == -1;
-          }
-          return true;
-        }
-        return false
-      }
-    }
-
     $scope.loadVersions = function() {
       $scope.latestVersions = [];
       if ($scope.selectedBranch) {
@@ -38,8 +24,15 @@ angular.module('Software.controllers', ['Software.services']).
           .then(function (versions) {
             versions.data.forEach(function (version) {
               if (version.branch === $scope.selectedBranch) {
-                if ($scope.installedSoftware.filter(getNewVersionFilter(version)).length > 0) {
-                  $scope.latestVersions.push(version);
+                if ($scope.installedSoftware.filter(
+                  function(installed) {
+                    if ($scope.showNewVersions) {
+                      return isSamePackage(installed, version) && isSameVersion(installed, version)
+                    }
+                  }).length === 0) {
+                  if (!latestVersionContainsPackage(version) || !$scope.showOnlyLatest) {
+                    $scope.latestVersions.push(version);
+                  }
                 }
               }
             });
@@ -49,7 +42,6 @@ angular.module('Software.controllers', ['Software.services']).
 
 
     $scope.install = function(item) {
-      alert(item.package + ' - ' + item.version + ' - ' + item.branch);
       softwareApiService.install(item.package, item.version, item.branch)
         .then(function(result) {
           $scope.installResult = JSON.stringify(result);
@@ -58,4 +50,21 @@ angular.module('Software.controllers', ['Software.services']).
         })
     };
     $scope.loadInstalledSoftware();
+
+
+
+    function isSamePackage(installed, item) {
+      return installed.package === item.package;
+    }
+
+    function isSameVersion(installed, item) {
+      return installed.version === item.version;
+    }
+
+    function latestVersionContainsPackage(version) {
+      return $scope.latestVersions.filter(
+        function(latest) { return isSamePackage(latest, version)  }
+      ).length !== 0
+    }
+
   });
