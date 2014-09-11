@@ -24,6 +24,11 @@
         </div>
       </div>
       <div class="form-group">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="showAllVersions" ng-change="loadVersions()">Show all versions
+          </label>
+        </div>
         <label for="softwareList" class="col-sm-1 control-label">Packages:</label>
         <div class="col-sm-6">
           <ul id="softwareList" >

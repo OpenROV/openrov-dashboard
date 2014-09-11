@@ -5,6 +5,7 @@ angular.module('Software.controllers', ['Software.services']).
       $scope.branches = branches;
     });
 
+    $scope.showAllVersions = false;
     $scope.selectedBranch = undefined;
     $scope.installResult = '';
     $scope.latestVersions = [];
@@ -15,23 +16,36 @@ angular.module('Software.controllers', ['Software.services']).
       });
     };
 
+    function getNewVersionFilter(item) {
+      return function (installed) {
+        if (installed.package === item.package && installed.version !== item.version) {
+          if (!$scope.showAllVersions) {
+            var index = $scope.latestVersions
+              .map(function(latest) {return latest.package})
+              .indexOf(item.package);
+            return index == -1;
+          }
+          return true;
+        }
+        return false
+      }
+    }
 
     $scope.loadVersions = function() {
       $scope.latestVersions = [];
+      if ($scope.selectedBranch) {
         softwareApiService.getLatestVersion('openrov-*')
-          .then(function(versions) {
-            $scope.latestVersions =
-              $scope.latestVersions.concat(versions.data.filter(
-                function(item) {
-                  return item.branch === $scope.selectedBranch &&
-                  ($scope.installedSoftware.filter(
-                    function (installed) {
-                      return installed.package === item.package &&
-                        installed.version !== item.version
-                    }).length > 0);
-                }));
+          .then(function (versions) {
+            versions.data.forEach(function (version) {
+              if (version.branch === $scope.selectedBranch) {
+                if ($scope.installedSoftware.filter(getNewVersionFilter(version)).length > 0) {
+                  $scope.latestVersions.push(version);
+                }
+              }
+            });
           });
-      };
+      }
+    };
 
 
     $scope.install = function(item) {
