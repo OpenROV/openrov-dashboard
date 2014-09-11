@@ -11,40 +11,55 @@
 <div>
   <h2>Available software</h2>
   <div class="row">
-    <form class="form-horizontal" role="form">
+    <div class="form-group">
+      <div class="col-sm-2"><h4>Branches:</h4></div>
+    </div>
+    <form class="form-inline col-sm-12" role="form">
       <div class="form-group">
-        <label for="branches" class="col-sm-1 control-label">Branches:</label>
-        <div class="col-sm-2">
-            <select class="form-control" id="branches"
-                    ng-model="selectedBranch"
-                    ng-options="branch for branch in branches"
-                    ng-change="loadVersions()">
-              <option value="">-- Select Branch --</option>
-            </select>
-        </div>
+        <select class="form-control" id="branches"
+                ng-model="selectedBranch"
+                ng-options="branch for branch in branches"
+                ng-change="loadVersions()">
+          <option value="">-- Select Branch --</option>
+        </select>
       </div>
-      <div class="form-group">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" ng-model="showAllVersions" ng-change="loadVersions()">Show all versions
-          </label>
-        </div>
-        <label for="softwareList" class="col-sm-1 control-label">Packages:</label>
-        <div class="col-sm-6">
-          <ul id="softwareList" >
-            <li ng-repeat="item in latestVersions">
-              {{ item.package }} - {{ item.version }}
-              <button type="button" class="btn btn-primary btn-xs" ng-click="install(item)">Install</button>
-            </li>
-          </ul>
-        </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="showAllVersions" ng-change="loadVersions()">Show all versions
+        </label>
+      </div>
+    </form>
+  </div>
+  <br>
+  <div class="row">
+    <form class="form-horizontal">
+      <div class="col-sm-12">
         <div>
-          <label for="installResult" class="col-sm-1 control-label">Install result:</label>
-          <div class="col-sm-6">
-            <div id="installResult">{{ installResult }}</div>
+          <div><h4>Packages:</h4></div>
+          <div>
+            <ul id="softwareList" >
+              <li ng-repeat="item in latestVersions">
+                {{ item.package }} - {{ item.version }}
+                <button type="button" class="btn btn-primary btn-xs" ng-click="install(item)">Install</button>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
     </form>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-sm-12">
+      <div>
+        <div><h4>Install result:</h4></div>
+      </div>
+
+      <div class="form-group">
+        <div>
+          <div id="installResult">{{ installResult }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
