@@ -6,6 +6,7 @@ angular.module('Software.controllers', ['Software.services']).
     });
 
     $scope.selectedBranch = undefined;
+    $scope.installResult = '';
     $scope.latestVersions = [];
 
     $scope.loadInstalledSoftware = function() {
@@ -32,5 +33,15 @@ angular.module('Software.controllers', ['Software.services']).
           });
       };
 
+
+    $scope.install = function(item) {
+      alert(item.package + ' - ' + item.version + ' - ' + item.branch);
+      softwareApiService.install(item.package, item.version, item.branch)
+        .then(function(result) {
+          $scope.installResult = JSON.stringify(result);
+          $scope.loadInstalledSoftware();
+          $scope.loadVersions();
+        })
+    };
     $scope.loadInstalledSoftware();
   });

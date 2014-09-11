@@ -29,9 +29,15 @@
           <ul id="softwareList" >
             <li ng-repeat="item in latestVersions">
               {{ item.package }} - {{ item.version }}
-              <!--<button type="button" class="btn btn-primary btn-xs" data-bind="click: $parent.install">Install</button>-->
+              <button type="button" class="btn btn-primary btn-xs" ng-click="install(item)">Install</button>
             </li>
           </ul>
+        </div>
+        <div>
+          <label for="installResult" class="col-sm-1 control-label">Install result:</label>
+          <div class="col-sm-6">
+            <div id="installResult">{{ installResult }}</div>
+          </div>
         </div>
       </div>
     </form>

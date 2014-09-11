@@ -17,5 +17,12 @@ angular.module('Software.services', []).
       });
     };
 
+    software.install = function(packageName, version, branch) {
+      return $http({
+        method: 'POST',
+        url: 'plugin/software/install/' + packageName + '/' + version + '/' + branch
+      });
+    }
+
     return software;
   });
