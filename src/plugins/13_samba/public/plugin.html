@@ -6,8 +6,8 @@
     <div class="col-md-5">
       <h2>Network share</h2>
       <p>
-        <i>Windows:</i> \\192.168.254.1\OpenROV<br>
-        <i>Linux:</i> smb://192.168.254.1/OpenROV<br><br>
+        <i>Windows:</i> <span data-bind="text: '\\\\' + samba.hostName() + '\\OpenROV'"></span><br>
+        <i>Linux:</i> <span data-bind="text: 'smb://' + samba.hostName() + '/OpenROV'"><br><br>
         <b>Status: </b><span data-bind="text: samba.status()">Unkown</span>
       </p>
     </div>

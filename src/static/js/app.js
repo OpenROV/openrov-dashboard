@@ -1,10 +1,8 @@
+var __dashboard;
 $(function() {
   var socket = io.connect();
   var viewmodel;
-  viewmodel = new DashboardViewModel(socket);
-  var dashboard = new Dashboard(socket, viewmodel);
-
-  console.log('Applying bindings');
+  __dashboard  = new Dashboard(socket, viewmodel);
 
 });
 
@@ -13,7 +11,9 @@ angular.module('DashboardApp', [
   'DashboardApp.services',
   'DashboardApp.subModules',
   'ui.router'
-]).
-  config(function($urlRouterProvider) {
-    $urlRouterProvider.otherwise('/software');
-  });
+])
+  .config(function($urlRouterProvider) {
+    $urlRouterProvider.otherwise('/services');
+  })
+  .value('DashboardAccess', function() { return __dashboard  });;
+

@@ -6,7 +6,8 @@ angular.module('DashboardApp.Services', [
     $stateProvider
       .state('services', {
         url: '/services',
-        templateUrl: 'plugin/00_services/plugin.html'
+        templateUrl: 'plugin/00_services/plugin.html',
+        controller: 'servicesController'
       });
   }
 );

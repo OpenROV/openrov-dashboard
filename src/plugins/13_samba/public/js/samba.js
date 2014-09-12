@@ -12,16 +12,20 @@
     viewModel.stop = function () {
       dashboard.socket.emit('stop-samba');
     };
-    dashboard.viewModel.samba = viewModel;
+    viewModel.hostName = ko.observable(window.location.hostname);
+
     dashboard.socket.on('status-samba', function (status) {
       viewModel.status(status);
     });
     // Add required UI elements
     $('#services').append('<div id="samba"></div>');
     $('#samba').load('plugin/13_samba/plugin.html', function () {
-      //ko.applyBindings({samba: viewModel}, $('#samba')[0]);
+      ko.applyBindings({samba: viewModel}, $('#samba')[0]);
     });
-    setInterval(viewModel.requestStatus, 3000);
+
+    dashboard.socket.on('services.refresh', viewModel.requestStatus);
+    dashboard.socket.emit('services.register', 'services.samba');
+
     viewModel.requestStatus();
   };
   window.Dashboard.plugins.push(Samba);
