@@ -1,8 +1,6 @@
-html { height: 100%; }
 body {
   padding-top: 60px;
   padding-bottom: 100px;
-  position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
@@ -13,17 +11,20 @@ body {
   position: relative;
   z-index: 1;
 }
+
+@media (min-width: 767px) {
+    .affix,.affix-top {
+        position:fixed;
+    }
+}
 .sidebar-nav {
 }
 
 #content {
-    /*top: 15px;*/
 }
 
 #sidebar-container {
-    /*background-color: grey;*/
     border-right: 1px solid gray;
-    padding-right: 0;
 }
 
 #telemetry {

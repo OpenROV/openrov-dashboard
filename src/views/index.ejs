@@ -16,7 +16,7 @@
 
   </head>
 
-  <body ng-app="DashboardApp" class="full-height">
+  <body ng-app="DashboardApp">
 
         <div class="navbar navbar-inverse navbar-fixed-top">
           <div class="container navbar-left">
@@ -29,14 +29,18 @@
         </div>
         
       <!-- Main ROW -->
-      <div id="content" class="row full-height">
-        <div class="col-lg-1 full-height" id="sidebar-container">
-          <ul id="sidebar"  class="nav nav-pills nav-stacked" role="tablist" id="menu-bar">
-          </ul>
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-1">
+              <div id="sidebar-container" class="affix">
+                <ul id="sidebar"  class="nav nav-pills nav-stacked">
+                </ul>
+              </div>
+            </div>
+            <div ui-view class="col-sm-9" id="main-row">
+            </div>
+          </div>
         </div>
-        <div ui-view id="main-row" class="col-lg-11 full-height">
-        </div>
-      </div>
 
         <!-- Le javascript
         ================================================== -->
