@@ -28,7 +28,7 @@ angular.module('Software.controllers', ['Software.services']).
             var candidates = results[1].data;
 
             if ($scope.showUpdatesOnly) {
-              loadUpdatesOnlyPackages(candidates.results, versions);
+              loadUpdatesOnlyPackages(candidates.result, versions);
             }
             else {
               loadAllPackages(versions);
