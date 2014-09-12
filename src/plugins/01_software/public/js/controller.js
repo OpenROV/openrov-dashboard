@@ -60,7 +60,9 @@ angular.module('Software.controllers', ['Software.services']).
               return isSamePackage(candidate, version) && isSameVersion(candidate, version);
             });
           if (packagesToInstall && packagesToInstall.length == 1) {
-            $scope.latestVersions.push(packagesToInstall[0]);
+            if(!newVersionsContainsPackage(packagesToInstall[0])) {
+              $scope.latestVersions.push(packagesToInstall[0]);
+            }
           }
         }
       });
