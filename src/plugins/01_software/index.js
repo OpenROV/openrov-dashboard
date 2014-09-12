@@ -53,6 +53,6 @@ module.exports = function(name, deps) {
   );
 
   this.ngModule = 'DashboardApp.Software';
-  console.log("Loaded Services plugin");
+  console.log("Loaded software plugin");
   return this;
 };

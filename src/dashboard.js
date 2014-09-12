@@ -20,6 +20,7 @@ var assets = {
     assets.plugins.forEach(function(plugin) {
       if (plugin && plugin.ngModule) { result.push("'" + plugin.ngModule + "'"); }
     });
+    console.log('#############' + result.join());
     return result.join();
   }
 };
