@@ -3,9 +3,8 @@
   <head>
         <title>OpenROV Dashboard</title>
         <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="themes/OpenROV/css/style.css">
-        <link href="css/ui-lightness/jquery-ui-1.8.23.custom.css" rel="stylesheet" />
- 
+        <link rel="stylesheet" href="css/style.css">
+
  <% for(var i=0; i<assets.styles.length; i++) { %>
 
         <link rel="stylesheet" href="<%= assets.styles[i] %>">
@@ -21,9 +20,11 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
           <div class="container navbar-left">
             <div id="menu">
-              <p class="navbar-header"><a class="navbar-brand" href="#"><img src="themes/OpenROV/img/logo.png" class="logo"/>&nbsp;Dashboard</a></p>
-              <!--<ul class="nav nav-pills nav-stacked" id="menu-bar">-->
-              <!--</ul>-->
+              <p class="navbar-header">
+                <a class="navbar-brand" href="#">
+                  <img src="img/openrov.png" class="logo"/><span class="navbar-titel">Dashboard</span>
+                </a>
+              </p>
             </div>
           </div>
         </div>
@@ -31,7 +32,7 @@
       <!-- Main ROW -->
         <div class="container">
           <div class="row">
-            <div class="col-sm-1">
+            <div id="sidebar-col" class="col-md-1">
               <div id="sidebar-container" class="affix">
                 <ul id="sidebar"  class="nav nav-pills nav-stacked">
                 </ul>

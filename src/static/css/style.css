@@ -1,0 +1,85 @@
+body {
+  padding-top: 60px;
+  padding-bottom: 100px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+* {
+  position: relative;
+  z-index: 1;
+}
+
+.navbar-inverse {
+    background-color: #0c2f3e;
+}
+
+.navbar-brand img {
+    vertical-align: text-bottom;
+}
+
+.nav li a {
+    font-size:18px;
+}
+
+.nav-pills li {
+}
+
+a .navbar-titel {
+    color: #ffffff;
+    margin-left: 20px;
+    font-size: 24px;
+    line-height: 26px;
+    font-variant: small-caps;
+}
+a:hover .navbar-titel {
+    color: #63A8CC;
+}
+
+@media (min-width: 767px) {
+    .affix,.affix-top {
+        position:fixed;
+    }
+}
+#sidebar-col {
+    padding-left: 8px;
+}
+#sidebar-container {
+    border-right: 1px solid gray;
+    padding-top: 15px;
+}
+
+#main-row {
+    padding-left: 30px;
+}
+
+.well {
+    margin-top: 1px;
+    margin-bottom: 0;
+}
+
+.control-element {
+  padding: 4px;
+  min-width: 50px;
+  border-right: 1px solid grey;
+  height: 100%;
+}
+
+.logo {
+  margin-left: 15px;
+  width: 220px;
+}
+
+.navbar-inner img, .navbar-inner a {
+  vertical-align: middle;
+}
+
+.control-group {
+  margin-left: 20px;
+}
+
+.full-height{
+  height: 100%;
+}
