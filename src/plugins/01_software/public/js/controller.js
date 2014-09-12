@@ -106,5 +106,4 @@ angular.module('Software.controllers', ['Software.services']).
       return result.length > 0
     }
 
-
   });
