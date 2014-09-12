@@ -29,9 +29,11 @@ var PluginLoader = function() {
       }).forEach(function (plugin) {
         console.log('Loading ' + plugin + ' plugin.');
         // Load the backend code
-        if (path.existsSync(path.join(dir, plugin))) {
+        if (fs.existsSync(path.join(dir, plugin))) {
           var pluginInstance = require(path.join(dir, plugin))(plugin, deps);
-          result.plugins.push(pluginInstance);
+          if (pluginInstance) {
+            result.plugins.push(pluginInstance);
+          }
 
           // Add the public assets to a static route
           if (fs.existsSync(assets = path.join(dir, plugin, 'public'))) {

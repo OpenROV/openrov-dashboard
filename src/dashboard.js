@@ -20,7 +20,6 @@ var assets = {
     assets.plugins.forEach(function(plugin) {
       if (plugin && plugin.ngModule) { result.push("'" + plugin.ngModule + "'"); }
     });
-    console.log('#############' + result.join());
     return result.join();
   }
 };
@@ -44,6 +43,7 @@ loader.loadPlugins(path.join(__dirname, 'plugins'), '/plugin', deps, addPluginAs
 console.log('Started listening on port: ' + config.port);
 
 // Load the plugins
+var util = require('util');
 function addPluginAssets(result) {
   assets.scripts = assets.scripts.concat(result.scripts);
   assets.styles = assets.styles.concat(result.styles);

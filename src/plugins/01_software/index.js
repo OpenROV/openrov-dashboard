@@ -6,7 +6,6 @@ var util = require('util');
 module.exports = function(name, deps) {
   var app = deps.app;
 
-
   app.get(
     '/plugin/software/installed',
     function (req, resp) {
@@ -52,7 +51,7 @@ module.exports = function(name, deps) {
     }
   );
 
-  this.ngModule = 'DashboardApp.Software';
+  var result = { ngModule: 'DashboardApp.Software' };
   console.log("Loaded software plugin");
-  return this;
+  return result;
 };
