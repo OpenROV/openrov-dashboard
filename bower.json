@@ -12,7 +12,8 @@
     "angular-resource": "~1.2.23",
     "angular-route": "~1.2.23",
     "angular-ui-router": "~0.2.11",
-    "angular-bootstrap": "~0.11.0"
+    "angular-bootstrap": "~0.11.0",
+    "angular-busy": "~4.1.0"
   },
   "devDependencies": {}
 }

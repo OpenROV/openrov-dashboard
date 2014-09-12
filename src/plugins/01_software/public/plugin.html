@@ -1,6 +1,6 @@
 <div>
   <h2>Currently installed software versions</h2>
-  <ul>
+  <ul class="package-list" cg-busy="loadingInstalled">
     <li ng-repeat="item in installedSoftware">
       {{ item.package }} - {{ item.version }}
     </li>
@@ -17,15 +17,13 @@
     <form class="form-inline col-sm-12" role="form" >
       <div class="alert alert-danger" role="alert" ng-hide="selectedBranch"><strong>Please select a branch!</strong></div>
 
-      <div class="form-group" id="branches-container" ng-class="{'has-error': !(selectedBranch)}">
-        <select class="form-control" id="branches"
+         <select class="form-control" id="branches"
 
                 ng-model="selectedBranch"
                 ng-options="branch for branch in branches"
                 ng-change="loadVersions()">
           <option value="">-- Select Branch --</option>
         </select>
-      </div>
       <div class="checkbox">
         <label>
           <input type="checkbox" ng-model="showUpdatesOnly" ng-change="loadVersions()">Show only updates
@@ -44,7 +42,7 @@
       <div class="col-sm-12">
         <div>
           <div><h4>Packages:</h4></div>
-          <div>
+          <div class="package-list" cg-busy="loadingPackages">
             <ul id="softwareList" >
               <li ng-repeat="item in latestVersions">
                 {{ item.package }} - {{ item.version }}

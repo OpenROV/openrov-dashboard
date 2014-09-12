@@ -12,7 +12,8 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.latestVersions = [];
 
     $scope.loadInstalledSoftware = function() {
-      softwareApiService.loadInstalledSoftware().then(function(items) {
+      $scope.loadingInstalled = softwareApiService.loadInstalledSoftware();
+      $scope.loadingInstalled.then(function(items) {
         $scope.installedSoftware = items.data;
       });
     };
@@ -22,7 +23,10 @@ angular.module('Software.controllers', ['Software.services']).
       if ($scope.selectedBranch) {
         var getLatestSoftware = softwareApiService.getLatestVersion('openrov-*');
         var getCandidates = softwareApiService.getInstallCandidate('openrov-*');
-        $q.all([getLatestSoftware, getCandidates]).then(
+        $scope.loadingPackages = $q.all([getLatestSoftware, getCandidates]);
+
+        $scope.loadingPackages
+          .then(
           function(results) {
             var versions = results[0].data;
             var candidates = results[1].data;
