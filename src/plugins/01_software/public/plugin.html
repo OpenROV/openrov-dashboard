@@ -14,9 +14,12 @@
     <div class="form-group">
       <div class="col-sm-2"><h4>Branches:</h4></div>
     </div>
-    <form class="form-inline col-sm-12" role="form">
-      <div class="form-group">
+    <form class="form-inline col-sm-12" role="form" >
+      <div class="alert alert-danger" role="alert" ng-hide="selectedBranch"><strong>Please select a branch!</strong></div>
+
+      <div class="form-group" id="branches-container" ng-class="{'has-error': !(selectedBranch)}">
         <select class="form-control" id="branches"
+
                 ng-model="selectedBranch"
                 ng-options="branch for branch in branches"
                 ng-change="loadVersions()">
@@ -33,7 +36,6 @@
           <input type="checkbox" ng-model="showOnlyLatest" ng-change="loadVersions()">Show latest versions only
         </label>
       </div>
-
     </form>
   </div>
   <br>
