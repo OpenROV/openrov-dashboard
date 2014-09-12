@@ -28,7 +28,7 @@
           <input type="checkbox" ng-model="showUpdatesOnly" ng-change="loadVersions()">Show only updates
         </label>
       </div>
-      <div class="checkbox">
+      <div class="checkbox" ng-hide="showUpdatesOnly" >
         <label>
           <input type="checkbox" ng-model="showOnlyLatest" ng-change="loadVersions()">Show latest versions only
         </label>

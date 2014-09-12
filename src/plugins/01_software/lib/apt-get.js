@@ -6,6 +6,8 @@ var AptGet = function() {
   aptGet.install = function(packageName, version, branch, callback) {
     var aptGetProcess = cp.spawn('apt-get',
       [
+        '-y',
+        '--force-yes',
         '-o Dpkg::Options::="--force-overwrite"',
         'install',
         '-t',
