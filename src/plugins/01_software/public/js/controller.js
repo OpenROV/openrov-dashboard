@@ -25,51 +25,17 @@ angular.module('Software.controllers', ['Software.services']).
         $q.all([getLatestSoftware, getCandidates]).then(
           function(results) {
             var versions = results[0].data;
-            var candidates = results[1].data.result;
+            var candidates = results[1].data;
 
             if ($scope.showUpdatesOnly) {
-              candidates.forEach(function(candidate) {
-                if (isPackageInstalled(candidate)
-                    && !isPackageVersionInstalled(candidate)) {
-                  var packagesToInstall =
-                    versions.filter(function(version) {
-                      return isSamePackage(candidate, version) && isSameVersion(candidate, version); });
-                  if (packagesToInstall && packagesToInstall.length == 1) {
-                    $scope.latestVersions.push(packagesToInstall[0]);
-                  }
-                }
-              });
+              loadUpdatesOnlyPackages(candidates.results, versions);
             }
             else {
-              versions.forEach(function (version) {
-                if (version.branch === $scope.selectedBranch) {
-                  if ($scope.showUpdatesOnly) {
-                    if (isPackageInstalled(version)) {
-                      var candidatePackage = candidates.filter(function (candidate) {
-                        return isSamePackage(candidate, version);
-                      });
-                      if (candidatePackage.length > 0) {
-
-                        if (candidatePackage[0].version !== version.version) {
-                          $scope.latestVersions.push(version);
-                        }
-                      }
-                    }
-                  }
-                  else {
-                    if (!($scope.showOnlyLatest && newVersionsContainsPackage(version))) {
-                      if (!newVersionsContainsPackage(version) || !isPackageVersionInstalled(version)) {
-                        $scope.latestVersions.push(version);
-                      }
-                    }
-                  }
-                }
-              })
+              loadAllPackages(versions);
             }
           })
       }
     };
-
 
     $scope.install = function(item) {
       softwareApiService.install(item.package, item.version, item.branch)
@@ -81,7 +47,32 @@ angular.module('Software.controllers', ['Software.services']).
     };
     $scope.loadInstalledSoftware();
 
+    function loadUpdatesOnlyPackages(candidates, versions) {
+      candidates.forEach(function (candidate) {
+        if (isPackageInstalled(candidate)
+          && !isPackageVersionInstalled(candidate)) {
+          var packagesToInstall =
+            versions.filter(function (version) {
+              return isSamePackage(candidate, version) && isSameVersion(candidate, version);
+            });
+          if (packagesToInstall && packagesToInstall.length == 1) {
+            $scope.latestVersions.push(packagesToInstall[0]);
+          }
+        }
+      });
+    }
 
+    function loadAllPackages(versions) {
+      versions.forEach(function (version) {
+        if (version.branch === $scope.selectedBranch) {
+          if (!($scope.showOnlyLatest && newVersionsContainsPackage(version))) {
+            if (!newVersionsContainsPackage(version) || !isPackageVersionInstalled(version)) {
+              $scope.latestVersions.push(version);
+            }
+          }
+        }
+      })
+    }
 
     function isSamePackage(installed, item) {
       return installed.package === item.package;
