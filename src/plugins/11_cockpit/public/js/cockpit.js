@@ -18,7 +18,7 @@
     // Add required UI elements
     $('#services').append('<div id="cockpit"></div>');
     $('#cockpit').load('plugin/11_cockpit/plugin.html', function () {
-      //ko.applyBindings({cockpit: viewModel}, $('#cockpit')[0]);
+      ko.applyBindings({cockpit: viewModel}, $('#cockpit')[0]);
     });
     setInterval(viewModel.requestStatus, 3000);
     viewModel.requestStatus();
