@@ -25,6 +25,44 @@ var AptCache = function() {
       input.join(function(items) {
         callback(items); });
     };
+
+  aptCache.getCandidates = function(packageName, callback) {
+    var cleanPackageName = packageName.replace('*', '');
+    var aptCacheProcess = cp.spawn('apt-cache', ['policy', packageName]);
+
+    var stdOut = '';
+    var stdErr = '';
+    var result = [];
+    var candidate = 'Candidate:';
+    Lazy(aptCacheProcess.stdout).lines.map(String)
+      .filter(function(line) {
+        return ((line.indexOf(cleanPackageName) === 0) ||
+            (line.trim().indexOf(candidate) === 0));
+      })
+      .join(function(lines) {
+        var packageName = '';
+        var version = '';
+        lines.forEach(function(line) {
+          if (line.indexOf(cleanPackageName) === 0) {
+            packageName = line.substring(0, line.indexOf(':'));
+          }
+          var candidateIndex = line.trim().indexOf(candidate);
+          if (candidateIndex === 0) {
+            version = line.trim().substring(candidate.length + 1);
+            result.push({package: packageName, version: version});
+            packageName = '';
+            version = '';
+          }
+        })
+      });
+    Lazy(aptCacheProcess.stderr).lines.map(String)
+      .join(function(items) { stdErr = items.join('\n') });
+
+    aptCacheProcess.on('close', function(exitCode, undefined) {
+      callback({ result: result, error: stdErr, exitCode: exitCode });
+    });
+
+  };
   return aptCache;
 };
 module.exports = AptCache;

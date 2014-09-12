@@ -5,7 +5,12 @@ var AptGet = function() {
   var aptGet = {};
   aptGet.install = function(packageName, version, branch, callback) {
     var aptGetProcess = cp.spawn('apt-get',
-      ['install', '-t', branch, packageName+'='+version]);
+      [
+        '-o Dpkg::Options::="--force-overwrite"',
+        'install',
+        '-t',
+        branch,
+          packageName+'='+version]);
 
     var stdOut = '';
     var stdErr = '';

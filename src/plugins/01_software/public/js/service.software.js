@@ -17,6 +17,13 @@ angular.module('Software.services', []).
       });
     };
 
+    software.getInstallCandidate = function(packageName) {
+      return $http({
+        method: 'GET',
+        url: 'plugin/software/installCandidate/' + packageName
+      });
+    };
+
     software.install = function(packageName, version, branch) {
       return $http({
         method: 'POST',

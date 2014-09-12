@@ -1,11 +1,11 @@
 angular.module('Software.controllers', ['Software.services']).
-  controller('softwareController', function($scope, BranchesApiService, softwareApiService) {
+  controller('softwareController', function($scope, $q, BranchesApiService, softwareApiService) {
 
     BranchesApiService.getBranches().then(function(branches) {
       $scope.branches = branches;
     });
 
-    $scope.showNewVersions = true;
+    $scope.showUpdatesOnly = true;
     $scope.showOnlyLatest = true;
     $scope.selectedBranch = undefined;
     $scope.installResult = '';
@@ -20,23 +20,38 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.loadVersions = function() {
       $scope.latestVersions = [];
       if ($scope.selectedBranch) {
-        softwareApiService.getLatestVersion('openrov-*')
-          .then(function (versions) {
-            versions.data.forEach(function (version) {
+        var getLatestSoftware = softwareApiService.getLatestVersion('openrov-*');
+        var getCandidates = softwareApiService.getInstallCandidate('openrov-*');
+        $q.all([getLatestSoftware, getCandidates]).then(
+          function(results) {
+            var versions = results[0].data;
+            var candidates = results[1].data;
+
+            versions.forEach(function (version) {
               if (version.branch === $scope.selectedBranch) {
-                if ($scope.installedSoftware.filter(
-                  function(installed) {
-                    if ($scope.showNewVersions) {
-                      return isSamePackage(installed, version) && isSameVersion(installed, version)
+                if ($scope.showUpdatesOnly) {
+                  if (isPackageInstalled(version))
+                  {
+                    var candidatePackage = candidates.filter(function(candidate) {
+                      return isSamePackage(candidate, version);
+                    });
+                    if (candidatePackage.length > 0) {
+                      if (candidatePackage[0].version === version.version) {
+                        $scope.latestVersions.push(version);
+                      }
                     }
-                  }).length === 0) {
-                  if (!latestVersionContainsPackage(version) || !$scope.showOnlyLatest) {
-                    $scope.latestVersions.push(version);
+                  }
+                }
+                else {
+                  if (!($scope.showOnlyLatest && newVersionsContainsPackage(version))) {
+                    if (!newVersionsContainsPackage(version) || !isPackageVersionInstalled(version)) {
+                      $scope.latestVersions.push(version);
+                    }
                   }
                 }
               }
-            });
-          });
+            })
+          })
       }
     };
 
@@ -61,10 +76,29 @@ angular.module('Software.controllers', ['Software.services']).
       return installed.version === item.version;
     }
 
-    function latestVersionContainsPackage(version) {
+    function newVersionsContainsPackage(version) {
       return $scope.latestVersions.filter(
         function(latest) { return isSamePackage(latest, version)  }
       ).length !== 0
     }
+
+    function isPackageVersionInstalled(version) {
+      return $scope.installedSoftware.filter(
+        function(installed) {
+            if (isSamePackage(installed, version)) {
+             return isSameVersion(installed, version);
+            }
+            return false;
+          }).length > 0
+    }
+
+    function isPackageInstalled(aPackage) {
+      var result = $scope.installedSoftware.filter(
+        function(installed) {
+          return isSamePackage(installed, aPackage)
+        });
+      return result.length > 0
+    }
+
 
   });
