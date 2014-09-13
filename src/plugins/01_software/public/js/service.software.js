@@ -6,23 +6,25 @@ angular.module('Software.services', []).
     software.loadInstalledSoftware = function() {
       return $http({
         method: 'GET',
-        url: 'plugin/software/installed/'
+        url: 'plugin/software/installed/openrov-*'
       });
     };
 
-    software.getLatestVersion = function(packageName) {
+    software.getLatestVersions = function(packageName, branch, onlyUpdates) {
       return $http({
         method: 'GET',
-        url: 'plugin/software/latestversion/' + packageName
+        url: 'plugin/software/latestversion/' + packageName + '/' + branch + '/' + onlyUpdates
       });
     };
 
+/*
     software.getInstallCandidate = function(packageName) {
       return $http({
         method: 'GET',
         url: 'plugin/software/installCandidate/' + packageName
       });
     };
+*/
 
     software.install = function(packageName, version, branch) {
       return $http({

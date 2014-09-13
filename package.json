@@ -8,15 +8,16 @@
     "url": "git://github.com/OpenROV/openrov-dashboard.git"
   },
   "dependencies": {
-    "express": "= 3.4.8",
     "ejs": "~0.8.3",
-    "nconf" : "",
-    "forever-monitor" : "",
-	  "optimist" : "",
-    "lazy" : ">= 1.0.11",
-    "sync" : "",
+    "express": "= 3.4.8",
+    "forever-monitor": "",
+    "jquery-file-upload-middleware": "",
+    "lazy": ">= 1.0.11",
+    "nconf": "",
+    "optimist": "",
+    "q": "^1.0.1",
     "socket.io": "~0.9.17",
-    "jquery-file-upload-middleware" : ""
+    "sync": ""
   },
   "bundleDependencies": [
     "express"

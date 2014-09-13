@@ -1,26 +1,35 @@
-var dpkg = require('../../lib/dpkg')();
 var aptCache = require('./lib/apt-cache')();
 var aptGet = require('./lib/apt-get')();
+var packageManager = require('./lib/package-manager')();
 var util = require('util');
 
 module.exports = function(name, deps) {
   var app = deps.app;
 
   app.get(
-    '/plugin/software/installed',
+    '/plugin/software/installed/:packageName',
     function (req, resp) {
-      dpkg.packagesAsync(function (items) {
+      var packageName = req.params.packageName;
+      if (!(packageName) || packageName.trim().lenght === 0) {
+        packageName = 'openrov-*'
+      }
+      packageManager.getInstalledPackages(packageName, function (items) {
         resp.send(items);
       });
     }
   );
 
   app.get(
-    '/plugin/software/latestversion/:packageName',
+    '/plugin/software/latestversion/:packageName/:branch/:updatesOnly',
     function (req, resp) {
-      aptCache.madison([req.params.packageName], function(items) {
-        resp.send(items);
-      })
+      packageManager.loadVersions(req.params.packageName, req.params.branch, req.params.updatesOnly === 'true' )
+        .then(function(items) {
+          resp.send(items);
+        },
+        function(reason){
+          resp.statusCode = 400;
+          resp.end(reason);
+        })
     });
 
   app.post(

@@ -14,7 +14,6 @@ angular.module('DashboardApp.services', []).
         else {
           deferred.reject(result.error);
         }
-
       });
       return deferred.promise;
     };

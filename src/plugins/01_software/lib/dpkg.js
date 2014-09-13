@@ -1,25 +1,12 @@
 var EventEmitter = require('events').EventEmitter, cp = require('child_process'), Lazy = require('lazy');
 var Dpkg = function () {
   var dpkg = new EventEmitter();
-  dpkg.packages = function () {
+
+
+  dpkg.packagesAsync = function (packageName, callback) {
     var dpkgProcess = cp.spawn('dpkg', [
         '-l',
-        'openrov-*'
-      ]);
-    return Lazy(dpkgProcess.stdout).lines.map(String).skip(5).filter(function (line) {
-      return line !== '0';
-    }).map(function (line) {
-      var fields = line.trim().split(/\s+/, 3);
-      return {
-        package: fields[1],
-        version: fields[2]
-      };
-    });
-  };
-  dpkg.packagesAsync = function (callback) {
-    var dpkgProcess = cp.spawn('dpkg', [
-        '-l',
-        'openrov-*'
+        packageName
       ]);
     var input = Lazy(dpkgProcess.stdout).lines.map(String).skip(5).filter(function (line) {
       return line !== '0';
@@ -30,7 +17,10 @@ var Dpkg = function () {
         version: fields[2]
       };
     });
-    input.join(function(items) { callback(items); });
+    var stdErr = '';
+    Lazy(dpkgProcess.stderr).lines.map(String).join(function(items) { stdErr = items.join('\n') });
+    input.join(function(items) {
+      callback(items); });
   };
   dpkg.install = function (path) {
     var dpkgProcess = cp.spawn('dpkg', [
