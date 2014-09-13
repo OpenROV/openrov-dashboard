@@ -8,6 +8,8 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.latestVersions = [];
 
     $scope.loadBranchesError = undefined;
+    $scope.loadPackagesError = undefined;
+    $scope.loadNewpackagesError = undefined;
 
     BranchesApiService.getBranches().then(
       function(branches) {
@@ -21,9 +23,13 @@ angular.module('Software.controllers', ['Software.services']).
 
     $scope.loadInstalledSoftware = function() {
       $scope.loadingInstalled = softwareApiService.loadInstalledSoftware();
-      $scope.loadingInstalled.then(function(items) {
-        $scope.installedSoftware = items.data;
-      });
+      $scope.loadingInstalled.then(
+        function(items) {
+          $scope.installedSoftware = items.data;
+        },
+        function(reason) {
+          $scope.loadPackagesError = reason;
+        });
     };
 
     $scope.loadVersions = function() {
@@ -36,6 +42,7 @@ angular.module('Software.controllers', ['Software.services']).
         $scope.loadingPackages
           .then(
           function(results) {
+            $scope.loadNewpackagesError = '';
             var versions = results[0].data;
             var candidates = results[1].data;
 
@@ -45,6 +52,9 @@ angular.module('Software.controllers', ['Software.services']).
             else {
               loadAllPackages(versions);
             }
+          },
+          function(reason) {
+            $scope.loadNewpackagesError = reason;
           })
       }
     };

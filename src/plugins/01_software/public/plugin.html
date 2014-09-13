@@ -5,6 +5,7 @@
       {{ item.package }} - {{ item.version }}
     </li>
   </ul>
+  <div class="alert alert-danger" role="alert" ng-hide="!(loadPackagesError)"><strong>Uh, there was a problem loading the installed packages!</strong><br>{{ loadPackagesError }}</div>
   <button class="btn btn-sm" ng-click="loadInstalledSoftware()">Refresh</button>
 
 </div>
@@ -42,6 +43,7 @@
       <div class="col-sm-12">
         <div>
           <div><h4>Packages:</h4></div>
+          <div class="alert alert-danger" role="alert" ng-hide="!(loadNewpackagesError)"><strong>Uh, there was a problem loading new installed packages!</strong><br>{{ loadNewpackagesError }}</div>
           <div class="package-list" cg-busy="loadingPackages">
             <ul id="softwareList" >
               <li ng-repeat="item in latestVersions">
