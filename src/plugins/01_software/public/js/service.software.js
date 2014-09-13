@@ -10,6 +10,20 @@ angular.module('Software.services', []).
       });
     };
 
+    software.getUpdates = function(packageName, branch) {
+      return $http({
+        method: 'GET',
+        url: 'plugin/software/packages/updates/' + packageName + '/' + branch
+      });
+    };
+
+    software.getAll = function(packageName, branch, onlyLatest) {
+      return $http({
+        method: 'GET',
+        url: 'plugin/software/packages/all/' + packageName + '/' + branch + '/' + onlyLatest
+      });
+    };
+
     software.getLatestVersions = function(packageName, branch, onlyUpdates) {
       return $http({
         method: 'GET',

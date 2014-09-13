@@ -35,13 +35,14 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.loadVersions = function() {
       $scope.latestVersions = [];
       if ($scope.selectedBranch) {
-        var getLatestSoftware =
-          softwareApiService.getLatestVersions(
-            'openrov-*',
-          $scope.selectedBranch,
-          $scope.showUpdatesOnly);
+        var packageName = 'openrov-*';
 
-        $scope.loadingPackages = getLatestSoftware;
+        if ($scope.showUpdatesOnly) {
+          $scope.loadingPackages = softwareApiService.getUpdates(packageName, $scope.selectedBranch);
+        }
+        else {
+          $scope.loadingPackages = softwareApiService.getAll(packageName, $scope.selectedBranch, $scope.showOnlyLatest);
+        }
 
         $scope.loadingPackages
           .then(

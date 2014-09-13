@@ -20,9 +20,29 @@ module.exports = function(name, deps) {
   );
 
   app.get(
-    '/plugin/software/latestversion/:packageName/:branch/:updatesOnly',
+    '/plugin/software/packages/updates/:packageName/:branch',
     function (req, resp) {
-      packageManager.loadVersions(req.params.packageName, req.params.branch, req.params.updatesOnly === 'true' )
+      packageManager.loadVersions(
+        req.params.packageName,
+        req.params.branch,
+          true, true)
+        .then(function(items) {
+          resp.send(items);
+        },
+        function(reason){
+          resp.statusCode = 400;
+          resp.end(reason);
+        })
+    });
+
+  app.get(
+    '/plugin/software/packages/all/:packageName/:branch/:onlyLatest',
+    function (req, resp) {
+      packageManager.loadVersions(
+        req.params.packageName,
+        req.params.branch,
+          false, // updates only
+          req.params.onlyLatest === 'true')
         .then(function(items) {
           resp.send(items);
         },

@@ -5,18 +5,15 @@ var aptGet = require('./apt-get')();
 
 var PackageManager = function() {
   'use strict'
-  var self = this;
-  var pm = {
-  };
+  var pm = { };
 
   pm.getInstalledPackages = function(packageName, callback) {
     dpkg.packagesAsync(packageName, callback);
   };
 
-  pm.loadVersions = function(packageName, branch, showUpdatesOnly) {
+  pm.loadVersions = function(packageName, branch, showUpdatesOnly, showAllVersions) {
     var loadVersionsPromise = Q.defer();
     if (branch !== undefined && branch.trim().length > 0) {
-      console.log('########' + branch);
 
       var getLatestSoftware = Q.defer();
       aptCache.madison([packageName], function(items) {
@@ -53,7 +50,7 @@ var PackageManager = function() {
              newVersions = loadUpdatesOnlyPackages(installedSoftware, candidates, versions);
           }
           else {
-            newVersions = loadAllPackages(installedSoftware, versions, branch, showUpdatesOnly);
+            newVersions = loadAllPackages(versions, branch, showAllVersions);
           }
           loadVersionsPromise.resolve(newVersions);
         },
@@ -86,11 +83,11 @@ var PackageManager = function() {
     return result;
   }
 
-  function loadAllPackages(installedSoftware, versions, selectedBranch) {
+  function loadAllPackages(versions, selectedBranch, onlyLatest) {
     var result = [];
     versions.forEach(function (version) {
       if (version.branch === selectedBranch) {
-        if (!newVersionsContainsPackage(result, version) || !isPackageVersionInstalled(installedSoftware, version)) {
+        if (! (onlyLatest && newVersionsContainsPackage(result, version) )) {
           result.push(version);
         }
       }
