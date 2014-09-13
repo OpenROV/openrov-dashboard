@@ -15,15 +15,15 @@
       <div class="col-sm-2"><h4>Branches:</h4></div>
     </div>
     <form class="form-inline col-sm-12" role="form" >
-      <div class="alert alert-danger" role="alert" ng-hide="selectedBranch"><strong>Please select a branch!</strong></div>
+      <div class="alert alert-warning" role="alert" ng-hide="selectedBranch"><strong>Please select a branch!</strong></div>
+       <select class="form-control" id="branches"
 
-         <select class="form-control" id="branches"
-
-                ng-model="selectedBranch"
-                ng-options="branch for branch in branches"
-                ng-change="loadVersions()">
-          <option value="">-- Select Branch --</option>
-        </select>
+              ng-model="selectedBranch"
+              ng-options="branch for branch in branches"
+              ng-change="loadVersions()">
+        <option value="">-- Select Branch --</option>
+      </select>
+      <div class="alert alert-danger" role="alert" ng-hide="!(loadBranchesError)"><strong>Uh, there was a problem loading the branches!</strong><br>{{ loadBranchesError }}</div>
       <div class="checkbox">
         <label>
           <input type="checkbox" ng-model="showUpdatesOnly" ng-change="loadVersions()">Show only updates
@@ -56,7 +56,7 @@
   </div>
   <br>
   <div class="row">
-    <div class="col-sm-12">
+    <div class="col-sm-12" ng-hide="!(installResult)">
       <div>
         <div><h4>Install result:</h4></div>
       </div>

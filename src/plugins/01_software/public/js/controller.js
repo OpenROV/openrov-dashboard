@@ -1,15 +1,23 @@
 angular.module('Software.controllers', ['Software.services']).
   controller('softwareController', function($scope, $q, BranchesApiService, softwareApiService) {
 
-    BranchesApiService.getBranches().then(function(branches) {
-      $scope.branches = branches;
-    });
-
     $scope.showUpdatesOnly = true;
     $scope.showOnlyLatest = true;
     $scope.selectedBranch = undefined;
     $scope.installResult = '';
     $scope.latestVersions = [];
+
+    $scope.loadBranchesError = undefined;
+
+    BranchesApiService.getBranches().then(
+      function(branches) {
+        $scope.branches = branches;
+        $scope.loadBranchesError = undefined;
+      },
+      function(reason) {
+        $scope.loadBranchesError = reason;
+
+      });
 
     $scope.loadInstalledSoftware = function() {
       $scope.loadingInstalled = softwareApiService.loadInstalledSoftware();

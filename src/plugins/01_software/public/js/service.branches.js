@@ -7,8 +7,14 @@ angular.module('DashboardApp.services', []).
 
       var deferred = $q.defer();
 
-      getBranchesFromS3(function(branches) {
-        deferred.resolve(branches);
+      getBranchesFromS3(function(result) {
+        if (result.success) {
+          deferred.resolve(result.branches);
+        }
+        else {
+          deferred.reject(result.error);
+        }
+
       });
       return deferred.promise;
     };
@@ -21,7 +27,7 @@ angular.module('DashboardApp.services', []).
         Prefix: 'dists/'
       }, function (err, data) {
         if (err) {
-          alert(err); //TODO fix error handling
+          callback( { success: false, error: err.toString()});
         }
         else {
           data.Contents.forEach(function(item) {
@@ -30,8 +36,9 @@ angular.module('DashboardApp.services', []).
               branches.push(parts[1]);
             }
           });
+          callback( { success: true, branches: branches});
         }
-        callback(branches);
+
       });
     }
 
