@@ -1,8 +1,8 @@
 var __dashboard;
+var __socket;
 $(function() {
-  var socket = io.connect();
-  var viewmodel;
-  __dashboard  = new Dashboard(socket, viewmodel);
+  __socket = io.connect();
+  __dashboard  = new Dashboard(__socket);
 
 });
 
@@ -15,5 +15,6 @@ angular.module('DashboardApp', [
   .config(function($urlRouterProvider) {
     $urlRouterProvider.otherwise('/services');
   })
-  .value('DashboardAccess', function() { return __dashboard  });;
+  .value('DashboardAccess', function() { return __dashboard  })
+  .value('SocketAccess', function() { return __socket; });
 

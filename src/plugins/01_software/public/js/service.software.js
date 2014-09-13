@@ -31,6 +31,13 @@ angular.module('Software.services', []).
       });
     };
 
+    software.startAptUpdate = function() {
+      return $http({
+        method: 'POST',
+        url: 'plugin/software/update/start'
+      });
+    };
+
 /*
     software.getInstallCandidate = function(packageName) {
       return $http({

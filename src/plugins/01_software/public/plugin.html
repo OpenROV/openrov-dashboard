@@ -12,6 +12,11 @@
 <div>
   <h2>Available software</h2>
   <div class="row">
+    <div class="form-group col-sm-4">
+      <button class="btn btn-sm" ng-click="refreshPackages()" ng-disabled="refreshingPackages">Update package list</button> <i>(this takes a while)</i>
+    </div>
+  </div>
+  <div class="row">
     <div class="form-group">
       <div class="col-sm-2"><h4>Branches:</h4></div>
     </div>

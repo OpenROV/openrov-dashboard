@@ -1,15 +1,21 @@
 angular.module('Software.controllers', ['Software.services']).
-  controller('softwareController', function($scope, $q, BranchesApiService, softwareApiService) {
+  controller('softwareController', function($scope, $q, BranchesApiService, softwareApiService, SocketAccess) {
+    var socket = SocketAccess();
 
     $scope.showUpdatesOnly = true;
     $scope.showOnlyLatest = true;
     $scope.selectedBranch = undefined;
     $scope.installResult = '';
     $scope.latestVersions = [];
+    $scope.refreshingPackages = false;
 
     $scope.loadBranchesError = undefined;
     $scope.loadPackagesError = undefined;
     $scope.loadNewpackagesError = undefined;
+
+    socket.on('Software.Update.update', function(data) {
+      console.log(JSON.stringify(data));
+    });
 
     BranchesApiService.getBranches().then(
       function(branches) {
@@ -21,10 +27,20 @@ angular.module('Software.controllers', ['Software.services']).
 
       });
 
+    $scope.refreshPackages = function() {
+      $scope.refreshingPackages = true;
+      softwareApiService.startAptUpdate().then(
+        function(result) {
+          alert(JSON.stringify(result.data));
+        }
+      );
+    };
+
     $scope.loadInstalledSoftware = function() {
       $scope.loadingInstalled = softwareApiService.loadInstalledSoftware();
       $scope.loadingInstalled.then(
         function(items) {
+          $scope.loadPackagesError = undefined;
           $scope.installedSoftware = items.data;
         },
         function(reason) {

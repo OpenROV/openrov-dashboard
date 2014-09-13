@@ -5,6 +5,61 @@ var util = require('util');
 
 module.exports = function(name, deps) {
   var app = deps.app;
+  var aptGetUpdate = {running: false};
+  var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
+  var getSocket = function() { return socket; };
+
+  deps.io.sockets.on('connection', function (newSocket) {
+    socket = newSocket;
+    console.log('Socket io connected()')
+  });
+
+  app.post(
+    '/plugin/software/update/start',
+    function(req, resp) {
+      if (aptGetUpdate.running) {
+        resp.redirect(301,'/plugin/software/update/status');
+        resp.send(aptGetUpdate);
+        resp.end();
+      }
+      else {
+        aptGetUpdate = { promise: aptGet.update(), running:true, data: [], error: [] };
+        aptGetUpdate.promise.then(
+          function() {
+            aptGetUpdate.running = false;
+            aptGetUpdate.success = true;
+            aptGetUpdate.lastUpdate = Date.now();
+            getSocket().emit('Software.Update.done', aptGetUpdate);
+          },
+          function(reason) {
+            aptGetUpdate.running = false;
+            aptGetUpdate.success = false;
+            aptGetUpdate.error.push(reason.error.toString());
+            aptGetUpdate.lastUpdate = Date.now();
+            getSocket().emit('Software.Update.done', aptGetUpdate);
+          },
+          function(information) {
+            aptGetUpdate.data.push(information.data.toString());
+            getSocket().emit('Software.Update.update', aptGetUpdate);
+          }
+        )
+      }
+      returnUpdateState(resp);
+    }
+  );
+
+  app.get(
+    '/plugin/software/update/status',
+    function (req, resp) {
+      returnUpdateState(resp);
+    }
+  );
+
+  function returnUpdateState(resp) {
+    resp.statusCode = aptGetUpdate.running ? 206 : 200;
+    resp.send(aptGetUpdate);
+    resp.end();
+  }
 
   app.get(
     '/plugin/software/installed/:packageName',
@@ -79,6 +134,7 @@ module.exports = function(name, deps) {
         })
     }
   );
+
 
   var result = { ngModule: 'DashboardApp.Software' };
   console.log("Loaded software plugin");
