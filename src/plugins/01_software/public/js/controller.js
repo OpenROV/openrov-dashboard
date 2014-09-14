@@ -40,6 +40,7 @@ angular.module('Software.controllers', ['Software.services']).
 
     $scope.$watch('aptUpdateStatus', function(newStatus) {
       if (newStatus) {
+        $scope.refreshingPackages = newStatus.running? newStatus.running : false;
         $scope.aptUpdateRefreshDate = newStatus.lastUpdate ? moment(newStatus.lastUpdate).fromNow() : 'unknown';
       }
     });
@@ -61,6 +62,7 @@ angular.module('Software.controllers', ['Software.services']).
 
     $scope.refreshPackages = function() {
       $scope.refreshingPackages = true;
+      $scope.aptUpdateError = false;
       softwareApiService.startAptUpdate().then(
         function(result) {
           $scope.aptUpdateStatus = result.data;
