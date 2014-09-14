@@ -21,7 +21,7 @@ var AptGet = function() {
         if (exitCode == 0) {//success{
           resolve();
         }
-        else { reject('Exit code: ' + exitCode + ' Signal: ' + signal); console.log('###' + exitCode); }
+        else { reject('Exit code: ' + exitCode + ' Signal: ' + signal); }
       })
     });
   };

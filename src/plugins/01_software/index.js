@@ -125,21 +125,6 @@ module.exports = function(name, deps) {
       });
     });
 
-  app.get(
-    '/plugin/software/installCandidate/:packageName',
-    function (req, resp) {
-      aptCache.getCandidates(req.params.packageName,
-        function(result) {
-          if (result.exitCode === 0) {
-
-            resp.send({ success: true, result: result.result});
-          }
-          else { resp.send({ success: false, error: result.error})}
-        })
-    }
-  );
-
-
   var result = { ngModule: 'DashboardApp.Software' };
   console.log("Loaded software plugin");
   return result;
