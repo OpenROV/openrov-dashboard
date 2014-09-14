@@ -12,6 +12,7 @@ module.exports = function(name, deps) {
   deps.io.sockets.on('connection', function (newSocket) {
     socket = newSocket;
     console.log('Socket io connected()')
+
   });
 
   app.post(

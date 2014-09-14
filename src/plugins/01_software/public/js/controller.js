@@ -8,13 +8,30 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.installResult = '';
     $scope.latestVersions = [];
     $scope.refreshingPackages = false;
+    $scope.aptUpdateRefreshDate = 'unknown';
+    $scope.aptUpdateStatus = undefined;
 
     $scope.loadBranchesError = undefined;
     $scope.loadPackagesError = undefined;
     $scope.loadNewpackagesError = undefined;
 
     socket.on('Software.Update.update', function(data) {
-      console.log(JSON.stringify(data));
+      $scope.$apply(function() {
+        $scope.aptUpdateStatus = data;
+      });
+    });
+
+    socket.on('Software.Update.done', function(data) {
+      $scope.$apply(function() {
+        $scope.refreshingPackages = data.running;
+        $scope.aptUpdateStatus = data;
+      });
+    });
+
+    $scope.$watch('aptUpdateStatus', function(newStatus) {
+      if (newStatus) {
+        $scope.aptUpdateRefreshDate = newStatus.lastUpdate ? moment(newStatus.lastUpdate).fromNow() : 'unknown';
+      }
     });
 
     BranchesApiService.getBranches().then(
@@ -27,11 +44,16 @@ angular.module('Software.controllers', ['Software.services']).
 
       });
 
+    softwareApiService.aptUpdateStatus().
+      then(function(result) {
+        $scope.aptUpdateStatus = result.data;
+      });
+
     $scope.refreshPackages = function() {
       $scope.refreshingPackages = true;
       softwareApiService.startAptUpdate().then(
         function(result) {
-          alert(JSON.stringify(result.data));
+          $scope.aptUpdateStatus = result.data;
         }
       );
     };

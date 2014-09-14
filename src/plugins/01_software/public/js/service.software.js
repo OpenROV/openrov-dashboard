@@ -38,6 +38,13 @@ angular.module('Software.services', []).
       });
     };
 
+    software.aptUpdateStatus = function() {
+      return $http({
+        method: 'get',
+        url: 'plugin/software/update/status'
+      });
+    };
+
 /*
     software.getInstallCandidate = function(packageName) {
       return $http({
