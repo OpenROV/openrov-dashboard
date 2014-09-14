@@ -6,13 +6,13 @@ var util = require('util');
 module.exports = function(name, deps) {
   var app = deps.app;
   var aptGetUpdate = {running: false};
+  var aptGetInstall = {running: false};
   var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
   var getSocket = function() { return socket; };
 
   deps.io.sockets.on('connection', function (newSocket) {
     socket = newSocket;
     console.log('Socket io connected()')
-
   });
 
   app.post(
@@ -48,22 +48,16 @@ module.exports = function(name, deps) {
           }
         )
       }
-      returnUpdateState(resp);
+      returnState(aptGetUpdate, resp);
     }
   );
 
   app.get(
     '/plugin/software/update/status',
     function (req, resp) {
-      returnUpdateState(resp);
+      returnState(aptGetUpdate, resp);
     }
   );
-
-  function returnUpdateState(resp) {
-    resp.statusCode = aptGetUpdate.running ? 206 : 200;
-    resp.send(aptGetUpdate);
-    resp.end();
-  }
 
   app.get(
     '/plugin/software/installed/:packageName',
@@ -112,18 +106,62 @@ module.exports = function(name, deps) {
     });
 
   app.post(
-    '/plugin/software/install/:packageName/:version/:branch',
-    function (req, resp) {
-      aptGet.install(req.params.packageName, req.params.version, req.params.branch,
-      function(result) {
-        if (result.exitCode == 0) {
-          resp.send({ success: true, result: result.stdOut });
-        }
-        else {
-          resp.send({ success: false, result: result.stdOut, error: result.stdErr });
-        }
-      });
+    '/plugin/software/install/start/:packageName/:version/:branch',
+    function(req, resp) {
+      if (aptGetInstall.running) {
+        resp.redirect(301,'/plugin/software/install/status');
+        resp.send(aptGetUpdate);
+        resp.end();
+      }
+      else {
+        aptGetInstall = {
+          promise: aptGet.install(req.params.packageName, req.params.version, req.params.branch),
+          running: true,
+          data: [],
+          error: []
+        };
+        aptGetInstall.promise.then(
+          function() {
+            console.log("##########");
+            aptGetInstall.running = false;
+            aptGetInstall.success = true;
+            aptGetInstall.lastUpdate = Date.now();
+            getSocket().emit('Software.Install.done', aptGetUpdate);
+          },
+          function(reason) {
+            console.log("@@@@@@@@@@@@@@" + reason);
+            aptGetInstall.success = false;
+            aptGetInstall.running = false;
+            aptGetInstall.error.push(reason);
+            aptGetInstall.lastUpdate = Date.now();
+            getSocket().emit('Software.Install.done', aptGetUpdate);
+          },
+        function(information) {
+          console.log("$$$$$$$$" + JSON.stringify( information.data.toString()));
+          aptGetInstall.data.push(information.data.toString());
+            if (information.error) {
+              aptGetInstall.error.push(information.error.toString());
+            }
+            getSocket().emit('Software.Install.update', aptGetUpdate);
+          }
+        )
+      }
+      returnState(aptGetInstall,resp);
     });
+
+  app.get(
+    '/plugin/software/install/status',
+    function (req, resp) {
+      console.log("__________");
+      returnState(aptGetInstall, resp);
+    }
+  );
+
+  function returnState(process, resp) {
+    resp.statusCode = process.running ? 206 : 200;
+    resp.send(aptGetUpdate);
+    resp.end();
+  }
 
   var result = { ngModule: 'DashboardApp.Software' };
   console.log("Loaded software plugin");

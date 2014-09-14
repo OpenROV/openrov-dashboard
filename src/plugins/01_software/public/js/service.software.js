@@ -48,9 +48,17 @@ angular.module('Software.services', []).
     software.install = function(packageName, version, branch) {
       return $http({
         method: 'POST',
-        url: 'plugin/software/install/' + packageName + '/' + version + '/' + branch
+        url: 'plugin/software/install/start/' + packageName + '/' + version + '/' + branch
       });
     };
+
+    software.installStatus = function() {
+      return $http({
+        method: 'get',
+        url: 'plugin/software/install/status'
+      });
+    };
+
 
     return software;
   });

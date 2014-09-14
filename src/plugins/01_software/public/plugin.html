@@ -67,11 +67,14 @@
   </div>
   <br>
   <div class="row">
-    <div class="col-sm-12" ng-hide="!(installResult)">
+    <!--<div class="col-sm-12" ng-hide="!(installingPackage)">-->
+    <div class="col-sm-12">
       <div>
-        <div><h4>Install result:</h4></div>
-      </div>
 
+        <div><h4>Install result:</h4></div>
+        <div cg-busy="installingPackage"></div>
+      </div>
+      <div class="alert alert-danger" role="alert" ng-hide="!installError"><strong>Uh, there was a problem Installing the package!</strong><br><div ng-bind-html="installErrorData"></div></div>
       <div class="form-group">
         <div>
           <div id="installResult">{{ installResult }}</div>

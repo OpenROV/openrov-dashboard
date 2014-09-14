@@ -5,7 +5,7 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.showUpdatesOnly = true;
     $scope.showOnlyLatest = true;
     $scope.selectedBranch = undefined;
-    $scope.installResult = '';
+
     $scope.latestVersions = [];
     $scope.refreshingPackages = false;
     $scope.aptUpdateRefreshDate = 'unknown';
@@ -15,7 +15,12 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.loadPackagesError = undefined;
     $scope.loadNewpackagesError = undefined;
     $scope.aptUpdateError = false;
-    $scope.aptUpdateErrorData = undefined
+    $scope.aptUpdateErrorData = undefined;
+
+    $scope.installResult = undefined;
+    $scope.installingPackage = true;
+    $scope.installError = false;
+    $scope.installErrorData = undefined;
 
     socket.on('Software.Update.update', function(data) {
       $scope.$apply(function() {
@@ -32,6 +37,30 @@ angular.module('Software.controllers', ['Software.services']).
           var error = "<hr><strong>Output:</strong> <br>" + data.data.join('<br>')
             + '<br><hr><br><strong>Error: </strong>' + data.error.join('<br>');
           $scope.aptUpdateErrorData = $sce.trustAsHtml(error);
+        }
+        else {
+          $scope.loadInstalledSoftware();
+          $scope.loadVersions();
+        }
+      });
+    });
+
+    socket.on('Software.Install.update', function(data) {
+      $scope.$apply(function() {
+        $scope.installResult = data;
+      });
+    });
+
+    socket.on('Software.Install.done', function(data) {
+      $scope.$apply(function() {
+        console.log('update ' + JSON.stringify(data));
+        $scope.installingPackage = data.running;
+        $scope.installResult = data;
+        if (!data.success) {
+          $scope.installError = true;
+          var error = "<hr><strong>Output:</strong> <br>" + data.data.join('<br>')
+            + '<br><hr><br><strong>Error: </strong>' + data.error.join('<br>');
+          $scope.installErrorData = $sce.trustAsHtml(error);
 
         }
       });
@@ -39,6 +68,7 @@ angular.module('Software.controllers', ['Software.services']).
 
     $scope.$watch('aptUpdateStatus', function(newStatus) {
       if (newStatus) {
+        console.log('update ' + JSON.stringify(newStatus));
         $scope.refreshingPackages = newStatus.running? newStatus.running : false;
         $scope.aptUpdateRefreshDate = newStatus.lastUpdate ? moment(newStatus.lastUpdate).fromNow() : 'unknown';
       }
@@ -109,15 +139,20 @@ angular.module('Software.controllers', ['Software.services']).
     };
 
     $scope.install = function(item) {
+      $scope.installingPackage = true;
+      $scope.installError = false;
+
       softwareApiService.install(item.package, item.version, item.branch)
-        .then(function(result) {
-          $scope.installResult = JSON.stringify(result);
-          $scope.loadInstalledSoftware();
-          $scope.loadVersions();
-        })
+        .then(
+        function (result) {
+          $scope.installResult = result.data;
+        },
+        function (reason) {
+          console.log(JSON.stringify(reason));
+        }
+      );
     };
+
     $scope.loadInstalledSoftware();
-
-
 
   });
