@@ -40,7 +40,9 @@ module.exports = function(name, deps) {
             getSocket().emit('Software.Update.done', aptGetUpdate);
           },
           function(information) {
-            aptGetUpdate.data.push(information.data.toString());
+            if (information.data) {
+              aptGetUpdate.data.push(information.data.toString());
+            }
             if (information.error) {
               aptGetUpdate.error.push(information.error.toString());
             }

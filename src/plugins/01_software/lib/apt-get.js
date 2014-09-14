@@ -16,7 +16,6 @@ var AptGet = function() {
     return Q.Promise(function(resolve, reject, notify) {
       var aptGetProcess = cp.spawn('apt-get',
         [
-          '-s',
           '-y',
           '--force-yes',
           '-o Dpkg::Options::="--force-overwrite"',
