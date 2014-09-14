@@ -16,8 +16,9 @@
     "nconf": "",
     "optimist": "",
     "q": "^1.0.1",
-    "socket.io": "~0.9.17",
-    "sync": ""
+    "sync": "",
+    "socket.io": "~1.1.0",
+    "socketio-wildcard": "~0.1.1"
   },
   "bundleDependencies": [
     "express"

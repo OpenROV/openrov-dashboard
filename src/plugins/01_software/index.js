@@ -9,9 +9,27 @@ module.exports = function(name, deps) {
   var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
   var getSocket = function() { return socket; };
 
-  deps.io.sockets.on('connection', function (newSocket) {
+  deps.io.on('connection', function (newSocket) {
     socket = newSocket;
-    console.log('Socket io connected()')
+    console.log('Socket io connected()');
+
+    var ipcSocket = deps.io.of('/IPC');
+    ipcSocket.on('connection', function (newIpcSocket) {
+      console.log('IPC Socket io connected()');
+
+      newIpcSocket.on('Software.Cockpit.message', function(message) {
+        console.log('IPC, Software.Cockpit.message: ' + message);
+        newSocket.emit('Software.Cockpit.message', message);
+      });
+
+      newSocket.on('Software.Cockpit.answer', function(message){
+        console.log('Software.Cockpit.answer: ' + message);
+        newIpcSocket.emit('Software.Cockpit.answer', message);
+      });
+
+    });
+
+
   });
 
   app.post(
