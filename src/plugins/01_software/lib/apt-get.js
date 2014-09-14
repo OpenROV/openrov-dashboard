@@ -15,13 +15,13 @@ var AptGet = function() {
         notify({error: data});
       });
       aptGetProcess.on('error', function (err) {
-        notify({error: error});
+        notify({error: err});
       });
       aptGetProcess.on('exit', function(exitCode, signal) {
         if (exitCode == 0) {//success{
           resolve();
         }
-        else { reject() }
+        else { reject('Exit code: ' + exitCode + ' Signal: ' + signal); console.log('###' + exitCode); }
       })
     });
   };

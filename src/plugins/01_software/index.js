@@ -33,14 +33,17 @@ module.exports = function(name, deps) {
             getSocket().emit('Software.Update.done', aptGetUpdate);
           },
           function(reason) {
-            aptGetUpdate.running = false;
             aptGetUpdate.success = false;
-            aptGetUpdate.error.push(reason.error.toString());
+            aptGetUpdate.running = false;
+            aptGetUpdate.error.push(reason);
             aptGetUpdate.lastUpdate = Date.now();
             getSocket().emit('Software.Update.done', aptGetUpdate);
           },
           function(information) {
             aptGetUpdate.data.push(information.data.toString());
+            if (information.error) {
+              aptGetUpdate.error.push(information.error.toString());
+            }
             getSocket().emit('Software.Update.update', aptGetUpdate);
           }
         )

@@ -1,5 +1,5 @@
 angular.module('Software.controllers', ['Software.services']).
-  controller('softwareController', function($scope, $q, BranchesApiService, softwareApiService, SocketAccess) {
+  controller('softwareController', function($scope, $q, $sce, BranchesApiService, softwareApiService, SocketAccess) {
     var socket = SocketAccess();
 
     $scope.showUpdatesOnly = true;
@@ -14,6 +14,8 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.loadBranchesError = undefined;
     $scope.loadPackagesError = undefined;
     $scope.loadNewpackagesError = undefined;
+    $scope.aptUpdateError = false;
+    $scope.aptUpdateErrorData = undefined
 
     socket.on('Software.Update.update', function(data) {
       $scope.$apply(function() {
@@ -23,8 +25,16 @@ angular.module('Software.controllers', ['Software.services']).
 
     socket.on('Software.Update.done', function(data) {
       $scope.$apply(function() {
+        console.log( JSON.stringify(data));
         $scope.refreshingPackages = data.running;
         $scope.aptUpdateStatus = data;
+        if (!data.success) {
+          $scope.aptUpdateError = true;
+          var error = "<strong>Output:</strong> <br>" + data.data.join('<br>')
+            + '<br><hr><br><strong>Error: </strong>' + data.error.join('<br>');
+          $scope.aptUpdateErrorData = $sce.trustAsHtml(error);
+
+        }
       });
     });
 
@@ -54,6 +64,9 @@ angular.module('Software.controllers', ['Software.services']).
       softwareApiService.startAptUpdate().then(
         function(result) {
           $scope.aptUpdateStatus = result.data;
+        },
+        function(reason) {
+          console.log(JSON.stringify(reason));
         }
       );
     };
