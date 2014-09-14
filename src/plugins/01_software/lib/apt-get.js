@@ -1,5 +1,4 @@
 var cp = require('child_process');
-var Lazy = require('lazy');
 var Q = require('q');
 
 var AptGet = function() {

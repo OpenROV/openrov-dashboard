@@ -1,4 +1,3 @@
-var aptCache = require('./lib/apt-cache')();
 var aptGet = require('./lib/apt-get')();
 var packageManager = require('./lib/package-manager')();
 var util = require('util');
