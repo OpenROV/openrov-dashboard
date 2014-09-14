@@ -17,10 +17,11 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.aptUpdateError = false;
     $scope.aptUpdateErrorData = undefined;
 
-    $scope.installResult = undefined;
-    $scope.installingPackage = true;
+    $scope.installResult = { running: false, data: [] };
+    $scope.installingPackage = false;
     $scope.installError = false;
     $scope.installErrorData = undefined;
+    $scope.showIinstallResult = false;
 
     socket.on('Software.Update.update', function(data) {
       $scope.$apply(function() {
@@ -37,10 +38,6 @@ angular.module('Software.controllers', ['Software.services']).
           var error = "<hr><strong>Output:</strong> <br>" + data.data.join('<br>')
             + '<br><hr><br><strong>Error: </strong>' + data.error.join('<br>');
           $scope.aptUpdateErrorData = $sce.trustAsHtml(error);
-        }
-        else {
-          $scope.loadInstalledSoftware();
-          $scope.loadVersions();
         }
       });
     });
@@ -61,8 +58,13 @@ angular.module('Software.controllers', ['Software.services']).
           var error = "<hr><strong>Output:</strong> <br>" + data.data.join('<br>')
             + '<br><hr><br><strong>Error: </strong>' + data.error.join('<br>');
           $scope.installErrorData = $sce.trustAsHtml(error);
-
         }
+        else {
+
+          $scope.loadInstalledSoftware();
+          $scope.loadVersions();
+        }
+
       });
     });
 
@@ -71,6 +73,13 @@ angular.module('Software.controllers', ['Software.services']).
         console.log('update ' + JSON.stringify(newStatus));
         $scope.refreshingPackages = newStatus.running? newStatus.running : false;
         $scope.aptUpdateRefreshDate = newStatus.lastUpdate ? moment(newStatus.lastUpdate).fromNow() : 'unknown';
+      }
+    });
+
+    $scope.$watch('installResult', function(newStatus) {
+      if (newStatus) {
+        console.log('update ' + JSON.stringify(newStatus));
+        $scope.installingPackage = newStatus.running? newStatus.running : false;
       }
     });
 
@@ -141,6 +150,7 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.install = function(item) {
       $scope.installingPackage = true;
       $scope.installError = false;
+      $scope.showIinstallResult = true;
 
       softwareApiService.install(item.package, item.version, item.branch)
         .then(

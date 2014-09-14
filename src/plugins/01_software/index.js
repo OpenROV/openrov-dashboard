@@ -110,7 +110,7 @@ module.exports = function(name, deps) {
     function(req, resp) {
       if (aptGetInstall.running) {
         resp.redirect(301,'/plugin/software/install/status');
-        resp.send(aptGetUpdate);
+        resp.send(aptGetInstall);
         resp.end();
       }
       else {
@@ -126,7 +126,7 @@ module.exports = function(name, deps) {
             aptGetInstall.running = false;
             aptGetInstall.success = true;
             aptGetInstall.lastUpdate = Date.now();
-            getSocket().emit('Software.Install.done', aptGetUpdate);
+            getSocket().emit('Software.Install.done', aptGetInstall);
           },
           function(reason) {
             console.log("@@@@@@@@@@@@@@" + reason);
@@ -134,7 +134,7 @@ module.exports = function(name, deps) {
             aptGetInstall.running = false;
             aptGetInstall.error.push(reason);
             aptGetInstall.lastUpdate = Date.now();
-            getSocket().emit('Software.Install.done', aptGetUpdate);
+            getSocket().emit('Software.Install.done', aptGetInstall);
           },
         function(information) {
           console.log("$$$$$$$$" + JSON.stringify( information.data.toString()));
@@ -142,7 +142,7 @@ module.exports = function(name, deps) {
             if (information.error) {
               aptGetInstall.error.push(information.error.toString());
             }
-            getSocket().emit('Software.Install.update', aptGetUpdate);
+            getSocket().emit('Software.Install.update', aptGetInstall);
           }
         )
       }
@@ -159,7 +159,7 @@ module.exports = function(name, deps) {
 
   function returnState(process, resp) {
     resp.statusCode = process.running ? 206 : 200;
-    resp.send(aptGetUpdate);
+    resp.send(process);
     resp.end();
   }
 

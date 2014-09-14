@@ -25,12 +25,10 @@
       <div class="col-sm-2"><h4>Branches:</h4></div>
     </div>
     <form class="form-inline col-sm-12" role="form" >
-      <div class="alert alert-warning" role="alert" ng-hide="selectedBranch"><strong>Please select a branch!</strong></div>
-       <select class="form-control" id="branches"
-
-              ng-model="selectedBranch"
-              ng-options="branch for branch in branches"
-              ng-change="loadVersions()">
+      <select class="form-control" id="branches"
+        ng-model="selectedBranch"
+        ng-options="branch for branch in branches"
+        ng-change="loadVersions()">
         <option value="">-- Select Branch --</option>
       </select>
       <div class="alert alert-danger" role="alert" ng-hide="!(loadBranchesError)"><strong>Uh, there was a problem loading the branches!</strong><br>{{ loadBranchesError }}</div>
@@ -52,6 +50,7 @@
       <div class="col-sm-12">
         <div>
           <div><h4>Packages:</h4></div>
+          <div class="alert alert-warning" role="alert" ng-hide="selectedBranch"><strong>Please select a branch!</strong></div>
           <div class="alert alert-danger" role="alert" ng-hide="!(loadNewpackagesError)"><strong>Uh, there was a problem loading new installed packages!</strong><br>{{ loadNewpackagesError }}</div>
           <div class="package-list" cg-busy="loadingPackages">
             <ul id="softwareList" >
@@ -68,16 +67,25 @@
   <br>
   <div class="row">
     <!--<div class="col-sm-12" ng-hide="!(installingPackage)">-->
-    <div class="col-sm-12">
+    <div class="col-sm-12" ng-hide="!showIinstallResult">
       <div>
-
         <div><h4>Install result:</h4></div>
-        <div cg-busy="installingPackage"></div>
       </div>
+      <button class="btn btn-sm" ng-click="refreshPackages()" ng-hide="!installingPackage">
+        <span class="glyphicon glyphicon-refresh" ng-class="{'glyphicon-refresh-animate' : installingPackage}"></span>
+        Installing </button>
+      <br>
       <div class="alert alert-danger" role="alert" ng-hide="!installError"><strong>Uh, there was a problem Installing the package!</strong><br><div ng-bind-html="installErrorData"></div></div>
       <div class="form-group">
         <div>
-          <div id="installResult">{{ installResult }}</div>
+          <div id="installResult">
+            <ul class="list-unstyled">
+              <li ng-repeat="item in installResult.data">
+                {{ item }}
+              </li>
+            </ul>
+            <div class="alert alert-success" role="alert" ng-hide="!installResult.success">Install successfull!</div>
+          </div>
         </div>
       </div>
     </div>
