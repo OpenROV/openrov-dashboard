@@ -25,12 +25,11 @@ angular.module('Software.controllers', ['Software.services']).
 
     socket.on('Software.Update.done', function(data) {
       $scope.$apply(function() {
-        console.log( JSON.stringify(data));
         $scope.refreshingPackages = data.running;
         $scope.aptUpdateStatus = data;
         if (!data.success) {
           $scope.aptUpdateError = true;
-          var error = "<strong>Output:</strong> <br>" + data.data.join('<br>')
+          var error = "<hr><strong>Output:</strong> <br>" + data.data.join('<br>')
             + '<br><hr><br><strong>Error: </strong>' + data.error.join('<br>');
           $scope.aptUpdateErrorData = $sce.trustAsHtml(error);
 
