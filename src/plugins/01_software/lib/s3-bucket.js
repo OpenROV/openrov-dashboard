@@ -1,14 +1,24 @@
 var AWS = require('aws-sdk');
 var Q = require('q');
 
-var Bucket = function() {
+var Bucket = function(config) {
 
-  var bucketName = { Bucket: 'openrov-deb-repository' };
-  var s3 = new AWS.S3({ region: 'us-west-2', params: bucketName });
+  var bucketName = { Bucket: config.aws.bucket };
+  var s3 = new AWS.S3({ region: config.aws.region, params: bucketName });
 
-  var listBranches = Q.defer();
+  var proxy = config.proxy;
+  if (proxy) {
+    console.log("Using proxy: " + proxy + " for AWS S3 connection.");
+    AWS.config.update({
+      httpOptions: {
+        proxy: proxy
+      }
+    });
+  }
 
   this.getBranches = function() {
+
+    var listBranches = Q.defer();
     s3.makeUnauthenticatedRequest('listObjects', {
       Prefix: 'dists/'
     }, function (err, data) {
@@ -27,7 +37,7 @@ var Bucket = function() {
       }
     });
     return listBranches.promise;
-  }
+  };
   return this;
 };
 

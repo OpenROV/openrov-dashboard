@@ -3,6 +3,7 @@ module.exports = {
     app.use(express.static(__dirname + '/../static/'));
     app.use(express.favicon());
     app.use(express.logger('dev'));
+    app.use(express.bodyParser());
 
     //socket.io cross domain access
     app.use(function(req, res, next) {

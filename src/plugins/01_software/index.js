@@ -1,10 +1,12 @@
 var aptGet = require('./lib/apt-get')();
-var s3Bucket = require('./lib/s3-bucket')();
 var packageManager = require('./lib/package-manager')();
+var S3Bucket = require('./lib/s3-bucket');
+var Q = require('q');
 var util = require('util');
 
 module.exports = function(name, deps) {
   var app = deps.app;
+  var s3bucket = S3Bucket(deps.config);
   var aptGetUpdate = {running: false};
   var aptGetInstall = {running: false};
   var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
@@ -85,6 +87,33 @@ module.exports = function(name, deps) {
       packageManager.getInstalledPackages(packageName, function (items) {
         resp.send(items);
       });
+    }
+  );
+
+  app.post(
+    '/plugin/software/updates',
+    function(req, resp) {
+      var branches = req.body.branches;
+
+      var promises = [];
+      var updates = [];
+      branches.forEach(function(branch) {
+        promises.push(
+          packageManager.loadVersions(
+            'openrov-*',
+            branch, true, true)
+        )});
+      Q.allSettled(promises)
+        .then(function(results) {
+          results.forEach(function (result) {
+            console.log('Fullfilled: ' + result.state + ' Value: ' + result.value)
+            if (result.state === "fulfilled") {
+              updates = updates.concat(result.value);
+            }
+          });
+          resp.send(updates);
+          resp.end();
+        });
     }
   );
 
@@ -172,7 +201,7 @@ module.exports = function(name, deps) {
   app.get(
     '/plugin/software/branches',
     function (req, resp) {
-      s3Bucket.getBranches().then(
+      s3bucket.getBranches().then(
         function(result) {
           resp.statusCode = 200;
           resp.send(result);

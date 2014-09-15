@@ -28,6 +28,7 @@ var dashboardEngine = new DashboardEngine();
 var deps = {
   server: server,
   app: app,
+  config: config,
   io: io,
   dashboardEngine: dashboardEngine,
   socket: undefined
