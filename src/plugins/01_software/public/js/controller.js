@@ -92,7 +92,7 @@ angular.module('Software.controllers', ['Software.services']).
 
     BranchesApiService.getBranches().then(
       function(branches) {
-        $scope.branches = branches;
+        $scope.branches = branches.data;
         $scope.loadBranchesError = undefined;
       },
       function(reason) {

@@ -8,6 +8,7 @@
     "url": "git://github.com/OpenROV/openrov-dashboard.git"
   },
   "dependencies": {
+    "aws-sdk": "^2.0.17",
     "ejs": "~0.8.3",
     "express": "= 3.4.8",
     "forever-monitor": "",
@@ -16,9 +17,9 @@
     "nconf": "",
     "optimist": "",
     "q": "^1.0.1",
-    "sync": "",
     "socket.io": "~1.1.0",
-    "socketio-wildcard": "~0.1.1"
+    "socketio-wildcard": "~0.1.1",
+    "sync": ""
   },
   "bundleDependencies": [
     "express"

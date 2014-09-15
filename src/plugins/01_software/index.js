@@ -1,4 +1,5 @@
 var aptGet = require('./lib/apt-get')();
+var s3Bucket = require('./lib/s3-bucket')();
 var packageManager = require('./lib/package-manager')();
 var util = require('util');
 
@@ -137,14 +138,12 @@ module.exports = function(name, deps) {
         };
         aptGetInstall.promise.then(
           function() {
-            console.log("##########");
             aptGetInstall.running = false;
             aptGetInstall.success = true;
             aptGetInstall.lastUpdate = Date.now();
             getSocket().emit('Software.Install.done', aptGetInstall);
           },
           function(reason) {
-            console.log("@@@@@@@@@@@@@@" + reason);
             aptGetInstall.success = false;
             aptGetInstall.running = false;
             aptGetInstall.error.push(reason);
@@ -152,7 +151,6 @@ module.exports = function(name, deps) {
             getSocket().emit('Software.Install.done', aptGetInstall);
           },
         function(information) {
-          console.log("$$$$$$$$" + JSON.stringify( information.data.toString()));
           aptGetInstall.data.push(information.data.toString());
             if (information.error) {
               aptGetInstall.error.push(information.error.toString());
@@ -167,8 +165,25 @@ module.exports = function(name, deps) {
   app.get(
     '/plugin/software/install/status',
     function (req, resp) {
-      console.log("__________");
       returnState(aptGetInstall, resp);
+    }
+  );
+
+  app.get(
+    '/plugin/software/branches',
+    function (req, resp) {
+      s3Bucket.getBranches().then(
+        function(result) {
+          resp.statusCode = 200;
+          resp.send(result);
+          resp.end();
+        },
+        function(reason) {
+          resp.statusCode = 500;
+          resp.send(reason);
+          resp.end();
+        }
+      )
     }
   );
 
