@@ -106,7 +106,6 @@ module.exports = function(name, deps) {
       Q.allSettled(promises)
         .then(function(results) {
           results.forEach(function (result) {
-            console.log('Fullfilled: ' + result.state + ' Value: ' + result.value)
             if (result.state === "fulfilled") {
               updates = updates.concat(result.value);
             }
