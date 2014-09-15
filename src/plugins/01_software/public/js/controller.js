@@ -69,6 +69,7 @@ angular.module('Software.controllers', ['Software.services']).
     });
 
     socket.on('connect', function() { console.log('CONNECTED!'); })
+
     socket.on('Software.Cockpit.message', function(message){
       alert(message);
       socket.emit('Software.Cockpit.answer', 'Thanks for ' + message);

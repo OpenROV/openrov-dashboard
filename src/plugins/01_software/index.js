@@ -12,25 +12,21 @@ module.exports = function(name, deps) {
   deps.io.on('connection', function (newSocket) {
     socket = newSocket;
     console.log('Socket io connected()');
-
-    var ipcSocket = deps.io.of('/IPC');
-    ipcSocket.on('connection', function (newIpcSocket) {
-      console.log('IPC Socket io connected()');
-
-      newIpcSocket.on('Software.Cockpit.message', function(message) {
-        console.log('IPC, Software.Cockpit.message: ' + message);
-        newSocket.emit('Software.Cockpit.message', message);
-      });
-
-      newSocket.on('Software.Cockpit.answer', function(message){
-        console.log('Software.Cockpit.answer: ' + message);
-        newIpcSocket.emit('Software.Cockpit.answer', message);
-      });
-
-    });
-
-
+    socket.on('Software.Cockpit.answer', emitOnIpc);
   });
+
+  var ipcSocket = deps.io.of('/IPC');
+  ipcSocket.on('connection', function (newIpcSocket) {
+    console.log('IPC Socket io connected()');
+
+    newIpcSocket.on('Software.Cockpit.message', function(message) {
+      deps.io.sockets.emit('Software.Cockpit.message', message);
+    });
+  });
+
+  function emitOnIpc(message){
+    ipcSocket.emit('Software.Cockpit.answer', message);
+  }
 
   app.post(
     '/plugin/software/update/start',
