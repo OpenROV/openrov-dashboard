@@ -208,13 +208,10 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
     $scope.loadInstalledSoftware();
     var ModalInstanceCtrl = function ($scope, $modalInstance, config) {
-
       $scope.config = config;
-
       $scope.ok = function () {
         $modalInstance.close();
       };
-
       $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
       };
