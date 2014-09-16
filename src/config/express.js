@@ -1,9 +1,11 @@
+var morgan = require('morgan');
+var bodyParser = require('body-parser');
+
 module.exports = {
   setup: function (express, app, config) {
     app.use(express.static(__dirname + '/../static/'));
-    app.use(express.favicon());
-    app.use(express.logger('dev'));
-    app.use(express.bodyParser());
+    app.use(morgan('dev'));
+    app.use(bodyParser.json());
 
     //socket.io cross domain access
     app.use(function(req, res, next) {
@@ -14,7 +16,6 @@ module.exports = {
       next();
     });
 
-    app.use(app.router);
     app.set('port', config.port);
     app.set('views', __dirname + '/../views');
     app.set('view engine', 'ejs', { pretty: true });

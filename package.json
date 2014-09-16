@@ -9,18 +9,18 @@
   },
   "dependencies": {
     "aws-sdk": "^2.0.17",
+    "body-parser": "^1.8.2",
     "ejs": "~0.8.3",
-    "express": "= 3.4.8",
+    "express": "^4.9.0",
     "forever-monitor": "",
-    "jquery-file-upload-middleware": "",
     "lazy": ">= 1.0.11",
+    "morgan": "^1.3.1",
     "nconf": "",
     "optimist": "",
     "q": "^1.0.1",
+    "q-io": "~1.11.5",
     "socket.io": "~1.1.0",
-    "socketio-wildcard": "~0.1.1",
-    "sync": "",
-    "q-io": "~1.11.5"
+    "sync": ""
   },
   "bundleDependencies": [
     "express"
