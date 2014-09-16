@@ -1,8 +1,10 @@
+var cp = require('child_process');
 var aptGet = require('./lib/apt-get')();
 var packageManager = require('./lib/package-manager')();
 var S3Bucket = require('./lib/s3-bucket');
 var Q = require('q');
 var util = require('util');
+var showSerialScript = __dirname + '/scripts/' + (process.env.USE_MOCK === 'true' ? 'mock-' : '') + 'showserial.sh';
 
 module.exports = function(name, deps) {
   var app = deps.app;
@@ -11,6 +13,9 @@ module.exports = function(name, deps) {
   var aptGetInstall = {running: false};
   var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
   var getSocket = function() { return socket; };
+
+  console.log("Starting apt-get update.");
+  startAptGetUpdate();
 
   deps.io.on('connection', function (newSocket) {
     socket = newSocket;
@@ -40,31 +45,7 @@ module.exports = function(name, deps) {
         resp.end();
       }
       else {
-        aptGetUpdate = { promise: aptGet.update(), running:true, data: [], error: [] };
-        aptGetUpdate.promise.then(
-          function() {
-            aptGetUpdate.running = false;
-            aptGetUpdate.success = true;
-            aptGetUpdate.lastUpdate = Date.now();
-            getSocket().emit('Software.Update.done', aptGetUpdate);
-          },
-          function(reason) {
-            aptGetUpdate.success = false;
-            aptGetUpdate.running = false;
-            aptGetUpdate.error.push(reason);
-            aptGetUpdate.lastUpdate = Date.now();
-            getSocket().emit('Software.Update.done', aptGetUpdate);
-          },
-          function(information) {
-            if (information.data) {
-              aptGetUpdate.data.push(information.data.toString());
-            }
-            if (information.error) {
-              aptGetUpdate.error.push(information.error.toString());
-            }
-            getSocket().emit('Software.Update.update', aptGetUpdate);
-          }
-        )
+        startAptGetUpdate();
       }
       returnState(aptGetUpdate, resp);
     }
@@ -198,6 +179,21 @@ module.exports = function(name, deps) {
   );
 
   app.get(
+    '/plugin/software/bbserial',
+    function (req, resp) {
+      loadBoardSerial(showSerialScript)
+        .then(function(result){
+          resp.status(200);
+          resp.send({bbSerial: result});
+        },
+        function(reason){
+          resp.status(500);
+          resp.end(reason);
+        })
+    }
+  );
+
+  app.get(
     '/plugin/software/branches',
     function (req, resp) {
       s3bucket.getBranches().then(
@@ -215,10 +211,58 @@ module.exports = function(name, deps) {
     }
   );
 
+  function startAptGetUpdate() {
+    aptGetUpdate = { promise: aptGet.update(), running:true, data: [], error: [] };
+    aptGetUpdate.promise.then(
+      function() {
+        aptGetUpdate.running = false;
+        aptGetUpdate.success = true;
+        aptGetUpdate.lastUpdate = Date.now();
+        getSocket().emit('Software.Update.done', aptGetUpdate);
+      },
+      function(reason) {
+        aptGetUpdate.success = false;
+        aptGetUpdate.running = false;
+        aptGetUpdate.error.push(reason);
+        aptGetUpdate.lastUpdate = Date.now();
+        getSocket().emit('Software.Update.done', aptGetUpdate);
+      },
+      function(information) {
+        if (information.data) {
+          aptGetUpdate.data.push(information.data.toString());
+        }
+        if (information.error) {
+          aptGetUpdate.error.push(information.error.toString());
+        }
+        getSocket().emit('Software.Update.update', aptGetUpdate);
+      }
+    )
+  }
+
   function returnState(process, resp) {
     resp.statusCode = process.running ? 206 : 200;
     resp.send(process);
     resp.end();
+  }
+
+  function loadBoardSerial(serialScript) {
+    return Q.Promise(function (resolve, reject) {
+      console.log('foo');
+      var status = cp.spawn('sh', [ serialScript ]);
+      status.stdout.on('data', function (data) {
+        var serial = data.toString();
+        var parts = serial.split(':');
+        if (parts.length > 0) {
+          serial = parts[parts.length -1].trim();
+        }
+        resolve(serial);
+      });
+      status.on('close', function (code) {
+        if (code !== 0) {
+          reject("ERROR");
+        }
+      });
+    });
   }
 
   var result = { ngModule: 'DashboardApp.Software' };

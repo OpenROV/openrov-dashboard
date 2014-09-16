@@ -59,6 +59,12 @@ angular.module('Software.services', []).
       });
     };
 
+    software.getBbSerial = function() {
+      return $http({
+        method: 'GET',
+        url: 'plugin/software/bbserial'
+      });
+    };
 
     return software;
   });

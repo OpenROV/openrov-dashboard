@@ -1,5 +1,5 @@
-angular.module('Software.controllers', ['Software.services']).
-  controller('softwareController', function($scope, $q, $sce, BranchesApiService, softwareApiService, SocketAccess) {
+angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
+  controller('softwareController', function($scope, $q, $sce, $modal, BranchesApiService, softwareApiService, SocketAccess) {
     var socket = SocketAccess();
 
     $scope.showUpdatesOnly = true;
@@ -22,6 +22,42 @@ angular.module('Software.controllers', ['Software.services']).
     $scope.installError = false;
     $scope.installErrorData = undefined;
     $scope.showIinstallResult = false;
+
+    $scope.updatesEnabled = false;
+    $scope.bbSerial = 'N/A';
+    $scope.geolocation = undefined;
+
+    $scope.setLocation = function(locationInformation) {
+        $scope.geolocation = locationInformation;
+    };
+
+    $scope.enableUpdate = function () {
+
+      var modalInstance = $modal.open({
+        templateUrl: 'modalAgreement.html',
+        controller: ModalInstanceCtrl,
+        size: '',
+        resolve: {
+          config: function () {
+            return { bbSerial: $scope.bbSerial };
+          }
+        }
+      });
+
+      modalInstance.result.then(function (selectedItem) {
+        $scope.updatesEnabled = true;
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition($scope.setLocation);
+        } else { //geolocation is disabled
+        }
+      }, function () {
+        //dismissed
+      });
+    };
+
+    softwareApiService.getBbSerial().then(function(result) {
+      $scope.bbSerial = result.data.bbSerial;
+    });
 
     socket.on('Software.Update.update', function(data) {
       $scope.$apply(function() {
@@ -171,5 +207,16 @@ angular.module('Software.controllers', ['Software.services']).
     };
 
     $scope.loadInstalledSoftware();
+    var ModalInstanceCtrl = function ($scope, $modalInstance, config) {
 
-  });
+      $scope.config = config;
+
+      $scope.ok = function () {
+        $modalInstance.close();
+      };
+
+      $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+      };
+    };
+});

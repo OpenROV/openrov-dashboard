@@ -9,8 +9,16 @@
   <button class="btn btn-sm" ng-click="loadInstalledSoftware()">Refresh</button>
 </div>
 <div>
+
   <h2>Available software</h2>
+
   <div class="row">
+    <div class="form-group col-sm-12">
+      <button ng-click="enableUpdate()" ng-hide="updatesEnabled" class="btn btn-success">Enable software updates</button>
+    </div>
+  </div>
+
+  <div class="row" ng-hide="!updatesEnabled">
     <div class="form-group col-sm-12">
       <button class="btn btn-sm" ng-click="refreshPackages()" ng-disabled="refreshingPackages">
         <span class="glyphicon glyphicon-refresh" ng-class="{'glyphicon-refresh-animate' : refreshingPackages}"></span>
@@ -20,11 +28,11 @@
       <div class="alert alert-danger" role="alert" ng-hide="!aptUpdateError"><strong>Uh, there was a problem updating the packages!</strong><br><div ng-bind-html="aptUpdateErrorData"></div></div>
     </div>
   </div>
-  <div class="row">
+  <div class="row" ng-hide="!updatesEnabled">
     <div class="form-group">
       <div class="col-sm-2"><h4>Branches:</h4></div>
     </div>
-    <form class="form-inline col-sm-12" role="form" >
+    <form class="form-inline col-sm-12" role="form">
       <select class="form-control" id="branches"
         ng-model="selectedBranch"
         ng-options="branch for branch in branches"
@@ -45,7 +53,7 @@
     </form>
   </div>
   <br>
-  <div class="row">
+  <div class="row" ng-hide="!updatesEnabled">
     <form class="form-horizontal">
       <div class="col-sm-12">
         <div>
@@ -56,7 +64,7 @@
             <ul id="softwareList" >
               <li ng-repeat="item in latestVersions">
                 {{ item.package }} - {{ item.version }}
-                <button type="button" class="btn btn-primary btn-xs" ng-click="install(item)">Install</button>
+                <button type="button" class="btn btn-primary btn-xs" ng-hide="!updatesEnabled" ng-click="install(item)">Install</button>
               </li>
             </ul>
           </div>
@@ -65,7 +73,7 @@
     </form>
   </div>
   <br>
-  <div class="row">
+  <div class="row" ng-hide="!updatesEnabled">
     <!--<div class="col-sm-12" ng-hide="!(installingPackage)">-->
     <div class="col-sm-12" ng-hide="!showIinstallResult">
       <div>
@@ -91,3 +99,24 @@
     </div>
   </div>
 </div>
+
+<script type="text/ng-template" id="modalAgreement.html">
+    <div class="modal-header"><h3>Software update agreement</h3></div>
+    <div class="modal-body">
+      <strong>Thanks for using OpenROV!</strong><br>
+      To enable software updates, we would like to collect some information about your ROV.
+      This consists of:<br>
+      <ul>
+        <li>the serial number of your Beagle Bone ({{ config.bbSerial }})</li>
+        <li>the list of the software and their versions that are installed on your ROV</li>
+        <li>Your location in the world supplied by your browser via geolocation</li>
+        <li>The IP Address through which your computer is connected to the internet</li>
+      </ul>
+      <br>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-success" ng-click="ok()">Yes, that's fine</button>
+      <button class="btn" ng-click="cancel()">No, thanks</button>
+    </div>
+</script>
