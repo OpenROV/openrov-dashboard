@@ -1,7 +1,6 @@
 var cp = require('child_process');
 var Q = require('q');
-var FS = require("fs");
-var PATH = require('path');
+var FS = require("q-io/fs");
 
 var AptGet = function(config) {
   var aptGet = {};
@@ -29,11 +28,10 @@ var AptGet = function(config) {
   };
 
   aptGet.configureBranches = function(branches) {
-    FS.readdir(config.aptGetSourcelists, function(err, files){
-      if (err) { console.error("Error while reading directory: " + err)}
-      else {
+    return FS.list(config.aptGetSourcelists)
+      .then(function(files) {
         files.forEach(
-          function(file) {
+          function (file) {
             if (file.indexOf('openrov-') == 0) {
               var start = file.indexOf('-');
               var end = file.indexOf('.');
@@ -41,26 +39,29 @@ var AptGet = function(config) {
               if (branches.filter(function (branch) {
                 return branch === branchName
               }).length === 0) {
-                FS.unlinkSync(PATH.join(config.aptGetSourcelists, file));
+                var path = FS.join(config.aptGetSourcelists, file);
+                return FS.remove(path)
+                  .then(function() {console.log('Removed ' + path)});
               }
             }
-          });
-        branches.forEach(function(branch) {
-          var path = PATH.join(config.aptGetSourcelists, 'openrov-' + branch + '.list');
-          if (!FS.existsSync(path)) {
-            var content = 'deb http://build.openrov.com/debian/ ' + branch + ' debian';
-            FS.writeFile(path, content, function(err) {
-              if (err) {
-                console.log(err);
-              } else {
-                console.log("The file was saved!");
+          })
+        return Q.Promise(function () {
+          branches.forEach(function (branch) {
+            var path = FS.join(config.aptGetSourcelists, 'openrov-' + branch + '.list');
+            return FS.exists(path).then(function (exists) {
+              if (!exists) {
+                var content = 'deb http://build.openrov.com/debian/ ' + branch + ' debian';
+                return FS.write(path, content)
+                  .then(function() {
+                    console.log("Wrote file " + path);
+                  });
               }
-            });
-          }
+            })
+          });
         });
-      }
-    });
-  };
+      }).then(function() {
+      })
+    };
 
   function handleClientProcess(aptGetProcess, resolve, reject, notify) {
     aptGetProcess.stdout.on('data', function(data) {

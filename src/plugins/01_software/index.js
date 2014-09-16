@@ -20,15 +20,17 @@ module.exports = function(name, deps) {
       s3bucket.getBranches().then(
         function(branches) {
           console.log('Setting up branches in ' + deps.config.aptGetSourcelists);
-          aptGet.configureBranches(branches);
+          return aptGet.configureBranches(branches);
         })
         .then(function() {
           console.log("Starting apt-get update.");
           startAptGetUpdate();
+        })
+        .finally(function(){
+          console.log('done');
         });
     },
-    10);
-    //(2 * 1000) *60);// 2 minutes
+    (2 * 1000) *60);// 2 minutes
 
   deps.io.on('connection', function (newSocket) {
     socket = newSocket;
