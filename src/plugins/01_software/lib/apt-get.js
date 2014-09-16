@@ -1,7 +1,9 @@
 var cp = require('child_process');
 var Q = require('q');
+var FS = require("fs");
+var PATH = require('path');
 
-var AptGet = function() {
+var AptGet = function(config) {
   var aptGet = {};
 
   aptGet.update = function() {
@@ -27,7 +29,37 @@ var AptGet = function() {
   };
 
   aptGet.configureBranches = function(branches) {
-
+    FS.readdir(config.aptGetSourcelists, function(err, files){
+      if (err) { console.error("Error while reading directory: " + err)}
+      else {
+        files.forEach(
+          function(file) {
+            if (file.indexOf('openrov-') == 0) {
+              var start = file.indexOf('-');
+              var end = file.indexOf('.');
+              var branchName = file.substring(start + 1, end);
+              if (branches.filter(function (branch) {
+                return branch === branchName
+              }).length === 0) {
+                FS.unlinkSync(PATH.join(config.aptGetSourcelists, file));
+              }
+            }
+          });
+        branches.forEach(function(branch) {
+          var path = PATH.join(config.aptGetSourcelists, 'openrov-' + branch + '.list');
+          if (!FS.existsSync(path)) {
+            var content = 'deb http://build.openrov.com/debian/ ' + branch + ' debian';
+            FS.writeFile(path, content, function(err) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log("The file was saved!");
+              }
+            });
+          }
+        });
+      }
+    });
   };
 
   function handleClientProcess(aptGetProcess, resolve, reject, notify) {

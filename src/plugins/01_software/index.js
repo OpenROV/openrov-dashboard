@@ -1,5 +1,5 @@
 var cp = require('child_process');
-var aptGet = require('./lib/apt-get')();
+var AptGet = require('./lib/apt-get');
 var packageManager = require('./lib/package-manager')();
 var S3Bucket = require('./lib/s3-bucket');
 var Q = require('q');
@@ -8,6 +8,7 @@ var showSerialScript = __dirname + '/scripts/' + (process.env.USE_MOCK === 'true
 
 module.exports = function(name, deps) {
   var app = deps.app;
+  var aptGet = new AptGet(deps.config);
   var s3bucket = S3Bucket(deps.config);
   var aptGetUpdate = {running: false};
   var aptGetInstall = {running: false};
@@ -15,10 +16,19 @@ module.exports = function(name, deps) {
   var getSocket = function() { return socket; };
 
   setTimeout(function() {
-      console.log("Starting apt-get update.");
-      startAptGetUpdate();
+      console.log('Init branches');
+      s3bucket.getBranches().then(
+        function(branches) {
+          console.log('Setting up branches in ' + deps.config.aptGetSourcelists);
+          aptGet.configureBranches(branches);
+        })
+        .then(function() {
+          console.log("Starting apt-get update.");
+          startAptGetUpdate();
+        });
     },
-    (2 * 1000) *60);// 2 minutes
+    10);
+    //(2 * 1000) *60);// 2 minutes
 
   deps.io.on('connection', function (newSocket) {
     socket = newSocket;
