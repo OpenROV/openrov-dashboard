@@ -3,15 +3,19 @@ angular.module('DashboardApp.Software', [
   'ui.router',
   'cgBusy'
 ])
-  .config(function($stateProvider) {
+  .config(function($stateProvider, $sceDelegateProvider) {
     $stateProvider
       .state('software', {
         url: '/software',
         templateUrl: 'plugin/01_software/plugin.html',
         controller: 'softwareController'
       });
-    }
-  ).value('cgBusyDefaults',{
+
+      $sceDelegateProvider
+        .resourceUrlWhitelist(
+        ['self', 'http://build.openrov.com/**']);
+  })
+  .value('cgBusyDefaults',{
     message:'Loading...',
     backdrop: true,
     templateUrl: 'plugin/01_software/loading.template.html',

@@ -1,10 +1,11 @@
 angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
-  controller('softwareController', function($scope, $q, $sce, $modal, BranchesApiService, softwareApiService, SocketAccess) {
+  controller('softwareController', function($scope, $q, $sce, $modal, BranchesApiService, softwareApiService, SocketAccess, reportingService) {
     var socket = SocketAccess();
 
     $scope.showUpdatesOnly = true;
     $scope.showOnlyLatest = true;
     $scope.selectedBranch = undefined;
+    $scope.installedSoftware = [];
 
     $scope.latestVersions = [];
     $scope.refreshingPackages = false;
@@ -27,10 +28,6 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     $scope.bbSerial = 'N/A';
     $scope.geolocation = undefined;
 
-    $scope.setLocation = function(locationInformation) {
-        $scope.geolocation = locationInformation;
-    };
-
     $scope.enableUpdate = function () {
 
       var modalInstance = $modal.open({
@@ -44,15 +41,31 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
         }
       });
 
-      modalInstance.result.then(function (selectedItem) {
+      modalInstance.result.then(function () {
         $scope.updatesEnabled = true;
+        var locationPromise = $q.defer();
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition($scope.setLocation);
+          navigator.geolocation.getCurrentPosition(function(location){
+            locationPromise.resolve(location);
+          });
         } else { //geolocation is disabled
+          locationPromise.resolve();
         }
+        return locationPromise.promise;
       }, function () {
         //dismissed
-      });
+      })
+        .then(function(location) {
+          $scope.geolocation = location;
+
+          reportingService
+            .report($scope.installedSoftware, { bbSerial: $scope.bbSerial }, location)
+            .then(function() {
+              console.log('Reporting of ROV information successfully');
+            }, function(reason) {
+              console.log('There was an issue with reporting ROV information: ' + JSON.stringify(reason));
+            });
+        });
     };
 
     softwareApiService.getBbSerial().then(function(result) {
