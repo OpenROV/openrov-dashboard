@@ -26,6 +26,10 @@ var AptGet = function() {
     });
   };
 
+  aptGet.configureBranches = function(branches) {
+
+  };
+
   function handleClientProcess(aptGetProcess, resolve, reject, notify) {
     aptGetProcess.stdout.on('data', function(data) {
       notify({data: data});

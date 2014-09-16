@@ -14,27 +14,16 @@ module.exports = function(name, deps) {
   var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
   var getSocket = function() { return socket; };
 
-  console.log("Starting apt-get update.");
-  startAptGetUpdate();
+  setTimeout(function() {
+      console.log("Starting apt-get update.");
+      startAptGetUpdate();
+    },
+    (2 * 1000) *60);// 2 minutes
 
   deps.io.on('connection', function (newSocket) {
     socket = newSocket;
     console.log('Socket io connected()');
-    socket.on('Software.Cockpit.answer', emitOnIpc);
   });
-
-  var ipcSocket = deps.io.of('/IPC');
-  ipcSocket.on('connection', function (newIpcSocket) {
-    console.log('IPC Socket io connected()');
-
-    newIpcSocket.on('Software.Cockpit.message', function(message) {
-      deps.io.sockets.emit('Software.Cockpit.message', message);
-    });
-  });
-
-  function emitOnIpc(message){
-    ipcSocket.emit('Software.Cockpit.answer', message);
-  }
 
   app.post(
     '/plugin/software/update/start',
@@ -247,7 +236,6 @@ module.exports = function(name, deps) {
 
   function loadBoardSerial(serialScript) {
     return Q.Promise(function (resolve, reject) {
-      console.log('foo');
       var status = cp.spawn('sh', [ serialScript ]);
       status.stdout.on('data', function (data) {
         var serial = data.toString();
