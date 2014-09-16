@@ -1,0 +1,105 @@
+body {
+  padding-top: 60px;
+  padding-bottom: 100px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+* {
+  position: relative;
+  z-index: 1;
+}
+
+.navbar-inverse {
+    background-color: #0c2f3e;
+}
+
+.navbar-header {
+    padding-top: 3px;
+    padding-bottom: 7px;
+}
+
+.navbar-brand img:hover {
+    opacity: 0.75;
+}
+.navbar-brand span:hover {
+    opacity: 0.75;
+}
+
+.navbar-brand img {
+    vertical-align: text-bottom;
+}
+
+.navbar-brand > * {
+    transition: opacity 0.3s;
+    -webkit-transition: opacity 0.3s;
+}
+
+a .navbar-titel {
+    color: #ffffff;
+    margin-left: 20px;
+    font-size: 22px;
+    line-height: 24px;
+    font-variant: small-caps;
+}
+a:hover .navbar-titel {
+    /*color: #63A8CC;*/
+}
+
+.nav-pills li a {
+    transition: background-color 0.3s ease, color 0.3s ease;
+    -webkit-transition: background-color 0.3sease, color 0.3s ease;;
+}
+
+
+.logo {
+    margin-left: 15px;
+    width: 200px;
+}
+
+.nav li a {
+    font-size:18px;
+}
+
+.nav-pills li {
+}
+
+
+@media (min-width: 767px) {
+    .affix,.affix-top {
+        position:fixed;
+    }
+}
+#sidebar-col {
+    padding-left: 8px;
+}
+#sidebar-container {
+    border-right: 1px solid gray;
+    padding-top: 15px;
+}
+
+#main-row {
+    padding-left: 30px;
+}
+
+.well {
+    margin-top: 1px;
+    margin-bottom: 0;
+}
+
+.control-element {
+  padding: 4px;
+  min-width: 50px;
+  border-right: 1px solid grey;
+  height: 100%;
+}
+
+.control-group {
+  margin-left: 20px;
+}
+
+.full-height{
+  height: 100%;
+}
