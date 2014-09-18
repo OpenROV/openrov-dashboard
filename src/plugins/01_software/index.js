@@ -1,4 +1,5 @@
 var cp = require('child_process');
+var AptCache = require('./lib/apt-cache');
 var AptGet = require('./lib/apt-get');
 var packageManager = require('./lib/package-manager')();
 var S3Bucket = require('./lib/s3-bucket');
@@ -9,6 +10,7 @@ var showSerialScript = __dirname + '/scripts/' + (process.env.USE_MOCK === 'true
 module.exports = function(name, deps) {
   var app = deps.app;
   var aptGet = new AptGet(deps.config);
+  var aptCache = new AptCache();
   var s3bucket = S3Bucket(deps.config);
   var aptGetUpdate = {running: false};
   var aptGetInstall = {running: false};
@@ -219,6 +221,7 @@ module.exports = function(name, deps) {
         aptGetUpdate.running = false;
         aptGetUpdate.success = true;
         aptGetUpdate.lastUpdate = Date.now();
+        aptCache.genCaches(function() {});
         getSocket().emit('Software.Update.done', aptGetUpdate);
       },
       function(reason) {
@@ -226,6 +229,7 @@ module.exports = function(name, deps) {
         aptGetUpdate.running = false;
         aptGetUpdate.error.push(reason);
         aptGetUpdate.lastUpdate = Date.now();
+        aptCache.genCaches(function() {});
         getSocket().emit('Software.Update.done', aptGetUpdate);
       },
       function(information) {
@@ -241,6 +245,7 @@ module.exports = function(name, deps) {
   }
 
   function returnState(process, resp) {
+    process.currentTime = Date.now();
     resp.statusCode = process.running ? 206 : 200;
     resp.send(process);
     resp.end();

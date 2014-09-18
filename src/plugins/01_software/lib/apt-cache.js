@@ -6,7 +6,6 @@ var AptCache = function() {
     aptCache.madison = function(arguments, callback) {
       var aptCacheProcess = cp.spawn('apt-cache', ['madison'].concat(arguments));
 
-      // TODO Error handling
       var input = Lazy(aptCacheProcess.stdout).lines.map(String).map(function (line) {
         var fields = line.trim().split('|');
         var source = fields[2].trim().split(' ');
@@ -25,6 +24,25 @@ var AptCache = function() {
       input.join(function(items) {
         callback(items); });
     };
+
+  aptCache.genCaches = function(callback) {
+    var aptCacheProcess = cp.spawn('apt-cache', ['gencaches']);
+
+    var stdOut = '';
+    var stdErr = '';
+    var result = '';
+    var candidate = 'Candidate:';
+    Lazy(aptCacheProcess.stdout).lines.map(String)
+      .join(function(lines) {
+        result = lines.join('\n');
+      });
+    Lazy(aptCacheProcess.stderr).lines.map(String)
+      .join(function(items) { stdErr = items.join('\n') });
+
+    aptCacheProcess.on('close', function(exitCode, undefined) {
+      callback({ result: result, error: stdErr, exitCode: exitCode });
+    });
+  };
 
   aptCache.getCandidates = function(packageName, callback) {
     var cleanPackageName = packageName.replace('*', '');
