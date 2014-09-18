@@ -9,7 +9,7 @@ angular.module('DashboardApp.Proxy', [
         controller: 'proxyController'
       });
 
-    $('body').append('<div id="proxy-container"  class="col-lg-12"><iframe  class="col-lg-12" style="height: 300px" src="http://localhost:3000"></iframe></div>');
+    $('body').append('<div id="proxy-container"  class="col-lg-12"><iframe  class="col-lg-12" style="height: 300px" src="http://' + window.location.hostname + ':3000"></iframe></div>');
     $('#proxy-container').hide();
 
   }

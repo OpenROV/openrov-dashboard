@@ -4,7 +4,6 @@ var Q = require('q');
 var Bucket = function(config) {
 
   var bucketName = { Bucket: config.aws.bucket };
-  var s3 = new AWS.S3({ region: config.aws.region, params: bucketName });
 
   var proxy = config.proxy;
   if (proxy) {
@@ -15,6 +14,7 @@ var Bucket = function(config) {
       }
     });
   }
+  var s3 = new AWS.S3({ region: config.aws.region, params: bucketName });
 
   this.getBranches = function() {
 
