@@ -39,6 +39,7 @@
         ng-change="loadVersions()">
         <option value="">-- Select Branch --</option>
       </select>
+      <button ng-click="refreshBranches()" class="btn">Refresh branches</button>
       <div class="alert alert-danger" role="alert" ng-hide="!(loadBranchesError)"><strong>Uh, there was a problem loading the branches!</strong><br>{{ loadBranchesError }}</div>
       <div class="checkbox">
         <label>

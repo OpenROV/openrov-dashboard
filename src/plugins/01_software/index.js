@@ -161,7 +161,9 @@ module.exports = function(name, deps) {
             getSocket().emit('Software.Install.done', aptGetInstall);
           },
         function(information) {
-          aptGetInstall.data.push(information.data.toString());
+          if (information.data) {
+            aptGetInstall.data.push(information.data.toString());
+          }
             if (information.error) {
               aptGetInstall.error.push(information.error.toString());
             }
@@ -241,6 +243,7 @@ module.exports = function(name, deps) {
   }
 
   function returnState(process, resp) {
+    process.currentTime = Date.now();
     resp.statusCode = process.running ? 206 : 200;
     resp.send(process);
     resp.end();
