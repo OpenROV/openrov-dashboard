@@ -128,7 +128,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       if (newStatus) {
         console.log('update ' + JSON.stringify(newStatus));
         $scope.refreshingPackages = newStatus.running? newStatus.running : false;
-        var lastUpdateString = 'unknown';
+	var lastUpdateString = 'unknown';
         if (newStatus.lastUpdate) {
           var lastUpdate = moment(newStatus.lastUpdate);
           var currentTime = newStatus.currentTime ? newStatus.currentTime : Date.now();
@@ -136,6 +136,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
           var newDate = moment.unix(moment().unix() - difference);
           lastUpdateString = newDate.fromNow();
         }
+
         $scope.aptUpdateRefreshDate = lastUpdateString;
       }
     });
@@ -147,6 +148,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       }
     });
 
+    function getBranches() {
     BranchesApiService.getBranches().then(
       function(branches) {
         $scope.branches = branches.data;
@@ -156,6 +158,9 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
         $scope.loadBranchesError = reason;
 
       });
+    };
+    getBranches();
+    $scope.refreshBranches = getBranches;
 
     softwareApiService.aptUpdateStatus().
       then(function(result) {

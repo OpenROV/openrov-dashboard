@@ -163,7 +163,9 @@ module.exports = function(name, deps) {
             getSocket().emit('Software.Install.done', aptGetInstall);
           },
         function(information) {
-          aptGetInstall.data.push(information.data.toString());
+          if (information.data) {
+            aptGetInstall.data.push(information.data.toString());
+          }
             if (information.error) {
               aptGetInstall.error.push(information.error.toString());
             }
