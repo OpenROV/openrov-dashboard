@@ -128,7 +128,15 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       if (newStatus) {
         console.log('update ' + JSON.stringify(newStatus));
         $scope.refreshingPackages = newStatus.running? newStatus.running : false;
-        $scope.aptUpdateRefreshDate = newStatus.lastUpdate ? moment(newStatus.lastUpdate).fromNow() : 'unknown';
+        var lastUpdateString = 'unknown';
+        if (newStatus.lastUpdate) {
+          var lastUpdate = moment(newStatus.lastUpdate);
+          var currentTime = newStatus.currentTime ? newStatus.currentTime : Date.now();
+          var difference = moment(currentTime).unix() - lastUpdate.unix();
+          var newDate = moment.unix(moment().unix() - difference);
+          lastUpdateString = newDate.fromNow();
+        }
+        $scope.aptUpdateRefreshDate = lastUpdateString;
       }
     });
 
