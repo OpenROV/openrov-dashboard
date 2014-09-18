@@ -7,7 +7,11 @@ var AptGet = function(config) {
 
   aptGet.update = function() {
     return Q.Promise( function(resolve, reject, notify) {
-      var aptGetProcess = cp.spawn('apt-get', ['update']);
+      var aptGetProcess = cp.spawn('apt-get', [
+        'update',
+        '-o Dir::Etc::sourcelist=/dev/zero',
+        '-o=Dir::Etc::sourceparts=/etc/apt/sources.list.d/'
+      ]);
       handleClientProcess(aptGetProcess, resolve, reject, notify);
     });
   };
