@@ -44,7 +44,6 @@ module.exports = function(name, deps) {
     function(req, resp) {
       if (aptGetUpdate.running) {
         resp.redirect(301,'/plugin/software/update/status');
-        resp.send(aptGetUpdate);
         resp.end();
       }
       else {
