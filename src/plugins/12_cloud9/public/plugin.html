@@ -1,0 +1,20 @@
+<div class="well">
+  <a data-bind="attr: {href: cloud9.cloud9Url}" target="_new">
+    <div class="row">
+      <div class="col-md-2">
+        <img src="img/cloud9.png" class="img-thumbnail">
+      </div>
+      <div class="col-md-5">
+        <h2>Cloud9</h2>
+        <p><b>Status: </b><span data-bind="text: cloud9.status()">---</span></p>
+      </div>
+    </div>
+  </a>
+  <div class="row">
+    <div class="col-md-5 col-md-offset-2">
+      <button class="btn" data-bind="click: cloud9.requestStatus">Refresh</button>
+      <button class="btn" data-bind="css: { disabled: ! cloud9.startable() }, click: cloud9.start">Start</button>
+      <button class="btn"  data-bind="css: { disabled: ! cloud9.stopable() }, click: cloud9.stop">Stop</button>
+    </div>
+  </div>
+</div>

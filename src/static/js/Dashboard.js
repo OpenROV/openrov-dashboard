@@ -1,9 +1,6 @@
 (function (window, document) {
-  var hostname = document.location.hostname ? document.location.hostname : 'localhost';
-  var Dashboard = function Dashboard(csocket, viewModel) {
+  var Dashboard = function Dashboard(csocket) {
     this.socket = csocket;
-    this.sendUpdateEnabled = true;
-    this.viewModel = viewModel;
     this.loadPlugins();
     console.log('loaded plugins');
     // Register the various event handlers

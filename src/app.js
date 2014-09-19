@@ -2,7 +2,7 @@ var forever = require('forever-monitor');
 var child = new forever.Monitor('/opt/openrov/dashboard/src/dashboard.js', {
     max: 3,
     silent: process.env.NODE_DEBUG === 'false',
-    options: [],
+    options: ['--proxy=http://localhost:3000'],
     'logFile': '/var/log/openrov.dashboard.log',
     'outFile': '/var/log/openrov.dashboard.log',
     'errFile': '/var/log/openrov.dashboard.err.log'

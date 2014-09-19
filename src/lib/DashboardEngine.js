@@ -1,5 +1,6 @@
 var EventEmitter = require('events').EventEmitter, spawn = require('child_process').spawn;
 var DashboardEngine = function () {
+  var baseDir = __dirname + '/../../linux/service-scripts/';
   var engine = new EventEmitter();
   var plugins = [
       'cockpit',
@@ -10,7 +11,7 @@ var DashboardEngine = function () {
     plugins.forEach(function (plugin) {
       var statusKey = 'status-' + plugin;
       if (message.key == statusKey) {
-        status = spawn('sudo', [__dirname + '/../../linux/dashboard/' + statusKey + '.sh']);
+        status = spawn('sudo', [baseDir + statusKey + '.sh']);
         status.stderr.on('data', function (data) {
           console.log('stderr: ' + data);
         });
@@ -35,11 +36,11 @@ var DashboardEngine = function () {
       }
       var startKey = 'start-' + plugin;
       if (message.key == startKey) {
-        start = spawn('sh', [__dirname + '/../../linux/dashboard/' + startKey + '.sh']);
+        start = spawn('sh', [baseDir + startKey + '.sh']);
       }
       var stopKey = 'stop-' + plugin;
       if (message.key == stopKey) {
-        start = spawn('sh', [__dirname + '/../../linux/dashboard/' + stopKey + '.sh']);
+        start = spawn('sh', [baseDir + stopKey + '.sh']);
       }
     });
   });
