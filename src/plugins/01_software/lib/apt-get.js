@@ -7,6 +7,7 @@ var AptGet = function(config) {
 
   aptGet.update = function() {
     return Q.Promise( function(resolve, reject, notify) {
+      console.log('Starting apt-get update child process');
       var aptGetProcess = cp.spawn('apt-get', [
         'update',
         '-o', 'Dir::Etc::sourcelist=/dev/zero',
@@ -49,7 +50,7 @@ var AptGet = function(config) {
               }
             }
           })
-        return Q.Promise(function () {
+        return Q.Promise(function (resolve, reject, notify) {
           branches.forEach(function (branch) {
             var path = FS.join(config.aptGetSourcelists, 'openrov-' + branch + '.list');
             return FS.exists(path).then(function (exists) {
@@ -58,12 +59,12 @@ var AptGet = function(config) {
                 return FS.write(path, content)
                   .then(function() {
                     console.log("Wrote file " + path);
+                    resolve();
                   });
               }
             })
           });
         });
-      }).then(function() {
       })
     };
 
