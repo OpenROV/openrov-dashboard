@@ -2,19 +2,23 @@ var EventEmitter = require('events').EventEmitter, cp = require('child_process')
 var Dpkg = function () {
   var dpkg = new EventEmitter();
 
-
   dpkg.packagesAsync = function (packageName, callback) {
-    var dpkgProcess = cp.spawn('dpkg', [
-        '-l',
+    console.log('Searching for packages: ' + packageName);
+    var dpkgProcess = cp.spawn('dpkg-query', [
+        '-W',
+        '-f',
+        '${package}|${version}|${description}\n',
         packageName
       ]);
-    var input = Lazy(dpkgProcess.stdout).lines.map(String).skip(5).filter(function (line) {
+    var input = Lazy(dpkgProcess.stdout).lines.map(String).filter(function (line) {
       return line !== '0';
     }).map(function (line) {
-      var fields = line.trim().split(/\s+/, 3);
+      console.log('Package: ' + line);
+      var fields = line.trim().split('|');
       return {
-        package: fields[1],
-        version: fields[2]
+        package: fields[0],
+        version: fields[1],
+        description: fields[2],
       };
     });
     var stdErr = '';

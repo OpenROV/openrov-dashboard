@@ -89,7 +89,7 @@
         <div>
           <div id="installResult">
             <ul class="list-unstyled">
-              <li ng-repeat="item in installResult.data">
+              <li ng-repeat="item in installResult.data track by $index">
                 {{ item }}
               </li>
             </ul>
