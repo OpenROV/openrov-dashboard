@@ -77,24 +77,6 @@ module.exports = function(name, deps) {
     function(req, resp) {
       var branches = req.body.branches;
 
-      var promises = [];
-      var updates = [];
-      branches.forEach(function(branch) {
-        promises.push(
-          packageManager.loadVersions(
-            'openrov-*',
-            branch, true, true)
-        )});
-      Q.allSettled(promises)
-        .then(function(results) {
-          results.forEach(function (result) {
-            if (result.state === "fulfilled") {
-              updates = updates.concat(result.value);
-            }
-          });
-          resp.send(updates);
-          resp.end();
-        });
     }
   );
 
