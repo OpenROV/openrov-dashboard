@@ -54,7 +54,9 @@ var AptGet = function(config) {
             var path = FS.join(config.aptGetSourcelists, 'openrov-' + branch + '.list');
             return FS.exists(path).then(function (exists) {
               if (!exists) {
-                var content = 'deb http://build.openrov.com/debian/ ' + branch + ' debian';
+                var content =
+                  'deb http://build.openrov.com/debian/ ' + branch + ' debian\n' +
+                  'deb [arch=all] http://build.openrov.com/debian/ ' + branch + ' debian\n';
                 return FS.write(path, content)
                   .then(function() {
                     console.log("Wrote file " + path);
