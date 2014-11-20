@@ -17,26 +17,10 @@ module.exports = function(name, deps) {
   var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
   var getSocket = function() { return socket; };
 
-  setTimeout(function() {
-      console.log('Init branches');
-      s3bucket.getBranches().then(
-        function(branches) {
-          console.log('Setting up branches in ' + deps.config.aptGetSourcelists);
-          return aptGet.configureBranches(branches);
-        })
-        .then(function() {
-          console.log("Starting apt-get update.");
-          startAptGetUpdate();
-        })
-        .finally(function(){
-          console.log('done');
-        });
-    },
-    (2 * 1000) *60);// 2 minutes
-
   deps.io.on('connection', function (newSocket) {
     socket = newSocket;
     console.log('Socket io connected()');
+    startAptGetUpdate();
   });
 
   app.post(
@@ -45,11 +29,26 @@ module.exports = function(name, deps) {
       if (aptGetUpdate.running) {
         resp.redirect(301,'/plugin/software/update/status');
         resp.end();
+        return;
       }
       else {
         startAptGetUpdate();
+        returnState(aptGetUpdate, resp);
       }
-      returnState(aptGetUpdate, resp);
+    }
+  );
+
+  app.post(
+    '/plugin/software/update/run',
+    function(req, resp) {
+      if (aptGetUpdate.running) {
+        resp.redirect(301,'/plugin/software/update/status');
+        resp.end();
+        return;
+      }
+      else {
+        startAptGetUpdate().then(function() { returnState(aptGetUpdate, resp); });
+      }
     }
   );
 
@@ -131,6 +130,7 @@ module.exports = function(name, deps) {
           resp.end(reason);
         })
     });
+
 
   app.post(
     '/plugin/software/install/start/:packageName/:version/:branch',
@@ -216,33 +216,47 @@ module.exports = function(name, deps) {
   );
 
   function startAptGetUpdate() {
-    aptGetUpdate = { promise: aptGet.update(), running:true, data: [], error: [] };
-    aptGetUpdate.promise.then(
-      function() {
-        aptGetUpdate.running = false;
-        aptGetUpdate.success = true;
-        aptGetUpdate.lastUpdate = Date.now();
-        aptCache.genCaches(function() {});
-        getSocket().emit('Software.Update.done', aptGetUpdate);
-      },
-      function(reason) {
-        aptGetUpdate.success = false;
-        aptGetUpdate.running = false;
-        aptGetUpdate.error.push(reason);
-        aptGetUpdate.lastUpdate = Date.now();
-        aptCache.genCaches(function() {});
-        getSocket().emit('Software.Update.done', aptGetUpdate);
-      },
-      function(information) {
-        if (information.data) {
-          aptGetUpdate.data.push(information.data.toString());
-        }
-        if (information.error) {
-          aptGetUpdate.error.push(information.error.toString());
-        }
-        getSocket().emit('Software.Update.update', aptGetUpdate);
-      }
-    )
+
+    console.log('Init branches');
+    aptGetUpdate.running = true;
+    return s3bucket.getBranches().then(
+        function(branches) {
+          console.log('Setting up branches in ' + deps.config.aptGetSourcelists);
+           return aptGet.configureBranches(branches);
+        }).then(
+        function() {
+         console.log("Starting apt-get update.");
+         aptGetUpdate = { promise: aptGet.update(), running: true, data: [], error: [], lastUpdate: aptGetUpdate.lastUpdate };
+         return aptGetUpdate.promise.then(
+           function() {
+             console.log('apt-get update done');
+             aptGetUpdate.running = false;
+             aptGetUpdate.success = true;
+             aptGetUpdate.lastUpdate = Date.now();
+             aptCache.genCaches(function() {});
+             getSocket().emit('Software.Update.done', aptGetUpdate);
+           },
+           function(reason) {
+             console.log('apt-get update done with errors: ' + reason);
+             aptGetUpdate.success = false;
+             aptGetUpdate.running = false;
+             aptGetUpdate.error.push(reason);
+             aptGetUpdate.lastUpdate = Date.now();
+             aptCache.genCaches(function() {});
+             getSocket().emit('Software.Update.done', aptGetUpdate);
+           },
+           function(information) {
+             console.log('apt-get update running');
+             if (information.data) {
+               aptGetUpdate.data.push(information.data.toString());
+             }
+             if (information.error) {
+               aptGetUpdate.error.push(information.error.toString());
+             }
+             getSocket().emit('Software.Update.update', aptGetUpdate);
+           }
+         )}, function(reason) { console.log("@@@@@@@@@@" + reason); }
+       );
   }
 
   function returnState(process, resp) {
@@ -275,3 +289,4 @@ module.exports = function(name, deps) {
   console.log("Loaded software plugin");
   return result;
 };
+
