@@ -9,15 +9,6 @@ chai.use(require('chai-things'));
 chai.use(chaiAsPromised);
 
 describe('software module', function() {
-/*
-  beforeEach(function () {
-    sinon.spy(console, 'log');
-  });
-
-  afterEach(function () {
-    console.log.restore();
-  });
-*/
   var packageManager = { loadVersions: function (packageName, branch, showUpdatesOnly, showAllVersions) {} };
 
   describe('getUpdates', function() {

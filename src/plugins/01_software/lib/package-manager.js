@@ -1,9 +1,6 @@
 var Q = require('q');
-var dpkg = require('./dpkg')();
-var aptCache = require('./apt-cache')();
-var aptGet = require('./apt-get')();
 
-var PackageManager = function() {
+var PackageManager = function(dpkg, aptCache, aptGet) {
   'use strict'
   var pm = { };
 

@@ -1,17 +1,22 @@
 var cp = require('child_process');
 var AptCache = require('./lib/apt-cache');
 var AptGet = require('./lib/apt-get');
-var packageManager = require('./lib/package-manager')();
+var Dpkg = require('./dpkg');
+var PackageManager = require('./lib/package-manager');
 var S3Bucket = require('./lib/s3-bucket');
+var Software = require('./lib/software');
 var Q = require('q');
 var util = require('util');
 var showSerialScript = __dirname + '/scripts/' + (process.env.USE_MOCK === 'true' ? 'mock-' : '') + 'showserial.sh';
 
 module.exports = function(name, deps) {
   var app = deps.app;
+  var dpkg = new Dpkg();
   var aptGet = new AptGet(deps.config);
   var aptCache = new AptCache();
   var s3bucket = S3Bucket(deps.config);
+  var packageManager = new PackageManager(dpkg, aptCache, aptGet);
+  var software = new Software(packageManager);
   var aptGetUpdate = {running: false};
   var aptGetInstall = {running: false};
   var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
@@ -76,7 +81,11 @@ module.exports = function(name, deps) {
     '/plugin/software/updates',
     function(req, resp) {
       var branches = req.body.branches;
-
+      software.getUpdates(branches)
+        .then(function(result) {
+          resp.send(result);
+          resp.end();
+        });
     }
   );
 
