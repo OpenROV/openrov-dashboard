@@ -18,12 +18,16 @@ describe('package-manager module', function() {
     var result = [ openrovTest, openrovTest2 ];
     var stub = sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) { callback(result); });
 
-    it('should get packages', function(done) {
-      underTest.getInstalledPackages('test', function(result) {
-        result.should.contain.something.that.deep.equals(openrovTest);
-        result.should.contain.something.that.deep.equals(openrovTest2);
-        done();
-      })
+    describe('should get packages promise', function() {
+      var promise = underTest.getInstalledPackages('test');
+
+      it('should contain openrov-test', function() {
+        return promise.should.eventually.contain.something.that.deep.equals(openrovTest);
+      });
+
+      it('should contain openrov-test2', function() {
+        return promise.should.eventually.contain.something.that.deep.equals(openrovTest2);
+      });
 
     });
   });

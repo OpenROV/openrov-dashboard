@@ -4,8 +4,12 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
   'use strict'
   var pm = { };
 
-  pm.getInstalledPackages = function(packageName, callback) {
-    dpkg.packagesAsync(packageName, callback);
+  pm.getInstalledPackages = function(packageName) {
+    var dpkgPackagesCall = Q.defer();
+    dpkg.packagesAsync(packageName, function(result) {
+      dpkgPackagesCall.resolve(result);
+    });
+    return dpkgPackagesCall.promise;
   };
 
   pm.loadVersions = function(packageName, branch, showUpdatesOnly, showAllVersions) {
@@ -25,10 +29,7 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
         else { getCandidates.reject(result.error); }
       });
 
-      var getInstalled = Q.defer();
-      pm.getInstalledPackages(packageName, function(result) {
-        getInstalled.resolve(result);
-      });
+      var getInstalled = pm.getInstalledPackages(packageName);
 
       Q.allSettled([getLatestSoftware.promise, getCandidates.promise, getInstalled.promise])
         .then(

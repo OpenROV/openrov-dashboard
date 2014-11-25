@@ -1,7 +1,7 @@
 var cp = require('child_process');
 var AptCache = require('./lib/apt-cache');
 var AptGet = require('./lib/apt-get');
-var Dpkg = require('./dpkg');
+var Dpkg = require('./lib/dpkg');
 var PackageManager = require('./lib/package-manager');
 var S3Bucket = require('./lib/s3-bucket');
 var Software = require('./lib/software');
@@ -71,9 +71,10 @@ module.exports = function(name, deps) {
       if (!(packageName) || packageName.trim().lenght === 0) {
         packageName = 'openrov-*'
       }
-      packageManager.getInstalledPackages(packageName, function (items) {
-        resp.send(items);
-      });
+      packageManager.getInstalledPackages(packageName)
+        .then(function (items) {
+          resp.send(items);
+        });
     }
   );
 
