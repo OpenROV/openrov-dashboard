@@ -82,7 +82,7 @@ module.exports = function(name, deps) {
       branches.forEach(function(branch) {
         promises.push(
           packageManager.loadVersions(
-            'openrov-*',
+            'openrov-rov-suite',
             branch, true, true)
         )});
       Q.allSettled(promises)
@@ -203,7 +203,7 @@ module.exports = function(name, deps) {
       s3bucket.getBranches().then(
         function(result) {
           resp.statusCode = 200;
-          resp.send(result);
+          resp.send('["stable","pre-release","master"]';
           resp.end();
         },
         function(reason) {
@@ -289,4 +289,3 @@ module.exports = function(name, deps) {
   console.log("Loaded software plugin");
   return result;
 };
-
