@@ -152,6 +152,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     BranchesApiService.getBranches().then(
       function(branches) {
         $scope.branches = branches.data;
+        $scope.selectedBranch = 'stable';
         $scope.loadBranchesError = undefined;
       },
       function(reason) {
