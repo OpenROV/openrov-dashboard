@@ -6,7 +6,7 @@ angular.module('Software.services', []).
     software.loadInstalledSoftware = function() {
       return $http({
         method: 'GET',
-        url: 'plugin/software/installed/openrov-*'
+        url: 'plugin/software/installed/openrov-rov-suite*'
       });
     };
 

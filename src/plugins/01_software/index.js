@@ -195,12 +195,12 @@ module.exports = function(name, deps) {
       s3bucket.getBranches().then(
         function(result) {
           resp.statusCode = 200;
-          resp.send(result);
+          resp.send('["stable","pre-release","master"]');
           resp.end();
         },
         function(reason) {
-          resp.statusCode = 500;
-          resp.send(reason);
+          resp.statusCode = 200;
+          resp.send('["stable","pre-release","master"]');
           resp.end();
         }
       )
@@ -211,12 +211,6 @@ module.exports = function(name, deps) {
 
     console.log('Init branches');
     aptGetUpdate.running = true;
-    return s3bucket.getBranches().then(
-        function(branches) {
-          console.log('Setting up branches in ' + deps.config.aptGetSourcelists);
-           return aptGet.configureBranches(branches);
-        }).then(
-        function() {
          console.log("Starting apt-get update.");
          aptGetUpdate = { promise: aptGet.update(), running: true, data: [], error: [], lastUpdate: aptGetUpdate.lastUpdate };
          return aptGetUpdate.promise.then(
@@ -247,9 +241,9 @@ module.exports = function(name, deps) {
              }
              getSocket().emit('Software.Update.update', aptGetUpdate);
            }
-         )}, function(reason) { console.log("@@@@@@@@@@" + reason); }
-       );
-  }
+         )}
+
+
 
   function returnState(process, resp) {
     process.currentTime = Date.now();
@@ -281,4 +275,3 @@ module.exports = function(name, deps) {
   console.log("Loaded software plugin");
   return result;
 };
-

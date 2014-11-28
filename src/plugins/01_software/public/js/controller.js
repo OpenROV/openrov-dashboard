@@ -4,7 +4,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
     $scope.showUpdatesOnly = true;
     $scope.showOnlyLatest = true;
-    $scope.selectedBranch = undefined;
+    $scope.selectedBranch = 'stable';
     $scope.installedSoftware = [];
 
     $scope.latestVersions = [];
@@ -152,6 +152,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     BranchesApiService.getBranches().then(
       function(branches) {
         $scope.branches = branches.data;
+        $scope.selectedBranch = 'stable';
         $scope.loadBranchesError = undefined;
       },
       function(reason) {
@@ -195,7 +196,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     $scope.loadVersions = function() {
       $scope.latestVersions = [];
       if ($scope.selectedBranch) {
-        var packageName = 'openrov-*';
+        var packageName = 'openrov-rov-suite';
 
         if ($scope.showUpdatesOnly) {
           $scope.loadingPackages = softwareApiService.getUpdates(packageName, $scope.selectedBranch);
