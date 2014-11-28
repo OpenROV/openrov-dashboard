@@ -93,8 +93,6 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
     return result;
   }
 
-
-
   function isSamePackage(installed, item) {
     return installed.package === item.package;
   }
