@@ -50,7 +50,7 @@ var PackageManager = function() {
              newVersions = loadUpdatesOnlyPackages(installedSoftware, candidates, versions);
           }
           else {
-            newVersions = loadAllPackages(versions, branch, showAllVersions);
+            newVersions = loadAllPackages(versions, branch, showAllVersions, branch);
           }
           loadVersionsPromise.resolve(newVersions);
         },
@@ -64,14 +64,14 @@ var PackageManager = function() {
     return loadVersionsPromise.promise;
   };
 
-  function loadUpdatesOnlyPackages(installedSoftware, candidates, versions) {
+  function loadUpdatesOnlyPackages(installedSoftware, candidates, versions, branch) {
     var result = [];
     candidates.forEach(function (candidate) {
       if (isPackageInstalled(installedSoftware, candidate)
         && !isPackageVersionInstalled(installedSoftware, candidate)) {
         var packagesToInstall =
           versions.filter(function (version) {
-            return isSamePackage(candidate, version) && isSameVersion(candidate, version);
+            return (version.branch === selectedBranch) && isSamePackage(candidate, version) && isSameVersion(candidate, version);
           });
         if (packagesToInstall && packagesToInstall.length == 1) {
           if(!newVersionsContainsPackage(result, packagesToInstall[0])) {
