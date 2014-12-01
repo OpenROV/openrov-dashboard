@@ -5,6 +5,7 @@ var Dpkg = require('./lib/dpkg');
 var PackageManager = require('./lib/package-manager');
 var S3Bucket = require('./lib/s3-bucket');
 var Software = require('./lib/software');
+var Preferences = require('./lib/preferences');
 var Q = require('q');
 var util = require('util');
 var showSerialScript = __dirname + '/scripts/' + (process.env.USE_MOCK === 'true' ? 'mock-' : '') + 'showserial.sh';
@@ -17,6 +18,7 @@ module.exports = function(name, deps) {
   var s3bucket = S3Bucket(deps.config);
   var packageManager = new PackageManager(dpkg, aptCache, aptGet);
   var software = new Software(packageManager);
+  var preferences = new Preferences(function() { return deps.config; });
   var aptGetUpdate = {running: false};
   var aptGetInstall = {running: false};
   var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
@@ -206,6 +208,31 @@ module.exports = function(name, deps) {
       )
     }
   );
+
+  /* Config */
+  app.get(
+    '/plugin/software/config',
+    function(req, resp) {
+      resp.send(preferences);
+    });
+
+  app.post(
+    '/plugin/software/config/enableUpdates/:enabled',
+    function (req, resp) {
+      preferences.enableUpdates = req.params.enabled === "true";
+      preferences.save();
+      resp.status(200);
+      resp.send(preferences);
+    });
+
+  app.post(
+    '/plugin/software/config/selectedBranch/:branch',
+    function (req, resp) {
+      preferences.selectedBranch = req.params.branch;
+      preferences.save();
+      resp.status(200);
+      resp.send(preferences);
+    });
 
   function startAptGetUpdate() {
 
