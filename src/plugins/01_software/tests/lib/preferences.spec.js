@@ -1,7 +1,5 @@
-var Q = require('q');
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
-var sinon = require('sinon');
 var underTest = require('../../lib/preferences');
 
 chai.should();
@@ -53,12 +51,10 @@ describe('preferences ', function() {
     var newPrefValue = undefined;
     var savePreferencesCalled = false;
 
-    config.preferences.set = function(name, value) {
-      newPrefValue = value;
-    };
-    config.savePreferences = function() { savePreferencesCalled = true;}
+    config.preferences.set = function(name, value) { newPrefValue = value; };
+    config.savePreferences = function() { savePreferencesCalled = true; };
 
-    describe('save eableUpdates', function() {
+    describe('save enableUpdates', function() {
 
       var preferences = new underTest(configAccessor);
       preferences.eableUpdates = true;
