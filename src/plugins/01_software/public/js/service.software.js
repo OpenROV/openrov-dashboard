@@ -3,10 +3,14 @@ angular.module('Software.services', []).
 
     var software = {};
 
-    software.loadInstalledSoftware = function() {
+    software.loadInstalledSoftware = function(showIndividualPackages) {
+      var packageName = "openrov-rov-suite*";
+      if (showIndividualPackages) {
+        packageName = "openrov-*";
+      }
       return $http({
         method: 'GET',
-        url: 'plugin/software/installed/openrov-rov-suite*'
+        url: 'plugin/software/installed/' + packageName
       });
     };
 

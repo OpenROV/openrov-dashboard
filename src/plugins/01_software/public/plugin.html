@@ -10,6 +10,12 @@
   </ul>
   <div class="alert alert-danger" role="alert" ng-hide="!(loadPackagesError)"><strong>Uh, there was a problem loading the installed packages!</strong><br>{{ loadPackagesError }}</div>
   <button class="btn btn-sm" ng-click="loadInstalledSoftware()">Refresh</button>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" ng-model="showIndividualPackages" ng-change="loadInstalledSoftware()">Show individual OpenROV packages
+    </label>
+  </div>
+
 </div>
 <div>
 

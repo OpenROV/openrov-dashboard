@@ -4,6 +4,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
     $scope.showUpdatesOnly = true;
     $scope.showOnlyLatest = true;
+    $scope.showIndividualPackages = false;
     $scope.selectedBranch = 'stable';
     $scope.installedSoftware = [];
     $scope.installedSoftwareLoaded = false;
@@ -184,7 +185,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
     $scope.loadInstalledSoftware = function() {
       $scope.installedSoftwareLoaded = false;
-      $scope.loadingInstalled = softwareApiService.loadInstalledSoftware();
+      $scope.loadingInstalled = softwareApiService.loadInstalledSoftware($scope.showIndividualPackages);
       $scope.loadingInstalled.then(
         function(items) {
           $scope.loadPackagesError = undefined;
