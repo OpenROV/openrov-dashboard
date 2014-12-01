@@ -6,6 +6,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     $scope.showOnlyLatest = true;
     $scope.selectedBranch = 'stable';
     $scope.installedSoftware = [];
+    $scope.installedSoftwareLoaded = false;
 
     $scope.latestVersions = [];
     $scope.refreshingPackages = false;
@@ -182,14 +183,17 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     };
 
     $scope.loadInstalledSoftware = function() {
+      $scope.installedSoftwareLoaded = false;
       $scope.loadingInstalled = softwareApiService.loadInstalledSoftware();
       $scope.loadingInstalled.then(
         function(items) {
           $scope.loadPackagesError = undefined;
           $scope.installedSoftware = items.data;
+          $scope.installedSoftwareLoaded = true;
         },
         function(reason) {
           $scope.loadPackagesError = reason;
+          $scope.installedSoftwareLoaded = true;
         });
     };
 

@@ -4,6 +4,9 @@
     <li ng-repeat="item in installedSoftware">
       {{ item.package }} - {{ item.version }}
     </li>
+    <li ng-hide="!(installedSoftwareLoaded == true && installedSoftware.length == 0)">
+      No packages found
+    </li>
   </ul>
   <div class="alert alert-danger" role="alert" ng-hide="!(loadPackagesError)"><strong>Uh, there was a problem loading the installed packages!</strong><br>{{ loadPackagesError }}</div>
   <button class="btn btn-sm" ng-click="loadInstalledSoftware()">Refresh</button>
