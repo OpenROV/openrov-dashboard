@@ -27,7 +27,6 @@ module.exports = function(name, deps) {
   deps.io.on('connection', function (newSocket) {
     socket = newSocket;
     console.log('Socket io connected()');
-    startAptGetUpdate();
   });
 
   app.post(
@@ -36,7 +35,6 @@ module.exports = function(name, deps) {
       if (aptGetUpdate.running) {
         resp.redirect(301,'/plugin/software/update/status');
         resp.end();
-        return;
       }
       else {
         startAptGetUpdate();
@@ -51,7 +49,6 @@ module.exports = function(name, deps) {
       if (aptGetUpdate.running) {
         resp.redirect(301,'/plugin/software/update/status');
         resp.end();
-        return;
       }
       else {
         startAptGetUpdate().then(function() { returnState(aptGetUpdate, resp); });
