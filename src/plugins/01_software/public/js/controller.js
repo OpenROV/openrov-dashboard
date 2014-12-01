@@ -45,6 +45,9 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
       modalInstance.result.then(function () {
         $scope.updatesEnabled = true;
+
+        softwareApiService.enableUpdate();
+
         var locationPromise = $q.defer();
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(location){
@@ -72,6 +75,10 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
     softwareApiService.getBbSerial().then(function(result) {
       $scope.bbSerial = result.data.bbSerial;
+    });
+
+    softwareApiService.isUpdateEnabled().then(function(result) {
+      $scope.updatesEnabled = result;
     });
 
     socket.on('Software.Update.update', function(data) {
@@ -130,7 +137,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       if (newStatus) {
         console.log('update ' + JSON.stringify(newStatus));
         $scope.refreshingPackages = newStatus.running? newStatus.running : false;
-	var lastUpdateString = 'unknown';
+        var lastUpdateString = 'unknown';
         if (newStatus.lastUpdate) {
           var lastUpdate = moment(newStatus.lastUpdate);
           var currentTime = newStatus.currentTime ? newStatus.currentTime : Date.now();

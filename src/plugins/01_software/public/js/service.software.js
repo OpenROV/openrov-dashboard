@@ -1,5 +1,5 @@
 angular.module('Software.services', []).
-  factory('softwareApiService', function($http) {
+  factory('softwareApiService', function($http, $q) {
 
     var software = {};
 
@@ -12,6 +12,37 @@ angular.module('Software.services', []).
         method: 'GET',
         url: 'plugin/software/installed/' + packageName
       });
+    };
+
+    software.isUpdateEnabled = function() {
+      var deferred = $q.defer();
+      $http({
+        method: 'GET',
+        url: 'plugin/software/config'
+      })
+        .then(
+        function(result) {
+          deferred.resolve(result.data.enableUpdates);
+        },
+        function() {
+          deferred.resolve(false);
+        });
+      return deferred.promise;
+    };
+
+    software.enableUpdate = function() {
+      $http({
+        method: 'POST',
+        url: 'plugin/software/config/enableUpdates/true'
+      })
+        .then(
+          function() {
+            console.log("Software updates successfully enabled.");
+          },
+          function(reason) {
+            console.log("Could not enable Software updates. Reason: " + reason);
+          }
+        );
     };
 
     software.getUpdates = function(packageName, branch) {
