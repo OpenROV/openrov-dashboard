@@ -1,29 +1,32 @@
 const PREFERENCES = 'plugins:software';
 
-function preferences(configuration) {
-  var pluginPreferences = getPreferences(configuration);
+function preferences(configAccessor) {
 
-  function savePreferences(config) {
-    config.preferences.set(PREFERENCES, pluginPreferences);
-    config.savePreferences();
-  }
+  var pluginPreferences = getPreferences(configAccessor());
 
-  function getPreferences(config) {
-    var preferences = config.preferences.get(PREFERENCES);
-    if (preferences === undefined) {
-      preferences = {
-        batteries: [
-          new Battery('TrustFire', 8.0, 13.0)
-        ],
-        selectedBattery: 'TrustFire'
+  function getPreferences() {
+    var pref = configAccessor().preferences.get(PREFERENCES);
+    if (pref === undefined) {
+      pref = {
+        enableUpdates: false,
+        selectedBranch: 'stable'
       };
-      config.preferences.set(PREFERENCES, preferences);
+      configAccessor().preferences.set(PREFERENCES, pref);
     }
-    console.log('Capestatus loaded preferences: ' + JSON.stringify(preferences));
-    return preferences;
+    pluginPreferences = pref;
+    pluginPreferences.save = savePreferences;
+    savePreferences();
+
+    console.log('Software plugin loaded preferences: ' + JSON.stringify(preferences));
+    return pref;
   }
 
+  function savePreferences() {
+    configAccessor().preferences.set(PREFERENCES, pluginPreferences);
+    configAccessor().savePreferences();
+  }
 
+  return pluginPreferences;
 }
 
 module.exports = preferences;
