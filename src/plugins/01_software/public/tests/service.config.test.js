@@ -59,6 +59,24 @@ describe('service.config', function() {
       });
     });
 
+    describe('getSelectedBranch should retrieve branch from server', function() {
+
+        it('retrieves the selected branch', function (done) {
+          var BRANCH = 'some-branch';
+          $httpBackend.expectGET('plugin/software/config')
+            .respond(200, {selectedBranch: BRANCH});
+
+          configService.getSelectedBranch()
+            .then(function (result) {
+              result.should.equal(BRANCH);
+              done();
+            });
+
+          $httpBackend.flush();
+        });
+
+    });
+
     afterEach(function () {
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();

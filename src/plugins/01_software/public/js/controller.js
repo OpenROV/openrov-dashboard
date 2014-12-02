@@ -7,7 +7,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     $scope.showUpdatesOnly = true;
     $scope.showOnlyLatest = true;
     $scope.showIndividualPackages = false;
-    $scope.selectedBranch = 'stable';
+    $scope.selectedBranch = undefined;
     $scope.installedSoftware = [];
     $scope.installedSoftwareLoaded = false;
 
@@ -167,17 +167,23 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     });
 
     function getBranches() {
-    branchesApiService.getBranches().then(
-      function(branches) {
-        $scope.branches = branches.data;
-        $scope.selectedBranch = 'stable';
-        $scope.loadBranchesError = undefined;
-      },
-      function(reason) {
-        $scope.loadBranchesError = reason;
+      branchesApiService.getBranches()
+        .then(
+        function(branches) {
+          $scope.branches = branches.data;
+          $scope.loadBranchesError = undefined;
 
-      });
-    };
+          configService.getSelectedBranch().then(function(result) {
+            $scope.selectedBranch = result;
+          })
+
+        },
+        function(reason) {
+          $scope.loadBranchesError = reason;
+
+        })
+    }
+
     getBranches();
 
     softwareApiService.aptUpdateStatus().

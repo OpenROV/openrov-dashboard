@@ -11,12 +11,16 @@
 var ConfigService = ['$q', '$http', function($q, $http) {
   var config = {};
 
-  config.isUpdateEnabled = function() {
-    var deferred = $q.defer();
-    $http({
+  function getConfig() {
+    return $http({
       method: 'GET',
       url: 'plugin/software/config'
-    })
+    });
+  }
+
+  config.isUpdateEnabled = function() {
+    var deferred = $q.defer();
+    getConfig()
       .then(
       function(result) {
         deferred.resolve(result.data.enableUpdates);
@@ -40,6 +44,15 @@ var ConfigService = ['$q', '$http', function($q, $http) {
         console.log("Could not enable Software updates. Reason: " + reason);
       }
     );
+  };
+
+  config.getSelectedBranch = function() {
+    var deferred = $q.defer();
+    getConfig()
+      .then(function(result){
+        deferred.resolve(result.data.selectedBranch);
+      });
+    return deferred.promise;
   };
 
   return config;
