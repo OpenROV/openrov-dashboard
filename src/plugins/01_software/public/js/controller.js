@@ -166,6 +166,12 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       }
     });
 
+    $scope.$watch('selectedBranch', function(newBranch) {
+      if (newBranch) {
+
+      }
+    });
+
     function getBranches() {
       branchesApiService.getBranches()
         .then(

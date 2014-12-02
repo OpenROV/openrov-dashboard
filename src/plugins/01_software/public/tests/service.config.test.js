@@ -77,6 +77,20 @@ describe('service.config', function() {
 
     });
 
+    describe('setSelectedBranch should send the branch to the server', function() {
+
+      it('sends a POST to the server', function() {
+          var BRANCH = 'some-branch';
+          $httpBackend.expectPOST('plugin/software/config/selectedBranch/' + BRANCH)
+            .respond(200, {selectedBranch: BRANCH});
+
+          configService.setSelectedBranch(BRANCH)
+
+          $httpBackend.flush();
+        });
+
+    });
+
     afterEach(function () {
       $httpBackend.verifyNoOutstandingExpectation();
       $httpBackend.verifyNoOutstandingRequest();

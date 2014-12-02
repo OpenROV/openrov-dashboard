@@ -34,8 +34,7 @@
     <form class="form-inline col-sm-12" role="form">
       <select class="form-control" id="branches"
         ng-model="selectedBranch"
-        ng-options="branch for branch in branches"
-        ng-change="loadVersions()">
+        ng-options="branch for branch in branches">
         <option value="">-- Select Branch --</option>
       </select>
       <div class="alert alert-danger" role="alert" ng-hide="!(loadBranchesError)"><strong>Uh, there was a problem loading the branches!</strong><br>{{ loadBranchesError }}</div>

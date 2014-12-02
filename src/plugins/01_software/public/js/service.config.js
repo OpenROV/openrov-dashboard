@@ -55,5 +55,21 @@ var ConfigService = ['$q', '$http', function($q, $http) {
     return deferred.promise;
   };
 
+  config.setSelectedBranch = function(branch){
+    $http({
+      method: 'POST',
+      url: 'plugin/software/config/selectedBranch/' + branch
+    })
+      .then(
+      function() {
+        console.log("Selected branch successfully saved.");
+      },
+      function(reason) {
+        console.log("Could not save selected branch. Reason: " + reason);
+      }
+    );
+
+  };
+
   return config;
 }];
