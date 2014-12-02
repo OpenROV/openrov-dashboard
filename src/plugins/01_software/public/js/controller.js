@@ -1,7 +1,7 @@
 angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
   controller('softwareController',
-    ['$scope', '$q', '$sce', '$modal', 'BranchesApiService', 'SoftwareApiService', 'ReportingService', 'SocketAccess',
-      function($scope, $q, $sce, $modal, branchesApiService, softwareApiService, reportingService, SocketAccess) {
+    ['$scope', '$q', '$sce', '$modal', 'BranchesApiService', 'SoftwareApiService', 'ReportingService', 'ConfigService', 'SocketAccess',
+      function($scope, $q, $sce, $modal, branchesApiService, softwareApiService, reportingService, configService, SocketAccess) {
     var socket = SocketAccess();
 
     $scope.showUpdatesOnly = true;
@@ -48,7 +48,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       modalInstance.result.then(function () {
         $scope.updatesEnabled = true;
 
-        softwareApiService.enableUpdate();
+        configService.enableUpdate();
 
         var locationPromise = $q.defer();
         if (navigator.geolocation) {
@@ -79,7 +79,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       $scope.bbSerial = result.data.bbSerial;
     });
 
-    softwareApiService.isUpdateEnabled().then(function(result) {
+    configService.isUpdateEnabled().then(function(result) {
       $scope.updatesEnabled = result;
     });
 
