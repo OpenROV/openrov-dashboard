@@ -129,12 +129,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     });
 
     socket.on('connect', function() { console.log('CONNECTED!'); })
-
-    socket.on('Software.Cockpit.message', function(message){
-      alert(message);
-      socket.emit('Software.Cockpit.answer', 'Thanks for ' + message);
-    });
-
+        
     $scope.$watch('aptUpdateStatus', function(newStatus) {
       if (newStatus) {
         console.log('update ' + JSON.stringify(newStatus));
