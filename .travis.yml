@@ -15,7 +15,7 @@ after_success:
 - cp *.deb build/openrov-dashboard_latest-${REAL_GIT_BRANCH}_all.deb
 - mv *.deb build/
 
-before_script: ./node_modules/bower/bin/bower install
+before_script: ./node_modules/bower/bin/bower install -F
 
 script: npm test
 
