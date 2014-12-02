@@ -168,7 +168,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
     $scope.$watch('selectedBranch', function(newBranch) {
       if (newBranch) {
-
+        configService.setSelectedBranch(newBranch);
       }
     });
 
