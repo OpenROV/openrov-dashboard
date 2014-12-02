@@ -15,7 +15,7 @@ after_success:
 - cp *.deb build/openrov-dashboard_latest-${REAL_GIT_BRANCH}_all.deb
 - mv *.deb build/
 
-script: node_modules/karma/bin/karma start karma.conf.js --single-run
+script: npm test
 
 before_install:
   - export CHROME_BIN=chromium-browser
