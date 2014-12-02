@@ -4,20 +4,64 @@ describe('service.config', function() {
   beforeEach(module('Software.services'));
 
   var configService;
-  var $log;
+  var $httpBackend;
 
-  beforeEach(inject(function(_ConfigService_, _$log_) {
+  beforeEach(inject(function(_ConfigService_, _$httpBackend_) {
     configService = _ConfigService_;
-    $log = _$log_;
-    sinon.stub($log, 'debug', function() {});
+    $httpBackend = _$httpBackend_;
+
+    //sinon.stub($log, 'debug', function() {});
   }));
 
-  it('foo', function() {
-    configService.test();
+  describe('isUpdateEnabled get value from server', function () {
+    describe('should get value from the configuration', function() {
 
-    expect($log.debug.callCount).to.equal(1);
-    expect($log.debug.args[0][0]).to.equal('foo');
+      var testIsUpdateEnabled = function(value, done) {
+        $httpBackend.expectGET('plugin/software/config')
+          .respond(200, {enableUpdates: value});
 
+        configService.isUpdateEnabled()
+          .then(function (result) {
+            result.should.equal(value);
+            done();
+          });
+
+        $httpBackend.flush();
+      };
+
+      it('should be true', function (done) {
+        testIsUpdateEnabled(true, done);
+      });
+
+      it('should be false', function (done) {
+        testIsUpdateEnabled(false, done);
+      });
+
+      it('should return false on fault', function(done) {
+        $httpBackend.expectGET('plugin/software/config')
+          .respond(500);
+
+        configService.isUpdateEnabled()
+          .then(function (result) {
+            result.should.be.false;
+            done();
+          });
+        $httpBackend.flush();
+      });
+    });
+
+    describe('enableUpdate should enable updates', function() {
+      it('sends POST to the server', function() {
+        $httpBackend.expectPOST('plugin/software/config/enableUpdates/true')
+          .respond(200);
+        configService.enableUpdate();
+        $httpBackend.flush();
+      });
+    });
+
+    afterEach(function () {
+      $httpBackend.verifyNoOutstandingExpectation();
+      $httpBackend.verifyNoOutstandingRequest();
+    })
   });
-
 });
