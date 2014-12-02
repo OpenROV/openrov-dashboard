@@ -22,17 +22,21 @@ module.exports = function(grunt) {
         'src/tests/**/*.js'
       ]}
     },
-    mocha: { // client side
-      test: {
-        src: ['src/*plugins/**/public/tests/*.html']
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js',
+        runnerPort: 9999,
+        singleRun: true,
+        browsers: ['PhantomJS'],
+        logLevel: 'ERROR'
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-simple-mocha');
-  grunt.loadNpmTasks('grunt-mocha');
+  grunt.loadNpmTasks('grunt-karma');
 
-  grunt.registerTask('test', ['simplemocha', 'mocha']);
+  grunt.registerTask('test', ['simplemocha', 'karma']);
   grunt.registerTask('default', ['jshint', 'test' ]);
 };

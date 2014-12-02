@@ -2,7 +2,7 @@
 // Generated on Tue Dec 02 2014 17:57:03 GMT+1100 (AEDT)
 
 module.exports = function(config) {
-  config.set({
+  var configuration = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
@@ -15,7 +15,13 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      './src/plugis/**/public/tests/*.test.js',
+      'src/static/bower_components/angular/angular.min.js',
+      'src/static/bower_components/angular-mocks/angular-mocks.js',
+      'src/static/bower_components/jquery/dist/jquery.min.js',
+      'src/static/bower_components/knockout/dist/knockout.js',
+      'node_modules/should/should.min.js',
+      'src/static/js/*.js',
+      'src/plugins/**/public/js/*.js',
       'src/plugins/**/public/tests/*.test.js'
     ],
 
@@ -28,13 +34,19 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      'src/plugins/**/public/js/*.js': ['coverage']
     },
 
+    coverageReporter: {
+      // type : 'html',
+      type : 'text-summary',
+      dir : 'coverage/'
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['progress', 'coverage'],
 
 
     // web server port
@@ -58,9 +70,24 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['Chrome', 'PhantomJS'],
 
+    customLaunchers: {
+      Chrome_travis_ci: {
+        base: 'Chrome',
+        flags: ['--no-sandbox']
+      }
+    },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false
-  });
+
+
+  }
+
+  if(process.env.TRAVIS){
+    configuration.browsers = ['Chrome_travis_ci'];
+  }
+
+  config.set(configuration);
+
 };
