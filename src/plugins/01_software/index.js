@@ -3,7 +3,6 @@ var AptCache = require('./lib/apt-cache');
 var AptGet = require('./lib/apt-get');
 var Dpkg = require('./lib/dpkg');
 var PackageManager = require('./lib/package-manager');
-var S3Bucket = require('./lib/s3-bucket');
 var Software = require('./lib/software');
 var Preferences = require('./lib/preferences');
 var Q = require('q');
@@ -15,7 +14,6 @@ module.exports = function(name, deps) {
   var dpkg = new Dpkg();
   var aptGet = new AptGet(deps.config);
   var aptCache = new AptCache();
-  var s3bucket = S3Bucket(deps.config);
   var packageManager = new PackageManager(dpkg, aptCache, aptGet);
   var software = new Software(packageManager);
   var preferences = new Preferences(function() { return deps.config; });
@@ -191,18 +189,16 @@ module.exports = function(name, deps) {
   app.get(
     '/plugin/software/branches',
     function (req, resp) {
-      s3bucket.getBranches().then(
-        function(result) {
-          resp.statusCode = 200;
-          resp.send('["stable","pre-release","master"]');
-          resp.end();
-        },
-        function(reason) {
-          resp.statusCode = 200;
-          resp.send('["stable","pre-release","master"]');
-          resp.end();
-        }
-      )
+      aptGet.getBranches()
+        .then(
+          function(result) {
+            resp.statusCode = 200;
+            resp.send(result);
+            resp.end();
+          },
+          function(reason) {
+            console.log("Error: " + reason)
+          });
     }
   );
 

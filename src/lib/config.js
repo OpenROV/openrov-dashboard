@@ -41,7 +41,7 @@ module.exports = {
   port: process.env.PORT || argv.port || nconf.get('port'),
   proxy: argv.proxy || nconf.get('proxy'),
   aws: nconf.get('aws'),
-  aptGetSourcelists : argv['source-list-dir'] || nconf.get('aptGetSourceLists'),
+  aptGetSourcelists : argv['source-list-dir'] || nconf.get('aptGetSourcelists'),
   DashboardEnginePath : './lib/DashboardEngine' + (process.env.USE_MOCK === 'true' ? '-mock' : ''),
 
   preferences: nconf,

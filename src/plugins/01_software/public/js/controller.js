@@ -1,5 +1,7 @@
 angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
-  controller('softwareController', function($scope, $q, $sce, $modal, BranchesApiService, softwareApiService, SocketAccess, reportingService) {
+  controller('softwareController',
+    ['$scope', '$q', '$sce', '$modal', 'BranchesApiService', 'SoftwareApiService', 'ReportingService', 'SocketAccess',
+      function($scope, $q, $sce, $modal, branchesApiService, softwareApiService, reportingService, SocketAccess) {
     var socket = SocketAccess();
 
     $scope.showUpdatesOnly = true;
@@ -139,11 +141,18 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
         $scope.refreshingPackages = newStatus.running? newStatus.running : false;
         var lastUpdateString = 'unknown';
         if (newStatus.lastUpdate) {
+          // the date on the ROV is not necessarily correct, therefore we get the
+          // currentTime and extrapolate from there.
           var lastUpdate = moment(newStatus.lastUpdate);
-          var currentTime = newStatus.currentTime ? newStatus.currentTime : Date.now();
-          var difference = moment(currentTime).unix() - lastUpdate.unix();
-          var newDate = moment.unix(moment().unix() - difference);
-          lastUpdateString = newDate.fromNow();
+          var currentTimeROV = moment(newStatus.currentTime ? newStatus.currentTime : Date.now());
+          var diff = lastUpdate.diff(currentTimeROV);
+
+          if (diff < 0) {
+            lastUpdateString = lastUpdate.from(currentTimeROV);
+          }
+          else {
+            lastUpdateString = "just now";
+          }
         }
 
         $scope.aptUpdateRefreshDate = lastUpdateString;
@@ -158,7 +167,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     });
 
     function getBranches() {
-    BranchesApiService.getBranches().then(
+    branchesApiService.getBranches().then(
       function(branches) {
         $scope.branches = branches.data;
         $scope.selectedBranch = 'stable';
@@ -170,7 +179,6 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       });
     };
     getBranches();
-    $scope.refreshBranches = getBranches;
 
     softwareApiService.aptUpdateStatus().
       then(function(result) {
@@ -255,4 +263,4 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
         $modalInstance.dismiss('cancel');
       };
     };
-});
+}]);

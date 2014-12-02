@@ -15,9 +15,10 @@ function preferences(configAccessor) {
     }
     pluginPreferences = pref;
     pluginPreferences.save = savePreferences;
+
     savePreferences();
 
-    console.log('Software plugin loaded preferences: ' + JSON.stringify(preferences));
+    console.log('Software plugin loaded preferences: ' + JSON.stringify(pluginPreferences));
     return pref;
   }
 

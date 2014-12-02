@@ -28,16 +28,6 @@
   </div>
 
   <div class="row" ng-hide="!updatesEnabled">
-    <div class="form-group col-sm-12">
-      <button class="btn btn-sm" ng-click="refreshPackages()" ng-disabled="refreshingPackages">
-        <span class="glyphicon glyphicon-refresh" ng-class="{'glyphicon-refresh-animate' : refreshingPackages}"></span>
-        Update package list</button> <i>(this takes a while)</i>
-      <br>
-      <strong>Last update: </strong>{{ aptUpdateRefreshDate }}
-      <div class="alert alert-danger" role="alert" ng-hide="!aptUpdateError"><strong>Uh, there was a problem updating the packages!</strong><br><div ng-bind-html="aptUpdateErrorData"></div></div>
-    </div>
-  </div>
-  <div class="row" ng-hide="!updatesEnabled">
     <div class="form-group">
       <div class="col-sm-2"><h4>Branches:</h4></div>
     </div>
@@ -48,7 +38,6 @@
         ng-change="loadVersions()">
         <option value="">-- Select Branch --</option>
       </select>
-      <button ng-click="refreshBranches()" class="btn">Refresh branches</button>
       <div class="alert alert-danger" role="alert" ng-hide="!(loadBranchesError)"><strong>Uh, there was a problem loading the branches!</strong><br>{{ loadBranchesError }}</div>
       <div class="checkbox">
         <label>
@@ -61,6 +50,17 @@
         </label>
       </div>
     </form>
+  </div>
+  <br>
+  <div class="row" ng-hide="!updatesEnabled">
+    <div class="form-group col-sm-12">
+      <button class="btn btn-sm" ng-click="refreshPackages()" ng-disabled="refreshingPackages">
+        <span class="glyphicon glyphicon-refresh" ng-class="{'glyphicon-refresh-animate' : refreshingPackages}"></span>
+        Update package list</button> <i>(this takes a while)</i>
+      <br>
+      <strong>Last update: </strong>{{ aptUpdateRefreshDate }}
+      <div class="alert alert-danger" role="alert" ng-hide="!aptUpdateError"><strong>Uh, there was a problem updating the packages!</strong><br><div ng-bind-html="aptUpdateErrorData"></div></div>
+    </div>
   </div>
   <br>
   <div class="row" ng-hide="!updatesEnabled">

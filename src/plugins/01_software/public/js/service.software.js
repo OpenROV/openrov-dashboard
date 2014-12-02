@@ -1,5 +1,4 @@
-angular.module('Software.services', []).
-  factory('softwareApiService', function($http, $q) {
+var SoftwareApiService = [ '$http', '$q', function($http, $q) {
 
     var software = {};
 
@@ -102,16 +101,4 @@ angular.module('Software.services', []).
     };
 
     return software;
-  })
-  .factory('reportingService', function($http) {
-    var reporting = {};
-
-    reporting.report = function (istalledPackages, rovInformation, location) {
-      return $http({
-        method: 'POST',
-        url: 'http://build.openrov.com/reporting/reportRov',
-        data: {installedPackages: istalledPackages, rovInformation: rovInformation, location: location}
-      });
-    };
-    return reporting;
-  });
+  } ];
