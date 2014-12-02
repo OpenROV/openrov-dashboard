@@ -129,7 +129,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     });
 
     socket.on('connect', function() { console.log('CONNECTED!'); })
-        
+
     $scope.$watch('aptUpdateStatus', function(newStatus) {
       if (newStatus) {
         console.log('update ' + JSON.stringify(newStatus));
@@ -195,14 +195,16 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     $scope.refreshPackages = function() {
       $scope.refreshingPackages = true;
       $scope.aptUpdateError = false;
-      softwareApiService.startAptUpdate().then(
-        function(result) {
-          $scope.aptUpdateStatus = result.data;
-        },
-        function(reason) {
-          console.log(JSON.stringify(reason));
-        }
-      );
+      if ($scope.selectedBranch) {
+        softwareApiService.startAptUpdate($scope.selectedBranch).then(
+          function (result) {
+            $scope.aptUpdateStatus = result.data;
+          },
+          function (reason) {
+            console.log(JSON.stringify(reason));
+          }
+        );
+      }
     };
 
     $scope.loadInstalledSoftware = function() {

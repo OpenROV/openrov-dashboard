@@ -7,10 +7,12 @@ var AptGet = function(config) {
 
   aptGet.update = function(branch) {
     return Q.Promise( function(resolve, reject, notify) {
-      console.log('Starting apt-get update child process');
+      var sourceList = 'Dir::Etc::sourcelist=' + config.aptGetSourcelists + '/openrov-' + branch + '.list';
+      console.log('Starting apt-get update child process ' + sourceList);
       var aptGetProcess = cp.spawn('apt-get', [
         'update',
-        '-o', 'Dir::Etc::sourcelist=' + aptGetSourcelists + '/openrov-' + branch + '.list'
+        '-o', sourceList,
+        '-o', 'Dir::Etc::SourceParts=/dev/zero'
       ]);
       handleClientProcess(aptGetProcess, resolve, reject, notify);
     });

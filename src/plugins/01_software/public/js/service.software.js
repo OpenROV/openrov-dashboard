@@ -34,10 +34,10 @@ var SoftwareApiService = [ '$http', '$q', function($http, $q) {
       });
     };
 
-    software.startAptUpdate = function() {
+    software.startAptUpdate = function(branch) {
       return $http({
         method: 'POST',
-        url: 'plugin/software/update/start'
+        url: 'plugin/software/update/start/' + branch
       });
     };
 
