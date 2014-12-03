@@ -1,7 +1,7 @@
 var Q = require('q');
 
 var PackageManager = function(dpkg, aptCache, aptGet) {
-  'use strict'
+  'use strict';
   var pm = { };
 
   pm.getInstalledPackages = function(packageName) {
@@ -10,6 +10,49 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
       dpkgPackagesCall.resolve(result);
     });
     return dpkgPackagesCall.promise;
+  };
+
+  pm.getLatestVersions = function(packageName){
+    var defered = Q.defer();
+    aptCache.madison([packageName], function(items) {
+      defered.resolve(items);
+    });
+    return defered.promise;
+  };
+
+  pm.getUpdates = function(packageName){
+    var getUpdates = Q.defer();
+
+    var getCandidates = Q.defer();
+    aptCache.getCandidates(packageName, function(items) {
+      getCandidates.resolve(items.result);
+    });
+
+    Q.allSettled([
+      getCandidates.promise,
+      pm.getInstalledPackages(packageName)
+    ])
+      .then(
+      function(results) {
+        results.forEach(function (result) {
+          if (result.state !== "fulfilled") {
+            getUpdates.reject(result.reason);
+          }
+        });
+        var candidates = results[0].value;
+        var installedSoftware = results[1].value;
+        var newVersions = [];
+
+        candidates.forEach(function(candidate){
+          if (!isPackageVersionInstalled(installedSoftware, candidate)) {
+            newVersions.push(candidate);
+          }
+        });
+
+        getUpdates.resolve(newVersions);
+      });
+
+      return getUpdates.promise;
   };
 
   pm.loadVersions = function(packageName, branch, showUpdatesOnly, showAllVersions) {

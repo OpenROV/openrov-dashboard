@@ -41,6 +41,20 @@ module.exports = function(name, deps) {
     }
   );
 
+  app.get(
+    '/plugin/software/updates/:packageName',
+    function(req, resp) {
+      startAptGetUpdate(preferences.selectedBranch)
+        .then(function() {
+          packageManager.getUpdates(req.params.packageName)
+            .then(function(result) {
+              resp.status(200);
+              resp.send(result);
+            });
+        });
+    }
+  );
+
   app.post(
     '/plugin/software/update/run',
     function(req, resp) {
@@ -71,18 +85,6 @@ module.exports = function(name, deps) {
       packageManager.getInstalledPackages(packageName)
         .then(function (items) {
           resp.send(items);
-        });
-    }
-  );
-
-  app.post(
-    '/plugin/software/updates',
-    function(req, resp) {
-      var branches = req.body.branches;
-      software.getUpdates(branches)
-        .then(function(result) {
-          resp.send(result);
-          resp.end();
         });
     }
   );
@@ -260,7 +262,8 @@ module.exports = function(name, deps) {
        }
        getSocket().emit('Software.Update.update', aptGetUpdate);
      }
-    )}
+    )
+  }
 
 
 
