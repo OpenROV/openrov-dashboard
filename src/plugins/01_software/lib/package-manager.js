@@ -153,6 +153,8 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
   function isPackageVersionInstalled(installedSoftware, version) {
     return installedSoftware.filter(
       function(installed) {
+        console.log("installed: " + JSON.stringify(installed));
+        console.log("new: " + JSON.stringify(version));
         if (isSamePackage(installed, version)) {
           return isSameVersion(installed, version);
         }
