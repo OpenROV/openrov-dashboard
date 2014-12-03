@@ -44,6 +44,7 @@ module.exports = function(name, deps) {
   app.get(
     '/plugin/software/updates/:packageName',
     function(req, resp) {
+      console.log('!!!!!!!!!!!!' + req.params.packageName);
       startAptGetUpdate(preferences.selectedBranch)
         .then(function() {
           packageManager.getUpdates(req.params.packageName)

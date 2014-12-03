@@ -164,7 +164,13 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     $scope.$watch('selectedBranch', function(newBranch) {
       if (newBranch) {
         configService.setSelectedBranch(newBranch);
+        $scope.loadVersions();
       }
+    });
+
+    $scope.$watch('showIndividualPackages', function(show) {
+      $scope.loadInstalledSoftware();
+      $scope.loadVersions();
     });
 
     function getBranches() {
@@ -225,14 +231,17 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     $scope.loadVersions = function() {
       $scope.latestVersions = [];
       if ($scope.selectedBranch) {
-        var packageName = 'openrov-rov-suite';
+        var packageName = "openrov-rov-suite*";
+        if ($scope.showIndividualPackages) {
+          packageName = "openrov-*";
+        }
 
-        if ($scope.showUpdatesOnly) {
-          $scope.loadingPackages = softwareApiService.getUpdates(packageName, $scope.selectedBranch);
-        }
-        else {
-          $scope.loadingPackages = softwareApiService.getAll(packageName, $scope.selectedBranch, $scope.showOnlyLatest);
-        }
+        //if ($scope.showUpdatesOnly) {
+          $scope.loadingPackages = softwareApiService.getUpdates(packageName);
+        //}
+        //else {
+        //  $scope.loadingPackages = softwareApiService.getAll(packageName, $scope.selectedBranch, $scope.showOnlyLatest);
+        //}
 
         $scope.loadingPackages
           .then(

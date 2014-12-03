@@ -7,16 +7,17 @@ var SoftwareApiService = [ '$http', '$q', function($http, $q) {
       if (showIndividualPackages) {
         packageName = "openrov-*";
       }
+      console.log('!!!!!!!!!' + packageName);
       return $http({
         method: 'GET',
         url: 'plugin/software/installed/' + packageName
       });
     };
 
-    software.getUpdates = function(packageName, branch) {
+    software.getUpdates = function(packageName) {
       return $http({
         method: 'GET',
-        url: 'plugin/software/packages/updates/' + packageName + '/' + branch
+        url: 'plugin/software/updates/' + packageName
       });
     };
 
