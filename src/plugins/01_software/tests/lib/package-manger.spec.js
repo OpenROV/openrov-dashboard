@@ -62,9 +62,11 @@ describe('package-manager module', function() {
     it('should show no updates to already installed versions', function() {
       var result = { package: PACKAGE_NAME, version: '0.1.1' };
       _sinon.stub(aptCache, 'getCandidates', function(pn, callback) {
-        callback( { result: [result], error: '', exitCode: 0 });
+        callback( { result: [result, { package: 'openrov-cockpit', version: '0.1.1'}], error: '', exitCode: 0 });
       });
-      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) { callback([result]); });
+      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) {
+        callback([result]);
+      });
 
       return underTest.getUpdates(PACKAGE_NAME)
         .should.eventually.be.empty;
