@@ -2,14 +2,18 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
   controller('softwareController',
     ['$scope', '$q', '$sce', '$modal', 'BranchesApiService', 'SoftwareApiService', 'ReportingService', 'ConfigService', 'SocketAccess',
       function($scope, $q, $sce, $modal, branchesApiService, softwareApiService, reportingService, configService, SocketAccess) {
-    var socket = SocketAccess();
+        var socket = SocketAccess();
+        $scope.isAdvancedMode = false;
+        $scope.installedSoftware = [];
+        $scope.installedSoftwareLoaded = false;
+        $scope.selectedBranch = undefined;
+        $scope.updatesEnabled = false;
 
-    $scope.showUpdatesOnly = true;
+
+
+        $scope.showUpdatesOnly = true;
     $scope.showOnlyLatest = true;
     $scope.showIndividualPackages = false;
-    $scope.selectedBranch = undefined;
-    $scope.installedSoftware = [];
-    $scope.installedSoftwareLoaded = false;
 
     $scope.latestVersions = [];
     $scope.refreshingPackages = false;
@@ -28,7 +32,6 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     $scope.installErrorData = undefined;
     $scope.showIinstallResult = false;
 
-    $scope.updatesEnabled = false;
     $scope.bbSerial = 'N/A';
     $scope.geolocation = undefined;
 
