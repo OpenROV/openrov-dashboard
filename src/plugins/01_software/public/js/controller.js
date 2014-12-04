@@ -8,6 +8,15 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
         $scope.installedSoftwareLoaded = false;
         $scope.selectedBranch = undefined;
         $scope.updatesEnabled = false;
+        $scope.showUpdates = true;
+
+        $scope.enableAdvanced = function() {
+          $scope.isAdvancedMode = true;
+        };
+
+        $scope.toggleShowUpdates = function() {
+          $scope.showUpdates = ! $scope.showUpdates;
+        };
 
 
 
