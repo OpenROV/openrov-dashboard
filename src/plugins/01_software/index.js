@@ -13,7 +13,7 @@ module.exports = function(name, deps) {
   var app = deps.app;
   var dpkg = new Dpkg();
   var aptGet = new AptGet(deps.config);
-  var aptCache = new AptCache();
+  var aptCache = new AptCache(cp);
   var packageManager = new PackageManager(dpkg, aptCache, aptGet);
   var software = new Software(packageManager);
   var preferences = new Preferences(function() { return deps.config; });
@@ -28,14 +28,14 @@ module.exports = function(name, deps) {
   });
 
   app.post(
-    '/plugin/software/update/start/:branch',
+    '/plugin/software/update/start',
     function(req, resp) {
       if (aptGetUpdate.running) {
         resp.redirect(301,'/plugin/software/update/status');
         resp.end();
       }
       else {
-        startAptGetUpdate(req.params.branch);
+        startAptGetUpdate();
         returnState(aptGetUpdate, resp);
       }
     }
@@ -44,29 +44,22 @@ module.exports = function(name, deps) {
   app.get(
     '/plugin/software/updates/:packageName',
     function(req, resp) {
-      startAptGetUpdate(preferences.selectedBranch)
-        .then(function() {
-          packageManager.getUpdates(req.params.packageName)
-            .then(function(result) {
-              resp.status(200);
-              resp.send(result);
-            });
+      packageManager.getUpdates(req.params.packageName)
+        .then(function(result) {
+          resp.status(200);
+          resp.send(result);
         });
     }
   );
 
-
   app.get(
     '/plugin/software/previous/:packageName',
     function(req, resp) {
-      startAptGetUpdate(preferences.selectedBranch)
-        .then(function() {
-          packageManager.getPreviousVersions(req.params.packageName)
-            .then(function(result) {
-              console.log(JSON.stringify(result));
-              resp.status(200);
-              resp.send(result);
-            });
+      packageManager.getPreviousVersions(req.params.packageName)
+        .then(function(result) {
+          console.log(JSON.stringify(result));
+          resp.status(200);
+          resp.send(result);
         });
     }
   );
@@ -198,14 +191,14 @@ module.exports = function(name, deps) {
       resp.send(preferences);
     });
 
-  function startAptGetUpdate(branch) {
+  function startAptGetUpdate() {
     aptGetUpdate.running = true;
 
-    console.log("Starting apt-get update for branch " + branch);
-    aptGetUpdate = { promise: aptGet.update(branch), running: true, data: [], error: [], lastUpdate: aptGetUpdate.lastUpdate };
+    console.log("Starting apt-get update");
+    aptGetUpdate = { promise: aptGet.update(), running: true, data: [], error: [], lastUpdate: aptGetUpdate.lastUpdate };
     return aptGetUpdate.promise.then(
      function() {
-       console.log('apt-get update done for branch ' + branch);
+       console.log('apt-get update done');
        aptGetUpdate.running = false;
        aptGetUpdate.success = true;
        aptGetUpdate.lastUpdate = Date.now();

@@ -1,10 +1,11 @@
-var cp = require('child_process');
+var Q = require('q');
 var Lazy = require('lazy');
 
-var AptCache = function() {
+var AptCache = function(childProcess) {
+
   var aptCache = {};
     aptCache.madison = function(arguments, callback) {
-      var aptCacheProcess = cp.spawn('apt-cache', ['madison'].concat(arguments));
+      var aptCacheProcess = childProcess.spawn('apt-cache', ['madison'].concat(arguments));
 
       var input = Lazy(aptCacheProcess.stdout).lines.map(String).map(function (line) {
         var fields = line.trim().split('|');
@@ -26,7 +27,7 @@ var AptCache = function() {
     };
 
   aptCache.genCaches = function(callback) {
-    var aptCacheProcess = cp.spawn('apt-cache', ['gencaches']);
+    var aptCacheProcess = childProcess.spawn('apt-cache', ['gencaches']);
 
     var stdOut = '';
     var stdErr = '';
@@ -46,7 +47,7 @@ var AptCache = function() {
 
   aptCache.getCandidates = function(packageName, callback) {
     var cleanPackageName = packageName.replace('*', '');
-    var aptCacheProcess = cp.spawn('apt-cache', ['policy', packageName]);
+    var aptCacheProcess = childProcess.spawn('apt-cache', ['policy', packageName]);
 
     var stdOut = '';
     var stdErr = '';
@@ -81,6 +82,49 @@ var AptCache = function() {
     });
 
   };
+
+  aptCache.policy = function(packageName){
+    var policyResult = Q.defer();
+    var cleanPackageName = packageName.replace('*', '');
+    var aptCacheProcess = childProcess.spawn('apt-cache', ['policy', packageName]);
+
+    var stdOut = "";
+    var stdErr = '';
+
+    aptCacheProcess.stdout.on('data', function(chunk) {
+        stdOut += chunk;
+    });
+
+    aptCacheProcess.on('close', function(exitCode, undefined) {
+      var result = parseStdOut(packageName, stdOut);
+
+      policyResult.resolve({ result: result, error: stdErr, exitCode: exitCode });
+    });
+
+    return policyResult.promise;
+  };
+
+  function parseStdOut(packageName, output) {
+    var lines = output.split("\n");
+    var result = [];
+    const INSTALLED = 'Installed: ';
+    const CANDIDATE = 'Candidate: ';
+    var lastPackage = undefined;
+    lines.forEach(function(line) {
+      if (line.trim().indexOf(packageName) == 0) {
+        lastPackage = {package: line.trim().replace(':', '') };
+        result.push(lastPackage)
+      }
+      else if (line.trim().indexOf(INSTALLED) == 0) {
+        lastPackage.installed = line.trim().replace(INSTALLED, '');
+      }
+      else if (line.trim().indexOf(CANDIDATE) == 0) {
+        lastPackage.candidate = line.trim().replace(CANDIDATE, '');
+      }
+    });
+    return result;
+  }
+
   return aptCache;
 };
 module.exports = AptCache;

@@ -5,14 +5,15 @@ var FS = require("q-io/fs");
 var AptGet = function(config) {
   var aptGet = {};
 
-  aptGet.update = function(branch) {
+  aptGet.update = function() {
     return Q.Promise( function(resolve, reject, notify) {
-      var sourceList = 'Dir::Etc::sourcelist=' + config.aptGetSourcelists + '/openrov-' + branch + '.list';
+      var sourceList = 'Dir::Etc::sourcelist=/dev/zero';
+      var sourceParts = 'Dir::Etc::SourceParts=' + config.aptGetSourcelists + '/';
       console.log('Starting apt-get update child process ' + sourceList);
       var aptGetProcess = cp.spawn('apt-get', [
         'update',
         '-o', sourceList,
-        '-o', 'Dir::Etc::SourceParts=/dev/zero'
+        '-o', sourceParts
       ]);
       handleClientProcess(aptGetProcess, resolve, reject, notify);
     });
