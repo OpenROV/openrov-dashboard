@@ -2,14 +2,18 @@ var SoftwareApiService = [ '$http', '$q', function($http, $q) {
 
     var software = {};
 
-    software.loadInstalledSoftware = function(showIndividualPackages) {
+    function getPackageName(showIndividualPackages) {
       var packageName = "openrov-rov-suite*";
       if (showIndividualPackages) {
         packageName = "openrov-*";
       }
+      return packageName;
+    }
+
+    software.loadInstalledSoftware = function(showIndividualPackages) {
       return $http({
         method: 'GET',
-        url: 'plugin/software/installed/' + packageName
+        url: 'plugin/software/installed/' + getPackageName(showIndividualPackages)
       });
     };
 
@@ -20,13 +24,12 @@ var SoftwareApiService = [ '$http', '$q', function($http, $q) {
       });
     };
 
-    software.getPrevious = function(packageName) {
+    software.getPreviousVersions = function(showIndividualPackages) {
       return $http({
         method: 'GET',
-        url: 'plugin/software/previous/' + packageName
+        url: 'plugin/software/previous/' + getPackageName(showIndividualPackages)
       });
     };
-
 
     software.startAptUpdate = function(branch) {
       return $http({
