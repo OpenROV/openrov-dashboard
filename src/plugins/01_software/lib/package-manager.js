@@ -80,8 +80,10 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
         var previousVersions = [];
 
         candidates.forEach(function(candidate){
-          if (isPackageInstalled(installedSoftware, candidate) &&
-            !isPackageVersionInstalled(installedSoftware, candidate)) {
+          if (!isPackageInstalled(installedSoftware, candidate)) {
+            previousVersions.push(candidate);
+          }
+          else if (!isPackageVersionInstalled(installedSoftware, candidate)) {
             previousVersions.push(candidate);
           }
         });

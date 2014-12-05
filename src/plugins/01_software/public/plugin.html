@@ -128,7 +128,7 @@
           <div class="row top-buffer-5" ng-hide="showUpdates">
             <div class="col-sm-12 package-list" ng-hide="previousVersions.length != 0 && refreshingPackages">
               <ul id="prviousSoftwareList" >
-                <li ng-repeat="item in latestVersions">
+                <li ng-repeat="item in previousVersions">
                   {{ item.package }} - {{ item.version }}
                   <button type="button" class="btn btn-primary btn-xs" ng-hide="!updatesEnabled" ng-click="install(item)">Install</button>
                 </li>
@@ -140,9 +140,9 @@
             <br>
             <br>
           </div>
-          <button class="btn btn-md" ng-click="refreshPackages()" ng-disabled="refreshingPackages">
+          <button class="btn btn-md" ng-click="loadVersions()" ng-disabled="refreshingPackages">
             <span class="glyphicon glyphicon-refresh" ng-class="{'glyphicon-refresh-animate' : refreshingPackages}"></span>
-            Check for updates
+            Refresh
           </button>
         </div>
       </div>

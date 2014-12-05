@@ -110,6 +110,20 @@ describe('package-manager module', function() {
         .should.eventually.be.empty;
     });
 
+    it('should show new packages that are not installed', function() {
+      var result = { package: PACKAGE_NAME, version: '0.1.1' };
+      _sinon.stub(aptCache, 'madison', function(pn, callback) {
+        callback( [result] );
+      });
+      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) {
+        callback([]);
+      });
+
+      return underTest.getPreviousVersions(PACKAGE_NAME)
+        .should.eventually.contain.something.that.deep
+        .equals(result);
+    })
+
   });
 
 
