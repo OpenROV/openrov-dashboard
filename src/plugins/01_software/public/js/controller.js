@@ -300,7 +300,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       $scope.installError = false;
       $scope.showIinstallResult = true;
 
-      softwareApiService.install(item.package, item.version, item.branch)
+      softwareApiService.install(item.package, item.version, $scope.selectedBranch)
         .then(
         function (result) {
           $scope.installResult = result.data;
