@@ -12,6 +12,9 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
         $scope.previousVersions = [];
 
+        $scope.refreshingPackagesError = undefined;
+        $scope.refreshingPackagesErrorData = '';
+
         $scope.enableAdvanced = function() {
           $scope.isAdvancedMode = true;
         };
@@ -262,15 +265,15 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
               packageName = "openrov-*";
             }
 
-            $scope.loadingPackages = softwareApiService.getUpdates(packageName);
-            $scope.loadingPackages
+            $scope.refreshingPackages = softwareApiService.getUpdates(packageName);
+            $scope.refreshingPackages
               .then(
               function(result) {
                 $scope.loadNewpackagesError = '';
                 $scope.latestVersions = result.data;
               },
               function(reason) {
-                $scope.loadNewpackagesError = reason;
+                $scope.refreshingPackagesError = reason;
               })
           }
         }
@@ -282,15 +285,15 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
             packageName = "openrov-*";
           }
 
-          $scope.loadingPackages = softwareApiService.getPrevious(packageName);
-          $scope.loadingPackages
+          $scope.refreshingPackages = softwareApiService.getPrevious(packageName);
+          $scope.refreshingPackages
             .then(
             function(result) {
               $scope.loadNewpackagesError = '';
               $scope.previousVersions = result.data;
             },
             function(reason) {
-              $scope.loadNewpackagesError = reason;
+              $scope.refreshingPackagesError = reason;
             })
 
         }
