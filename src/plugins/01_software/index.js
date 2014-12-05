@@ -71,19 +71,6 @@ module.exports = function(name, deps) {
     }
   );
 
-  app.post(
-    '/plugin/software/update/run',
-    function(req, resp) {
-      if (aptGetUpdate.running) {
-        resp.redirect(301,'/plugin/software/update/status');
-        resp.end();
-      }
-      else {
-        startAptGetUpdate().then(function() { returnState(aptGetUpdate, resp); });
-      }
-    }
-  );
-
   app.get(
     '/plugin/software/update/status',
     function (req, resp) {
@@ -104,40 +91,6 @@ module.exports = function(name, deps) {
         });
     }
   );
-
-  app.get(
-    '/plugin/software/packages/updates/:packageName/:branch',
-    function (req, resp) {
-      packageManager.loadVersions(
-        req.params.packageName,
-        req.params.branch,
-          true, true)
-        .then(function(items) {
-          resp.send(items);
-        },
-        function(reason){
-          resp.statusCode = 400;
-          resp.end(reason);
-        })
-    });
-
-  app.get(
-    '/plugin/software/packages/all/:packageName/:branch/:onlyLatest',
-    function (req, resp) {
-      packageManager.loadVersions(
-        req.params.packageName,
-        req.params.branch,
-          false, // updates only
-          req.params.onlyLatest === 'true')
-        .then(function(items) {
-          resp.send(items);
-        },
-        function(reason){
-          resp.statusCode = 400;
-          resp.end(reason);
-        })
-    });
-
 
   app.post(
     '/plugin/software/install/start/:packageName/:version/:branch',
@@ -280,8 +233,6 @@ module.exports = function(name, deps) {
      }
     )
   }
-
-
 
   function returnState(process, resp) {
     process.currentTime = Date.now();

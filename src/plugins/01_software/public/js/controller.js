@@ -270,11 +270,6 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
       function loadPreviousVersions() {
         $scope.previousVersions = [];
-        var packageName = "openrov-rov-suite*";
-        if () {
-          packageName = "openrov-*";
-        }
-
         $scope.refreshingPackages = softwareApiService.getPreviousVersions($scope.showIndividualPackages);
         $scope.refreshingPackages
           .then(
