@@ -113,8 +113,9 @@
           <div class="alert alert-warning" role="alert" ng-hide="selectedBranch"><strong>Please select a branch!</strong></div>
           <div class="alert alert-danger" role="alert" ng-hide="!(loadNewpackagesError)"><strong>Uh, there was a problem loading new installed packages!</strong><br>{{ loadNewpackagesError }}</div>
 -->
-          <div class="row top-buffer-5">
-            <div class="col-sm-12 package-list" ng-hide="!(latestVersions.length != 0 || refreshingPackages)">
+          <!--Updates-->
+          <div class="row top-buffer-5" ng-hide="!showUpdates">
+            <div class="col-sm-12 package-list" ng-hide="latestVersions.length != 0 && refreshingPackages">
               <ul id="softwareList" >
                 <li ng-repeat="item in latestVersions">
                   {{ item.package }} - {{ item.version }}
@@ -123,7 +124,18 @@
               </ul>
             </div>
           </div>
-          <div ng-hide="latestVersions.length != 0 || refreshingPackages">
+          <!--Previous versions-->
+          <div class="row top-buffer-5" ng-hide="showUpdates">
+            <div class="col-sm-12 package-list" ng-hide="previousVersions.length != 0 && refreshingPackages">
+              <ul id="prviousSoftwareList" >
+                <li ng-repeat="item in latestVersions">
+                  {{ item.package }} - {{ item.version }}
+                  <button type="button" class="btn btn-primary btn-xs" ng-hide="!updatesEnabled" ng-click="install(item)">Install</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div ng-hide="latestVersions.length != 0 || refreshingPackages || !showUpdates">
             Your ROV is up to date!
             <br>
             <br>

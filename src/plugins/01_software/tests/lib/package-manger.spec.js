@@ -74,6 +74,44 @@ describe('package-manager module', function() {
 
   });
 
+  describe('getPreviousVersions', function(){
+    var _sinon = sinon.sandbox.create();
+    afterEach(function() {
+      _sinon.restore();
+    });
+
+    it('should get previous versions of installed packages', function() {
+      var result = { package: PACKAGE_NAME, version: '0.1.0' };
+      var result2 = { package: PACKAGE_NAME, version: '0.0.9' };
+      _sinon.stub(aptCache, 'madison', function(pn, callback) {
+        callback( [result, result2] );
+      });
+      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) {
+        callback([{package: PACKAGE_NAME, version: '0.1.1'}]);
+      });
+
+      return underTest.getPreviousVersions(PACKAGE_NAME)
+        .should.eventually.contain.something.that.deep
+        .equals(result)
+        .and.should.eventually.contain.something.that.deep
+        .equals(result2);
+    });
+
+    it('should show no packages for already installed versions', function() {
+      var result = { package: PACKAGE_NAME, version: '0.1.1' };
+      _sinon.stub(aptCache, 'madison', function(pn, callback) {
+        callback( [result] );
+      });
+      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) {
+        callback([result]);
+      });
+
+      return underTest.getPreviousVersions(PACKAGE_NAME)
+        .should.eventually.be.empty;
+    });
+
+  });
+
 
   describe('getLatestVersion', function(){
 

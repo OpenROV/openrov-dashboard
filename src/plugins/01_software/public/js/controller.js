@@ -10,13 +10,18 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
         $scope.updatesEnabled = false;
         $scope.showUpdates = true;
 
+        $scope.previousVersions = [];
+
         $scope.enableAdvanced = function() {
           $scope.isAdvancedMode = true;
         };
 
         $scope.toggleShowUpdates = function() {
           $scope.showUpdates = ! $scope.showUpdates;
+          $scope.loadVersions();
         };
+
+
 
 
 
@@ -241,31 +246,54 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
     };
 
     $scope.loadVersions = function() {
-      $scope.latestVersions = [];
-      if ($scope.selectedBranch) {
-        var packageName = "openrov-rov-suite*";
-        if ($scope.showIndividualPackages) {
-          packageName = "openrov-*";
-        }
-
-        //if ($scope.showUpdatesOnly) {
-          $scope.loadingPackages = softwareApiService.getUpdates(packageName);
-        //}
-        //else {
-        //  $scope.loadingPackages = softwareApiService.getAll(packageName, $scope.selectedBranch, $scope.showOnlyLatest);
-        //}
-
-        $scope.loadingPackages
-          .then(
-          function(result) {
-            $scope.loadNewpackagesError = '';
-            $scope.latestVersions = result.data;
-          },
-          function(reason) {
-            $scope.loadNewpackagesError = reason;
-          })
+      if ($scope.showUpdates) {
+        loadUpdates();
+      }
+      else {
+        loadPreviousVersions();
       }
     };
+
+        function loadUpdates() {
+          $scope.latestVersions = [];
+          if ($scope.selectedBranch) {
+            var packageName = "openrov-rov-suite*";
+            if ($scope.showIndividualPackages) {
+              packageName = "openrov-*";
+            }
+
+            $scope.loadingPackages = softwareApiService.getUpdates(packageName);
+            $scope.loadingPackages
+              .then(
+              function(result) {
+                $scope.loadNewpackagesError = '';
+                $scope.latestVersions = result.data;
+              },
+              function(reason) {
+                $scope.loadNewpackagesError = reason;
+              })
+          }
+        }
+
+        function loadPreviousVersions() {
+          $scope.previousVersions = [];
+          var packageName = "openrov-rov-suite*";
+          if ($scope.showIndividualPackages) {
+            packageName = "openrov-*";
+          }
+
+          $scope.loadingPackages = softwareApiService.getPrevious(packageName);
+          $scope.loadingPackages
+            .then(
+            function(result) {
+              $scope.loadNewpackagesError = '';
+              $scope.previousVersions = result.data;
+            },
+            function(reason) {
+              $scope.loadNewpackagesError = reason;
+            })
+
+        }
 
     $scope.install = function(item) {
       $scope.installingPackage = true;

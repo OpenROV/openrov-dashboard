@@ -56,6 +56,42 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
       return getUpdates.promise;
   };
 
+  pm.getPreviousVersions = function(packageName){
+    var getPreviousVersions = Q.defer();
+
+    var getCandidates = Q.defer();
+    aptCache.madison(packageName, function(items) {
+      getCandidates.resolve(items);
+    });
+
+    Q.allSettled([
+      getCandidates.promise,
+      pm.getInstalledPackages(packageName)
+    ])
+      .then(
+      function(results) {
+        results.forEach(function (result) {
+          if (result.state !== "fulfilled") {
+            getUpdates.reject(result.reason);
+          }
+        });
+        var candidates = results[0].value;
+        var installedSoftware = results[1].value;
+        var previousVersions = [];
+
+        candidates.forEach(function(candidate){
+          if (isPackageInstalled(installedSoftware, candidate) &&
+            !isPackageVersionInstalled(installedSoftware, candidate)) {
+            previousVersions.push(candidate);
+          }
+        });
+
+        getPreviousVersions.resolve(previousVersions);
+      });
+
+    return getPreviousVersions.promise;
+  };
+
   pm.loadVersions = function(packageName, branch, showUpdatesOnly, showAllVersions) {
     var loadVersionsPromise = Q.defer();
     if (branch !== undefined && branch.trim().length > 0) {

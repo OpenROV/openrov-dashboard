@@ -44,11 +44,26 @@ module.exports = function(name, deps) {
   app.get(
     '/plugin/software/updates/:packageName',
     function(req, resp) {
-      console.log('!!!!!!!!!!!!' + req.params.packageName);
       startAptGetUpdate(preferences.selectedBranch)
         .then(function() {
           packageManager.getUpdates(req.params.packageName)
             .then(function(result) {
+              resp.status(200);
+              resp.send(result);
+            });
+        });
+    }
+  );
+
+
+  app.get(
+    '/plugin/software/previous/:packageName',
+    function(req, resp) {
+      startAptGetUpdate(preferences.selectedBranch)
+        .then(function() {
+          packageManager.getPreviousVersions(req.params.packageName)
+            .then(function(result) {
+              console.log(JSON.stringify(result));
               resp.status(200);
               resp.send(result);
             });

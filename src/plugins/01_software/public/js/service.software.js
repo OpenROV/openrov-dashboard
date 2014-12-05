@@ -7,7 +7,6 @@ var SoftwareApiService = [ '$http', '$q', function($http, $q) {
       if (showIndividualPackages) {
         packageName = "openrov-*";
       }
-      console.log('!!!!!!!!!' + packageName);
       return $http({
         method: 'GET',
         url: 'plugin/software/installed/' + packageName
@@ -20,6 +19,16 @@ var SoftwareApiService = [ '$http', '$q', function($http, $q) {
         url: 'plugin/software/updates/' + packageName
       });
     };
+
+    software.getPrevious = function(packageName) {
+      return $http({
+        method: 'GET',
+        url: 'plugin/software/previous/' + packageName
+      });
+    };
+
+
+
 
     software.getAll = function(packageName, branch, onlyLatest) {
       return $http({
