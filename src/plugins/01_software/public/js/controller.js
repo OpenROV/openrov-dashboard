@@ -8,7 +8,6 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       $scope.showIndividualPackages = false;
       $scope.isAdvancedMode = false;
       $scope.installedSoftware = [];
-      $scope.installedSoftwareLoaded = false;
       $scope.selectedBranch = undefined;
       $scope.updatesEnabled = false;
       $scope.showUpdates = true;
@@ -31,6 +30,9 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       $scope.bbSerial = 'N/A';
       $scope.geolocation = undefined;
 
+      $scope.loadingInstalled = undefined;
+      $scope.loadingPackages = undefined;
+
       $scope.enableAdvanced = function() {
         $scope.isAdvancedMode = true;
       };
@@ -47,7 +49,6 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
           softwareApiService.startAptUpdate().then(
             function (result) {
               $scope.aptUpdateStatus = result.data;
-              $scope.loadVersions();
             },
             function (reason) {
               console.log(JSON.stringify(reason));
@@ -57,29 +58,24 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       };
 
       $scope.loadInstalledSoftware = function() {
-        $scope.installedSoftwareLoaded = false;
         $scope.loadingInstalled = softwareApiService.loadInstalledSoftware($scope.showIndividualPackages);
         $scope.loadingInstalled.then(
           function(items) {
             $scope.loadPackagesError = undefined;
             $scope.installedSoftware = items.data;
-            $scope.installedSoftwareLoaded = true;
           },
           function(reason) {
             $scope.loadPackagesError = reason;
-            $scope.installedSoftwareLoaded = true;
           });
       };
 
       $scope.loadVersions = function() {
-        var running = undefined;
         if ($scope.showUpdates) {
-          running = loadUpdates();
+          $scope.loadingPackages = loadUpdates();
         }
         else {
-          running = loadPreviousVersions();
+          $scope.loadingPackages = loadPreviousVersions();
         }
-        running.then(function() {$scope.refreshingPackages = false});
       };
 
       $scope.enableUpdate = function () {
@@ -160,6 +156,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
         $scope.$apply(function() {
           $scope.refreshingPackages = data.running;
           $scope.aptUpdateStatus = data;
+          $scope.loadVersions();
           if (!data.success) {
             $scope.aptUpdateError = true;
             var error = "<hr><strong>Output:</strong> <br>" + data.data.join('<br>')
@@ -262,8 +259,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
             packageName = "openrov-*";
           }
 
-          $scope.refreshingPackages = softwareApiService.getUpdates(packageName);
-          return $scope.refreshingPackages
+          return softwareApiService.getUpdates(packageName)
             .then(
             function(result) {
               $scope.loadNewpackagesError = '';
@@ -273,13 +269,12 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
               $scope.refreshingPackagesError = reason;
             })
         }
-        else { return $q(function() {}) }
+        else { return $q(function(resolve) {resolve()}) }
       }
 
       function loadPreviousVersions() {
         $scope.previousVersions = [];
-        $scope.refreshingPackages = softwareApiService.getPreviousVersions($scope.showIndividualPackages);
-        return $scope.refreshingPackages
+        return softwareApiService.getPreviousVersions($scope.showIndividualPackages)
           .then(
           function(result) {
             $scope.loadNewpackagesError = '';

@@ -34,7 +34,7 @@
           <li ng-repeat="item in installedSoftware">
             {{ item.package }} - {{ item.version }}
           </li>
-          <li ng-hide="!(installedSoftwareLoaded == true && installedSoftware.length == 0)">
+          <li ng-hide="!(installedSoftware.length == 0)">
             No packages found
           </li>
         </ul>
@@ -56,7 +56,7 @@
   <div class="row" ng-hide="!updatesEnabled">
     <form class="form-horizontal">
       <div class="col-sm-12">
-        <div>
+        <div cg-busy="loadingPackages">
 
           <div class="row" ng-hide="!isAdvancedMode">
             <div class="col-sm-4">
@@ -67,7 +67,7 @@
 
           <!--Updates-->
           <div class="row top-buffer-5" ng-hide="!showUpdates">
-            <div class="col-sm-12 package-list" ng-hide="latestVersions.length != 0 && refreshingPackages">
+            <div class="col-sm-12 package-list" ng-hide="latestVersions.length === 0">
               <ul id="softwareList" >
                 <li ng-repeat="item in latestVersions">
                   {{ item.package }} - {{ item.version }}
@@ -78,7 +78,7 @@
           </div>
           <!--Previous versions-->
           <div class="row top-buffer-5" ng-hide="showUpdates">
-            <div class="col-sm-12 package-list" ng-hide="previousVersions.length != 0 && refreshingPackages">
+            <div class="col-sm-12 package-list" ng-hide="previousVersions.length === 0">
               <ul id="prviousSoftwareList" >
                 <li ng-repeat="item in previousVersions">
                   {{ item.package }} - {{ item.version }}
