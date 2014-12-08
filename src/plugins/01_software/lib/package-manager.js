@@ -30,8 +30,7 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
           candidate.versions.forEach(function(version) {
             if (candidate.installed !== '' &&
               candidate.installed !== candidate.candidate) {
-              if ((version.version !== candidate.installed ||
-                version.version !== candidate.candidate) &&
+              if (version.version === candidate.candidate &&
                   version.branch == branch) {
                 newVersions.push({package: candidate.package, version: version.version})
               }

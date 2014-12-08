@@ -49,8 +49,7 @@ describe('package-manager module', function() {
       _sinon.restore();
     });
 
-    it('should get updates to newer versions', function() {
-      var result = { package: PACKAGE_NAME, version: '0.1.1' };
+    it('should get updates to newer versions', function(done) {
       var policyResult = {
         result: [
           { package: PACKAGE_NAME, installed: '0.1.0', candidate: '0.1.1', versions: [
@@ -62,9 +61,17 @@ describe('package-manager module', function() {
         exitCode: 0 };
       _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
 
-      return underTest.getUpdates(PACKAGE_NAME, 'stable')
-        .should.eventually.contain.something.that.deep
-        .equals(result);
+      underTest.getUpdates(PACKAGE_NAME, 'stable')
+        .then(function(result) {
+          try {
+            result.length.should.equal(1);
+            result[0].should.deep.equals({ package: PACKAGE_NAME, version: '0.1.1' });
+            done();
+          }
+          catch(e) {
+            done(e);
+          }
+        })
     });
 
     it('should show no updates to already installed versions', function() {
@@ -86,7 +93,7 @@ describe('package-manager module', function() {
       var result = { package: PACKAGE_NAME, version: '0.1.2' };
       var policyResult = {
         result: [
-          { package: PACKAGE_NAME, installed: '0.1.0', candidate: '0.1.1', versions: [
+          { package: PACKAGE_NAME, installed: '0.1.0', candidate: '0.1.2', versions: [
             { version: '0.1.0', branch: 'stable' },
             { version: '0.1.1', branch: 'stable' },
             { version: '0.1.2', branch: 'pre-release' }

@@ -71,12 +71,14 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       };
 
       $scope.loadVersions = function() {
+        var running = undefined;
         if ($scope.showUpdates) {
-          loadUpdates();
+          running = loadUpdates();
         }
         else {
-          loadPreviousVersions();
+          running = loadPreviousVersions();
         }
+        running.then(function() {$scope.refreshingPackages = false});
       };
 
       $scope.enableUpdate = function () {
@@ -256,7 +258,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
           }
 
           $scope.refreshingPackages = softwareApiService.getUpdates(packageName);
-          $scope.refreshingPackages
+          return $scope.refreshingPackages
             .then(
             function(result) {
               $scope.loadNewpackagesError = '';
@@ -271,7 +273,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
       function loadPreviousVersions() {
         $scope.previousVersions = [];
         $scope.refreshingPackages = softwareApiService.getPreviousVersions($scope.showIndividualPackages);
-        $scope.refreshingPackages
+        return $scope.refreshingPackages
           .then(
           function(result) {
             $scope.loadNewpackagesError = '';
