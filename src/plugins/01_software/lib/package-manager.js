@@ -21,9 +21,7 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
   };
 
   pm.getUpdates = function(packageName, branch){
-    var getUpdates = Q.defer();
-
-    aptCache.policy(packageName).then(
+    return aptCache.policy(packageName).then(
       function(result) {
         var candidates = result.result;
         var newVersions = [];
@@ -40,16 +38,12 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
             }
           });
         });
-        getUpdates.resolve(newVersions);
+        return newVersions;
       });
-
-      return getUpdates.promise;
   };
 
   pm.getPreviousVersions = function(packageName, branch){
-    var getPreviousVersions = Q.defer();
-
-    aptCache.policy(packageName)
+    return aptCache.policy(packageName)
       .then(
       function(result) {
         var candidates = result.result;
@@ -66,10 +60,8 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
           });
         });
 
-        getPreviousVersions.resolve(previousVersions);
+        return previousVersions;
       });
-
-    return getPreviousVersions.promise;
   };
 
   pm.loadVersions = function(packageName, branch, showUpdatesOnly, showAllVersions) {
