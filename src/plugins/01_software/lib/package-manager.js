@@ -23,14 +23,8 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
   pm.getUpdates = function(packageName){
     var getUpdates = Q.defer();
 
-    var getCandidates = Q.defer();
-    aptCache.getCandidates(packageName, function(items) {
-      getCandidates.resolve(items.result);
-    });
-
     Q.allSettled([
-      getCandidates.promise,
-      pm.getInstalledPackages(packageName)
+      aptCache.policy(packageName)
     ])
       .then(
       function(results) {
@@ -39,14 +33,13 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
             getUpdates.reject(result.reason);
           }
         });
-        var candidates = results[0].value;
-        var installedSoftware = results[1].value;
+        var candidates = results[0].value.result;
         var newVersions = [];
 
         candidates.forEach(function(candidate){
-          if (isPackageInstalled(installedSoftware, candidate) &&
-              !isPackageVersionInstalled(installedSoftware, candidate)) {
-            newVersions.push(candidate);
+          if (candidate.installed !== '' &&
+              candidate.installed !== candidate.candidate) {
+            newVersions.push({package: candidate.package, version: candidate.candidate})
           }
         });
 
@@ -56,17 +49,11 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
       return getUpdates.promise;
   };
 
-  pm.getPreviousVersions = function(packageName){
+  pm.getPreviousVersions = function(packageName, branch){
     var getPreviousVersions = Q.defer();
 
-    var getCandidates = Q.defer();
-    aptCache.madison(packageName, function(items) {
-      getCandidates.resolve(items);
-    });
-
     Q.allSettled([
-      getCandidates.promise,
-      pm.getInstalledPackages(packageName)
+      aptCache.policy(packageName)
     ])
       .then(
       function(results) {
@@ -75,17 +62,18 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
             getUpdates.reject(result.reason);
           }
         });
-        var candidates = results[0].value;
-        var installedSoftware = results[1].value;
+        var candidates = results[0].value.result;
         var previousVersions = [];
 
         candidates.forEach(function(candidate){
-          if (!isPackageInstalled(installedSoftware, candidate)) {
-            previousVersions.push(candidate);
-          }
-          else if (!isPackageVersionInstalled(installedSoftware, candidate)) {
-            previousVersions.push(candidate);
-          }
+          candidate.versions.forEach(function(version) {
+            if (version.version !== candidate.installed ||
+                version.version !== candidate.candidate) {
+              if (version.branch == branch) {
+                previousVersions.push({package: candidate.package, version: version.version})
+              }
+            }
+          });
         });
 
         getPreviousVersions.resolve(previousVersions);

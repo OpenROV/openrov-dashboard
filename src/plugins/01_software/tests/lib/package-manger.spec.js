@@ -2,15 +2,19 @@ var Q = require('q');
 var chai = require("chai");
 var chaiAsPromised = require("chai-as-promised");
 var sinon = require('sinon');
+var sinonPromise = require('sinon-promise');
+
 var PackageManager = require('../../lib/package-manager');
 
 chai.should();
 chai.use(require('chai-things'));
 chai.use(chaiAsPromised);
+sinonPromise(sinon);
+
 
 describe('package-manager module', function() {
   var dpkg = { packagesAsync: function(packageName, callback) {} };
-  var aptCache = { madison: function(packageNames, callback) {}, getCandidates: function(pn, cb) {} };
+  var aptCache = { madison: function(packageNames, callback) {}, getCandidates: function(pn, cb) {}, policy: function(pn) {} };
   var underTest = new PackageManager(dpkg, aptCache, null);
   const PACKAGE_NAME = 'openrov-rov-suite';
 
@@ -47,12 +51,8 @@ describe('package-manager module', function() {
 
     it('should get updates to newer versions', function() {
       var result = { package: PACKAGE_NAME, version: '0.1.1' };
-      _sinon.stub(aptCache, 'getCandidates', function(pn, callback) {
-        callback( { result: [result], error: '', exitCode: 0 });
-      });
-      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) {
-        callback([{package: PACKAGE_NAME, version: '0.1.0'}]);
-      });
+      var policyResult = { result: [ { package: PACKAGE_NAME, installed: '0.1.0', candidate: '0.1.1'} ], error: '', exitCode: 0 };
+      _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
 
       return underTest.getUpdates(PACKAGE_NAME)
         .should.eventually.contain.something.that.deep
@@ -60,13 +60,8 @@ describe('package-manager module', function() {
     });
 
     it('should show no updates to already installed versions', function() {
-      var result = { package: PACKAGE_NAME, version: '0.1.1' };
-      _sinon.stub(aptCache, 'getCandidates', function(pn, callback) {
-        callback( { result: [result, { package: 'openrov-cockpit', version: '0.1.1'}], error: '', exitCode: 0 });
-      });
-      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) {
-        callback([result]);
-      });
+      var policyResult = { result: [ { package: PACKAGE_NAME, installed: '0.1.1', candidate: '0.1.1'} ], error: '', exitCode: 0 };
+      _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
 
       return underTest.getUpdates(PACKAGE_NAME)
         .should.eventually.be.empty;
@@ -80,49 +75,102 @@ describe('package-manager module', function() {
       _sinon.restore();
     });
 
-    it('should get previous versions of installed packages', function() {
-      var result = { package: PACKAGE_NAME, version: '0.1.0' };
-      var result2 = { package: PACKAGE_NAME, version: '0.0.9' };
-      _sinon.stub(aptCache, 'madison', function(pn, callback) {
-        callback( [result, result2] );
-      });
-      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) {
-        callback([{package: PACKAGE_NAME, version: '0.1.1'}]);
-      });
+    it('should get previous versions of installed packages', function(done) {
+      var policyResult = {
+        result: [ {
+          package: PACKAGE_NAME,
+          installed: '0.1.1',
+          candidate: '0.1.1',
+          versions: [
+            { version: '0.1.1', branch: 'stable' },
+            { version: '0.1.0', branch: 'stable' },
+            { version: '0.0.9', branch: 'stable' }
+          ]
+        }
+        ], error: '', exitCode: 0 };
+      _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
 
-      return underTest.getPreviousVersions(PACKAGE_NAME)
-        .should.eventually.contain.something.that.deep
-        .equals(result)
-        .and.should.eventually.contain.something.that.deep
-        .equals(result2);
+      underTest.getPreviousVersions(PACKAGE_NAME, 'stable')
+        .then(function(result){
+          try {
+            result.should.have.property('length', 2);
+            result[0].should.deep
+              .equal({ package: PACKAGE_NAME, version: '0.1.0' });
+            result[1].should.deep
+              .equal({ package: PACKAGE_NAME, version: '0.0.9' });
+            done();
+          }
+          catch (e) {
+            done(e);
+          }
+        });
     });
 
     it('should show no packages for already installed versions', function() {
-      var result = { package: PACKAGE_NAME, version: '0.1.1' };
-      _sinon.stub(aptCache, 'madison', function(pn, callback) {
-        callback( [result] );
-      });
-      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) {
-        callback([result]);
-      });
+      var policyResult = {
+        result: [ {
+          package: PACKAGE_NAME,
+          installed: '0.1.1',
+          candidate: '0.1.1',
+          versions: [
+            { version: '0.1.1', branch: 'stable' }
+          ]
+        }
+        ], error: '', exitCode: 0 };
+      _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
 
-      return underTest.getPreviousVersions(PACKAGE_NAME)
+      return underTest.getPreviousVersions(PACKAGE_NAME, 'stable')
         .should.eventually.be.empty;
     });
 
     it('should show new packages that are not installed', function() {
       var result = { package: PACKAGE_NAME, version: '0.1.1' };
-      _sinon.stub(aptCache, 'madison', function(pn, callback) {
-        callback( [result] );
-      });
-      _sinon.stub(dpkg, 'packagesAsync', function(packageName, callback) {
-        callback([]);
-      });
+      var policyResult = {
+        result: [ {
+          package: PACKAGE_NAME,
+          installed: '0.1.0',
+          candidate: '0.1.1',
+          versions: [
+            { version: '0.1.1', branch: 'stable' },
+            { version: '0.1.0', branch: 'stable' },
+          ]
+        }
+        ], error: '', exitCode: 0 };
+      _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
 
-      return underTest.getPreviousVersions(PACKAGE_NAME)
+      return underTest.getPreviousVersions(PACKAGE_NAME, 'stable')
         .should.eventually.contain.something.that.deep
         .equals(result);
-    })
+    });
+
+    it('should show only versions from the currently selected branch', function(done) {
+      var policyResult = {
+        result: [ {
+          package: PACKAGE_NAME,
+          installed: '0.1.1',
+          candidate: '0.1.1',
+          versions: [
+            { version: '0.1.1', branch: 'stable' },
+            { version: '0.1.0', branch: 'stable' },
+            { version: '0.0.9', branch: 'pre-release' }
+          ]
+        }
+        ], error: '', exitCode: 0 };
+      _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
+
+      underTest.getPreviousVersions(PACKAGE_NAME, 'stable')
+        .then(function(result){
+          try {
+            result.should.have.property('length', 1);
+            result[0].should.deep
+              .equal({ package: PACKAGE_NAME, version: '0.1.0' });
+            done();
+          }
+          catch (e) {
+            done(e);
+          }
+        });
+    });
 
   });
 

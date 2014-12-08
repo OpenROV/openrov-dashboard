@@ -55,7 +55,7 @@ module.exports = function(name, deps) {
   app.get(
     '/plugin/software/previous/:packageName',
     function(req, resp) {
-      packageManager.getPreviousVersions(req.params.packageName)
+      packageManager.getPreviousVersions(req.params.packageName, preferences.selectedBranch)
         .then(function(result) {
           console.log(JSON.stringify(result));
           resp.status(200);
