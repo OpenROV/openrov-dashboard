@@ -20,29 +20,26 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
     return defered.promise;
   };
 
-  pm.getUpdates = function(packageName){
+  pm.getUpdates = function(packageName, branch){
     var getUpdates = Q.defer();
 
-    Q.allSettled([
-      aptCache.policy(packageName)
-    ])
-      .then(
-      function(results) {
-        results.forEach(function (result) {
-          if (result.state !== "fulfilled") {
-            getUpdates.reject(result.reason);
-          }
-        });
-        var candidates = results[0].value.result;
+    aptCache.policy(packageName).then(
+      function(result) {
+        var candidates = result.result;
         var newVersions = [];
 
         candidates.forEach(function(candidate){
-          if (candidate.installed !== '' &&
+          candidate.versions.forEach(function(version) {
+            if (candidate.installed !== '' &&
               candidate.installed !== candidate.candidate) {
-            newVersions.push({package: candidate.package, version: candidate.candidate})
-          }
+              if ((version.version !== candidate.installed ||
+                version.version !== candidate.candidate) &&
+                  version.branch == branch) {
+                newVersions.push({package: candidate.package, version: version.version})
+              }
+            }
+          });
         });
-
         getUpdates.resolve(newVersions);
       });
 
@@ -52,17 +49,10 @@ var PackageManager = function(dpkg, aptCache, aptGet) {
   pm.getPreviousVersions = function(packageName, branch){
     var getPreviousVersions = Q.defer();
 
-    Q.allSettled([
-      aptCache.policy(packageName)
-    ])
+    aptCache.policy(packageName)
       .then(
-      function(results) {
-        results.forEach(function (result) {
-          if (result.state !== "fulfilled") {
-            getUpdates.reject(result.reason);
-          }
-        });
-        var candidates = results[0].value.result;
+      function(result) {
+        var candidates = result.result;
         var previousVersions = [];
 
         candidates.forEach(function(candidate){

@@ -51,20 +51,54 @@ describe('package-manager module', function() {
 
     it('should get updates to newer versions', function() {
       var result = { package: PACKAGE_NAME, version: '0.1.1' };
-      var policyResult = { result: [ { package: PACKAGE_NAME, installed: '0.1.0', candidate: '0.1.1'} ], error: '', exitCode: 0 };
+      var policyResult = {
+        result: [
+          { package: PACKAGE_NAME, installed: '0.1.0', candidate: '0.1.1', versions: [
+            { version: '0.1.0', branch: 'stable' },
+            { version: '0.1.1', branch: 'stable' }
+          ]}
+        ],
+        error: '',
+        exitCode: 0 };
       _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
 
-      return underTest.getUpdates(PACKAGE_NAME)
+      return underTest.getUpdates(PACKAGE_NAME, 'stable')
         .should.eventually.contain.something.that.deep
         .equals(result);
     });
 
     it('should show no updates to already installed versions', function() {
-      var policyResult = { result: [ { package: PACKAGE_NAME, installed: '0.1.1', candidate: '0.1.1'} ], error: '', exitCode: 0 };
+      var policyResult = {
+        result: [
+          { package: PACKAGE_NAME, installed: '0.1.1', candidate: '0.1.1', versions: [
+            { version: '0.1.0', branch: 'stable' },
+            { version: '0.1.1', branch: 'stable' }
+          ]} ],
+        error: '',
+        exitCode: 0 };
       _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
 
       return underTest.getUpdates(PACKAGE_NAME)
         .should.eventually.be.empty;
+    });
+
+    it('should get only updates from the current branch', function() {
+      var result = { package: PACKAGE_NAME, version: '0.1.2' };
+      var policyResult = {
+        result: [
+          { package: PACKAGE_NAME, installed: '0.1.0', candidate: '0.1.1', versions: [
+            { version: '0.1.0', branch: 'stable' },
+            { version: '0.1.1', branch: 'stable' },
+            { version: '0.1.2', branch: 'pre-release' }
+          ]}
+        ],
+        error: '',
+        exitCode: 0 };
+      _sinon.stub(aptCache, 'policy', sinon.promise().resolves(policyResult));
+
+      return underTest.getUpdates(PACKAGE_NAME, 'pre-release')
+        .should.eventually.contain.something.that.deep
+        .equals(result);
     });
 
   });
