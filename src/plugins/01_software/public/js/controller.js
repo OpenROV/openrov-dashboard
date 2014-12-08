@@ -44,9 +44,10 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
         $scope.refreshingPackages = true;
         $scope.aptUpdateError = false;
         if ($scope.selectedBranch) {
-          softwareApiService.startAptUpdate($scope.selectedBranch).then(
+          softwareApiService.startAptUpdate().then(
             function (result) {
               $scope.aptUpdateStatus = result.data;
+              $scope.loadVersions();
             },
             function (reason) {
               console.log(JSON.stringify(reason));
@@ -241,12 +242,16 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
 
       function initialise() {
         getBranches();
+        getAptUpdateState();
+        $scope.loadInstalledSoftware();
+
+      }
+
+      function getAptUpdateState() {
         softwareApiService.aptUpdateStatus().
           then(function (result) {
             $scope.aptUpdateStatus = result.data;
           });
-        $scope.loadInstalledSoftware();
-
       }
 
       function loadUpdates() {
@@ -268,6 +273,7 @@ angular.module('Software.controllers', ['Software.services', 'ui.bootstrap']).
               $scope.refreshingPackagesError = reason;
             })
         }
+        else { return $q(function() {}) }
       }
 
       function loadPreviousVersions() {
