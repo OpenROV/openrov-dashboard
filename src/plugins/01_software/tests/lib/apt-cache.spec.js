@@ -61,12 +61,17 @@ describe('apt-cache', function() {
 
       it('should have the version table', function(done) {
         promise.then(function(result) {
-          result.result[0].versions.should.be
-            .equal([
-              { version: '2.5.1-pre-release.26.448f366', branch: 'pre-release'},
-              { version: '2.5.1-pre-release.21.2f75718', branch: 'pre-release'}
-            ]);
-          done();
+          try {
+            result.result[0].versions.should.be.deep
+              .equals([
+                {version: '2.5.1-pre-release.26.448f366', branch: 'pre-release'},
+                {version: '2.5.1-pre-release.21.2f75718', branch: 'pre-release'}
+              ]);
+            done();
+          }
+          catch (e) {
+            done(e);
+          }
         })
       });
     })
@@ -82,18 +87,18 @@ function policyExample(buffer) {
     "Candidate: 2.5.1-pre-release.26.448f366",
     "Version table:",
     "  2.5.1-pre-release.26.448f366 0",
-    "500 http://build.openrov.com/debian/ pre-release/debian armhf Packages",
+    "    500 http://build.openrov.com/debian/ pre-release/debian armhf Packages",
     "  2.5.1-pre-release.21.2f75718 0",
-    "500 http://build.openrov.com/debian/ pre-release/debian armhf Packages",
-    "  openrov-mjpeg-streamer:",
+    "    500 http://build.openrov.com/debian/ pre-release/debian armhf Packages",
+    "openrov-mjpeg-streamer:",
     "Installed: 2.0.1-7",
     "Candidate: 2.0.1-7",
     "Version table:",
     "  *** 2.0.1-7 0",
-    "500 http://build.openrov.com/debian/ stable/debian armhf Packages",
-    "  100 /var/lib/dpkg/status",
-    "2.0-6 0",
-    "500 http://build.openrov.com/debian/ stable/debian armhf Packages"];
+    "    500 http://build.openrov.com/debian/ stable/debian armhf Packages",
+    "    100 /var/lib/dpkg/status",
+    "  2.0-6 0",
+    "    500 http://build.openrov.com/debian/ stable/debian armhf Packages"];
     lines.forEach(function(line){
       buffer.push(line + "\n");
     });

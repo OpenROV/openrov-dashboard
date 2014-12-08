@@ -3,6 +3,12 @@ var Lazy = require('lazy');
 
 var AptCache = function(childProcess) {
 
+  const INSTALLED = 'Installed:';
+  const CANDIDATE = 'Candidate:';
+  const VERSION_TABLE = 'Version table:';
+
+  const KEYWORDS = [INSTALLED, CANDIDATE, VERSION_TABLE];
+
   var aptCache = {};
     aptCache.madison = function(arguments, callback) {
       var aptCacheProcess = childProcess.spawn('apt-cache', ['madison'].concat(arguments));
@@ -104,24 +110,62 @@ var AptCache = function(childProcess) {
     return policyResult.promise;
   };
 
+/*
+  *** 6.0.1-4 0
+  500 http://build.openrov.com/debian/ stable/debian armhf Packages
+    100 /var/lib/dpkg/status
+*/
+
+  function getBranch(line) {
+    var parts = line.trim().split(' ');
+    if (parts.length == 5) {
+      return parts[2].split('/')[0];
+    }
+  }
+
+  function getVersions(lineIndex, lines, packageName) {
+    var versions = [];
+    for (; lineIndex < lines.length; lineIndex++) {
+      var line = lines[lineIndex].trim();
+      if (line.indexOf(packageName) >= 0 || KEYWORDS.indexOf(line) >= 0) {
+        lineIndex--; //step back in the lines;
+        break;
+      }
+      var parts = line.split(' ');
+      if ((parts.length == 3 && parts[0] == '***')
+        || (parts.length == 2 && parts[0] != '100')) { //installed version
+        var versionIndex = (parts.length == 3 && parts[0] == '***') ? 1 : 0;
+        versions.push({ version: parts[versionIndex], branch: getBranch(lines[lineIndex+1]) });
+        lineIndex = lineIndex + 1; // we parsed the next line already
+      }
+    }
+    return { lineIndex: lineIndex, versions: versions };
+  }
+
   function parseStdOut(packageName, output) {
     var lines = output.split("\n");
     var result = [];
-    const INSTALLED = 'Installed: ';
-    const CANDIDATE = 'Candidate: ';
-    var lastPackage = undefined;
-    lines.forEach(function(line) {
+    var lastPackage = {};
+    var i;
+    for(i = 0; i < lines.length; i++) {
+      var line = lines[i];
       if (line.trim().indexOf(packageName) == 0) {
-        lastPackage = {package: line.trim().replace(':', '') };
-        result.push(lastPackage)
+        lastPackage = {package: line.trim().replace(':', ''), versions: [] };
+        result.push(lastPackage);
       }
       else if (line.trim().indexOf(INSTALLED) == 0) {
-        lastPackage.installed = line.trim().replace(INSTALLED, '');
+        lastPackage.installed = line.replace(INSTALLED, '').trim();
       }
       else if (line.trim().indexOf(CANDIDATE) == 0) {
-        lastPackage.candidate = line.trim().replace(CANDIDATE, '');
+        lastPackage.candidate = line.replace(CANDIDATE, '').trim();
       }
-    });
+      else if (line.trim().indexOf(VERSION_TABLE) == 0) {
+        i = i+1; //advance to the next line;
+        var parsedVersions = getVersions(i, lines, packageName);
+        i = parsedVersions.lineIndex;
+        lastPackage.versions = parsedVersions.versions;
+      }
+    }
     return result;
   }
 
