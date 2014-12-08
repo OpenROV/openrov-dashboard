@@ -74,15 +74,24 @@ describe('apt-cache', function() {
           }
         })
       });
+
+      it('should parse not installed packages correctly', function(done) {
+        promise.then(function(result) {
+          try {
+            result.result[2].installed.should.be.equal('');
+            done();
+          }
+          catch (e) { done(e);}
+        });
+      })
     })
   });
 
 });
 
 function policyExample(buffer) {
-  //var result = new Buffer("");
-  //result._read = function noop() {}; // redundant? see update below
-  var lines = ["openrov-rov-suite:",
+  var lines = [
+    "openrov-rov-suite:",
     "Installed: 2.5.1-pre-release.21.2f75718",
     "Candidate: 2.5.1-pre-release.26.448f366",
     "Version table:",
@@ -98,7 +107,14 @@ function policyExample(buffer) {
     "    500 http://build.openrov.com/debian/ stable/debian armhf Packages",
     "    100 /var/lib/dpkg/status",
     "  2.0-6 0",
-    "    500 http://build.openrov.com/debian/ stable/debian armhf Packages"];
+    "    500 http://build.openrov.com/debian/ stable/debian armhf Packages",
+    "openrov-test:",
+    "Installed: (none)",
+    "Candidate: 0.0.1-1",
+    "Version table:",
+    "  0.0.1-1 0",
+    "    500 http://build.openrov.com/debian/ pre-release/debian armhf Packages"
+  ];
     lines.forEach(function(line){
       buffer.push(line + "\n");
     });

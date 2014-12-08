@@ -102,7 +102,7 @@ var AptCache = function(childProcess) {
     });
 
     aptCacheProcess.on('close', function(exitCode, undefined) {
-      var result = parseStdOut(packageName, stdOut);
+      var result = parseStdOut(cleanPackageName, stdOut);
 
       policyResult.resolve({ result: result, error: stdErr, exitCode: exitCode });
     });
@@ -149,6 +149,9 @@ var AptCache = function(childProcess) {
       }
       else if (line.trim().indexOf(INSTALLED) == 0) {
         lastPackage.installed = line.replace(INSTALLED, '').trim();
+        if (lastPackage.installed == '(none)') {
+          lastPackage.installed = '';
+        }
       }
       else if (line.trim().indexOf(CANDIDATE) == 0) {
         lastPackage.candidate = line.replace(CANDIDATE, '').trim();
