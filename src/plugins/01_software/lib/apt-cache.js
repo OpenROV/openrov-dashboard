@@ -110,12 +110,6 @@ var AptCache = function(childProcess) {
     return policyResult.promise;
   };
 
-/*
-  *** 6.0.1-4 0
-  500 http://build.openrov.com/debian/ stable/debian armhf Packages
-    100 /var/lib/dpkg/status
-*/
-
   function getBranch(line) {
     var parts = line.trim().split(' ');
     if (parts.length == 5) {
