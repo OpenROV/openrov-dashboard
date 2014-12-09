@@ -4,12 +4,46 @@
  * Configuration file for dashboard
  *
  */
-var argv = require('optimist').argv;
-module.exports = {
-  port: process.env.PORT || argv.port || 80,
-  proxy: process.env.HTTP_PROXY || process.env.http_proxy || argv.proxy || undefined,
-  aws: { bucket: 'openrov-deb-repository', region: 'us-west-2'},
-  aptGetSourcelists : argv['source-list-dir'] || '/etc/apt/sources.list.d',
 
-  DashboardEnginePath : './lib/DashboardEngine' + (process.env.USE_MOCK === 'true' ? '-mock' : '')
+var nconf = require('nconf');
+var argv = require('optimist').argv;
+
+// Will essentially rewrite the file when a change to the defaults are made if there is a parsing error.
+try {
+  nconf.use('file', { file: './etc/dashboardconfig.json' });
+} catch (err) {
+  console.log('Unable to load the configuration file, resetting to defaults');
+  console.log(err);
+}
+nconf.env(); //Also look for overrides in environment settings
+
+
+// Do not change these values in this file for an individual ROV, use the ./etc/rovconfig.json instead
+nconf.defaults({
+  port: 80,
+  proxy: undefined,
+  aws: { bucket: 'openrov-deb-repository', region: 'us-west-2'},
+  aptGetSourcelists : '/etc/apt/sources.list.d'
+});
+
+function savePreferences() {
+  nconf.save(function (err) {
+    if (err) {
+      console.error(err.message);
+      return;
+    }
+    console.log('Configuration saved successfully.');
+  });
+}
+
+
+module.exports = {
+  port: process.env.PORT || argv.port || nconf.get('port'),
+  proxy: argv.proxy || nconf.get('proxy'),
+  aws: nconf.get('aws'),
+  aptGetSourcelists : argv['source-list-dir'] || nconf.get('aptGetSourcelists'),
+  DashboardEnginePath : './lib/DashboardEngine' + (process.env.USE_MOCK === 'true' ? '-mock' : ''),
+
+  preferences: nconf,
+  savePreferences: savePreferences
 };

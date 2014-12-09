@@ -1,14 +1,66 @@
 var Q = require('q');
-var dpkg = require('./dpkg')();
-var aptCache = require('./apt-cache')();
-var aptGet = require('./apt-get')();
 
-var PackageManager = function() {
-  'use strict'
+var PackageManager = function(dpkg, aptCache, aptGet) {
+  'use strict';
   var pm = { };
 
-  pm.getInstalledPackages = function(packageName, callback) {
-    dpkg.packagesAsync(packageName, callback);
+  pm.getInstalledPackages = function(packageName) {
+    var dpkgPackagesCall = Q.defer();
+    dpkg.packagesAsync(packageName, function(result) {
+      dpkgPackagesCall.resolve(result);
+    });
+    return dpkgPackagesCall.promise;
+  };
+
+  pm.getLatestVersions = function(packageName){
+    var defered = Q.defer();
+    aptCache.madison([packageName], function(items) {
+      defered.resolve(items);
+    });
+    return defered.promise;
+  };
+
+  pm.getUpdates = function(packageName, branch){
+    return aptCache.policy(packageName).then(
+      function(result) {
+        var candidates = result.result;
+        var newVersions = [];
+
+        candidates.forEach(function(candidate){
+          candidate.versions.forEach(function(version) {
+            if (candidate.installed !== '' &&
+              candidate.installed !== candidate.candidate) {
+              if (version.version === candidate.candidate &&
+                  version.branch == branch) {
+                newVersions.push({package: candidate.package, version: version.version})
+              }
+            }
+          });
+        });
+        return newVersions;
+      });
+  };
+
+  pm.getPreviousVersions = function(packageName, branch){
+    return aptCache.policy(packageName)
+      .then(
+      function(result) {
+        var candidates = result.result;
+        var previousVersions = [];
+
+        candidates.forEach(function(candidate){
+          candidate.versions.forEach(function(version) {
+            if (version.version !== candidate.installed ||
+                version.version !== candidate.candidate) {
+              if (version.branch == branch) {
+                previousVersions.push({package: candidate.package, version: version.version})
+              }
+            }
+          });
+        });
+
+        return previousVersions;
+      });
   };
 
   pm.loadVersions = function(packageName, branch, showUpdatesOnly, showAllVersions) {
@@ -28,10 +80,7 @@ var PackageManager = function() {
         else { getCandidates.reject(result.error); }
       });
 
-      var getInstalled = Q.defer();
-      pm.getInstalledPackages(packageName, function(result) {
-        getInstalled.resolve(result);
-      });
+      var getInstalled = pm.getInstalledPackages(packageName);
 
       Q.allSettled([getLatestSoftware.promise, getCandidates.promise, getInstalled.promise])
         .then(
@@ -94,8 +143,6 @@ var PackageManager = function() {
     });
     return result;
   }
-
-
 
   function isSamePackage(installed, item) {
     return installed.package === item.package;

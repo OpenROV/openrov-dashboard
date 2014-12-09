@@ -7,11 +7,13 @@ var AptGet = function(config) {
 
   aptGet.update = function() {
     return Q.Promise( function(resolve, reject, notify) {
-      console.log('Starting apt-get update child process');
+      var sourceList = 'Dir::Etc::sourcelist=/dev/zero';
+      var sourceParts = 'Dir::Etc::SourceParts=' + config.aptGetSourcelists + '/';
+      console.log('Starting apt-get update child process ' + sourceList);
       var aptGetProcess = cp.spawn('apt-get', [
         'update',
-        '-o', 'Dir::Etc::sourcelist=/dev/zero',
-        '-o', 'Dir::Etc::sourceparts=/etc/apt/sources.list.d/'
+        '-o', sourceList,
+        '-o', sourceParts
       ]);
       handleClientProcess(aptGetProcess, resolve, reject, notify);
     });
@@ -32,41 +34,25 @@ var AptGet = function(config) {
     });
   };
 
-  aptGet.configureBranches = function(branches) {
-    return FS.list(config.aptGetSourcelists)
-      .then(function(files) {
-        files.forEach(
-          function (file) {
-            if (file.indexOf('openrov-') == 0) {
-              var start = file.indexOf('-');
-              var end = file.indexOf('.');
-              var branchName = file.substring(start + 1, end);
-              if (branches.filter(function (branch) {
-                return branch === branchName
-              }).length === 0) {
-                var path = FS.join(config.aptGetSourcelists, file);
-                return FS.remove(path)
-                  .then(function() {console.log('Removed ' + path)});
+  aptGet.getBranches = function() {
+    return Q.Promise(function(resolve) {
+      FS.list(config.aptGetSourcelists)
+        .then(function(files) {
+          var branches = [];
+          files.forEach(
+            function (file) {
+              if (file.indexOf('openrov-') == 0) {
+
+                var start = file.indexOf('-');
+                var end = file.indexOf('.');
+                var branchName = file.substring(start + 1, end);
+                branches.push(branchName);
               }
-            }
-          })
-        return Q.Promise(function (resolve, reject, notify) {
-          branches.forEach(function (branch) {
-            var path = FS.join(config.aptGetSourcelists, 'openrov-' + branch + '.list');
-            return FS.exists(path).then(function (exists) {
-              if (!exists) {
-                var content = 'deb http://build.openrov.com/debian/ ' + branch + ' debian';
-                return FS.write(path, content)
-                  .then(function() {
-                    console.log("Wrote file " + path);
-                    resolve();
-                  });
-              }
-            })
-          });
+            });
+          resolve(branches);
         });
-      })
-    };
+    });
+  };
 
   function handleClientProcess(aptGetProcess, resolve, reject, notify) {
     aptGetProcess.stdout.on('data', function(data) {

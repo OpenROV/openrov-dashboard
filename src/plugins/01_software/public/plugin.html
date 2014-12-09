@@ -1,82 +1,111 @@
 <div>
-  <h2>Currently installed software versions</h2>
-  <ul class="package-list" cg-busy="loadingInstalled">
-    <li ng-repeat="item in installedSoftware">
-      {{ item.package }} - {{ item.version }}
-    </li>
-  </ul>
-  <div class="alert alert-danger" role="alert" ng-hide="!(loadPackagesError)"><strong>Uh, there was a problem loading the installed packages!</strong><br>{{ loadPackagesError }}</div>
-  <button class="btn btn-sm" ng-click="loadInstalledSoftware()">Refresh</button>
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>Currently installed software versions</h2>
+    </div>
+  </div>
+  <form class="form-inline" role="form">
+    <div class="container">
+      <div class="row" ng-hide="!isAdvancedMode">
+        <div class="col-sm-12">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="showIndividualPackages"> Show individual packages
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          Current branch:
+          <span ng-hide="isAdvancedMode">{{ selectedBranch }}</span>
+          <select class="form-control" id="branches"
+                  ng-model="selectedBranch"
+                  ng-options="branch for branch in branches"
+                  ng-hide="!isAdvancedMode">
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="coll-sm-12 top-buffer-5">
+        <ul class="package-list" cg-busy="loadingInstalled">
+          <li ng-repeat="item in installedSoftware">
+            {{ item.package }} - {{ item.version }}
+          </li>
+          <li ng-hide="!(installedSoftware.length == 0)">
+            No packages found
+          </li>
+        </ul>
+      </div>
+      <div class="alert alert-danger" role="alert" ng-hide="!(loadPackagesError)"><strong>Uh, there was a problem loading the installed packages!</strong><br>{{ loadPackagesError }}</div>
+    </div>
+  </form>
 </div>
 <div>
 
-  <h2>Available software</h2>
+  <h2>Updates</h2>
 
-  <div class="row">
+  <div class="row" ng-hide="updatesEnabled">
     <div class="form-group col-sm-12">
-      <button ng-click="enableUpdate()" ng-hide="updatesEnabled" class="btn btn-success">Enable software updates</button>
+      <button ng-click="enableUpdate()" class="btn btn-success">Enable software updates</button>
     </div>
   </div>
 
-  <div class="row" ng-hide="!updatesEnabled">
-    <div class="form-group col-sm-12">
-      <button class="btn btn-sm" ng-click="refreshPackages()" ng-disabled="refreshingPackages">
-        <span class="glyphicon glyphicon-refresh" ng-class="{'glyphicon-refresh-animate' : refreshingPackages}"></span>
-        Update package list</button> <i>(this takes a while)</i>
-      <br>
-      <strong>Last update: </strong>{{ aptUpdateRefreshDate }}
-      <div class="alert alert-danger" role="alert" ng-hide="!aptUpdateError"><strong>Uh, there was a problem updating the packages!</strong><br><div ng-bind-html="aptUpdateErrorData"></div></div>
-    </div>
-  </div>
-  <div class="row" ng-hide="!updatesEnabled">
-    <div class="form-group">
-      <div class="col-sm-2"><h4>Branches:</h4></div>
-    </div>
-    <form class="form-inline col-sm-12" role="form">
-      <select class="form-control" id="branches"
-        ng-model="selectedBranch"
-        ng-options="branch for branch in branches"
-        ng-change="loadVersions()">
-        <option value="">-- Select Branch --</option>
-      </select>
-      <button ng-click="refreshBranches()" class="btn">Refresh branches</button>
-      <div class="alert alert-danger" role="alert" ng-hide="!(loadBranchesError)"><strong>Uh, there was a problem loading the branches!</strong><br>{{ loadBranchesError }}</div>
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" ng-model="showUpdatesOnly" ng-change="loadVersions()">Show only updates
-        </label>
-      </div>
-      <div class="checkbox" ng-hide="showUpdatesOnly" >
-        <label>
-          <input type="checkbox" ng-model="showOnlyLatest" ng-change="loadVersions()">Show latest versions only
-        </label>
-      </div>
-    </form>
-  </div>
-  <br>
   <div class="row" ng-hide="!updatesEnabled">
     <form class="form-horizontal">
       <div class="col-sm-12">
-        <div>
-          <div><h4>Packages:</h4></div>
-          <div class="alert alert-warning" role="alert" ng-hide="selectedBranch"><strong>Please select a branch!</strong></div>
-          <div class="alert alert-danger" role="alert" ng-hide="!(loadNewpackagesError)"><strong>Uh, there was a problem loading new installed packages!</strong><br>{{ loadNewpackagesError }}</div>
-          <div class="package-list" cg-busy="loadingPackages">
-            <ul id="softwareList" >
-              <li ng-repeat="item in latestVersions">
-                {{ item.package }} - {{ item.version }}
-                <button type="button" class="btn btn-primary btn-xs" ng-hide="!updatesEnabled" ng-click="install(item)">Install</button>
-              </li>
-            </ul>
+        <div cg-busy="loadingPackages">
+
+          <div class="row" ng-hide="!isAdvancedMode">
+            <div class="col-sm-4">
+              <button class="btn btn-default" ng-click="toggleShowUpdates()" ng-class="{'btn-primary': showUpdates}">Updates</button>
+              <button class="btn btn-default" ng-click="toggleShowUpdates()" ng-class="{'btn-primary': !showUpdates}">Other versions</button>
+            </div>
           </div>
+
+          <!--Updates-->
+          <div class="row top-buffer-5" ng-hide="!showUpdates">
+            <div class="col-sm-12 package-list" ng-hide="latestVersions.length === 0">
+              <ul id="softwareList" >
+                <li ng-repeat="item in latestVersions">
+                  {{ item.package }} - {{ item.version }}
+                  <button type="button" class="btn btn-primary btn-xs" ng-hide="!updatesEnabled" ng-click="install(item)">Install</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!--Previous versions-->
+          <div class="row top-buffer-5" ng-hide="showUpdates">
+            <div class="col-sm-12 package-list" ng-hide="previousVersions.length === 0">
+              <ul id="prviousSoftwareList" >
+                <li ng-repeat="item in previousVersions">
+                  {{ item.package }} - {{ item.version }}
+                  <button type="button" class="btn btn-primary btn-xs" ng-hide="!updatesEnabled" ng-click="install(item)">Install</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div ng-hide="latestVersions.length != 0 || refreshingPackages || !showUpdates">
+            Your ROV is up to date!
+            <br>
+            <br>
+          </div>
+          <button class="btn btn-md" ng-click="refreshPackages()" ng-disabled="refreshingPackages">
+            <span class="glyphicon glyphicon-refresh" ng-class="{'glyphicon-refresh-animate' : refreshingPackages}"></span>
+            Refresh
+          </button>
+          <strong>Last update: </strong>{{ aptUpdateRefreshDate }}
+          <div class="alert alert-danger" role="alert" ng-hide="!refreshingPackagesError"><strong>Uh, there was a problem updating the packages!</strong><br><div ng-bind-html="refreshingPackagesError"></div></div>
+
         </div>
       </div>
     </form>
   </div>
   <br>
   <div class="row" ng-hide="!updatesEnabled">
-    <!--<div class="col-sm-12" ng-hide="!(installingPackage)">-->
-    <div class="col-sm-12" ng-hide="!showIinstallResult">
+    <div class="col-sm-12" ng-hide="!showInstallResult">
       <div>
         <div><h4>Install result:</h4></div>
       </div>
@@ -99,6 +128,15 @@
       </div>
     </div>
   </div>
+
+  <div class="row top-buffer-10" ng-hide="!updatesEnabled">
+    <div class="col-sm-12"  ng-hide="isAdvancedMode">
+      <button class="btn btn-default btn-md" ng-click="enableAdvanced()">
+        Enable advanced mode </button>
+      <br><i>(Enable to install previous versions and install individual packages)</i>
+    </div>
+  </div>
+
 </div>
 
 <script type="text/ng-template" id="modalAgreement.html">

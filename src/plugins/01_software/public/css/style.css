@@ -16,3 +16,6 @@
 .package-list {
     min-height: 30px;
 }
+
+.top-buffer-5 { margin-top:5px; }
+.top-buffer-10 { margin-top:10px; }
