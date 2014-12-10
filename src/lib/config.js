@@ -7,10 +7,17 @@
 
 var nconf = require('nconf');
 var argv = require('optimist').argv;
+var fs = require('fs');
+
+var configDir = './etc/';
+
+if (!fs.existsSync(configDir)) {
+  fs.mkdirSync(configDir)
+}
 
 // Will essentially rewrite the file when a change to the defaults are made if there is a parsing error.
 try {
-  nconf.use('file', { file: './etc/dashboardconfig.json' });
+  nconf.use('file', { file: configDir + 'dashboardconfig.json' });
 } catch (err) {
   console.log('Unable to load the configuration file, resetting to defaults');
   console.log(err);
