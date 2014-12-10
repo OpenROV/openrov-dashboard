@@ -14,7 +14,8 @@ describe('apt-cache', function() {
   spawn.on = function(name, cb) {  spawn.cb = cb };
   spawn.stdout._read = function noop() {}; // redundant? see update below
   var cp = { spawn: function() { return spawn; } };
-  var aptCache = new AptCache(cp);
+  var preferences = { selectedBranch: 'stable' };
+  var aptCache = new AptCache(cp, preferences);
   const PACKAGE_NAME = 'openrov-rov-suite';
 
   describe('policy', function(){

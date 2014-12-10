@@ -1,7 +1,7 @@
 var Q = require('q');
 var Lazy = require('lazy');
 
-var AptCache = function(childProcess) {
+var AptCache = function(childProcess, preferences) {
 
   const INSTALLED = 'Installed:';
   const CANDIDATE = 'Candidate:';
@@ -53,7 +53,12 @@ var AptCache = function(childProcess) {
 
   aptCache.getCandidates = function(packageName, callback) {
     var cleanPackageName = packageName.replace('*', '');
-    var aptCacheProcess = childProcess.spawn('apt-cache', ['policy', packageName]);
+
+    var aptCacheProcess = childProcess.spawn('apt-cache', [
+      'policy',
+      packageName,
+      '-t', preferences.selectedBranch
+    ]);
 
     var stdOut = '';
     var stdErr = '';
@@ -92,7 +97,12 @@ var AptCache = function(childProcess) {
   aptCache.policy = function(packageName){
     var policyResult = Q.defer();
     var cleanPackageName = packageName.replace('*', '');
-    var aptCacheProcess = childProcess.spawn('apt-cache', ['policy', packageName]);
+
+    var aptCacheProcess = childProcess.spawn('apt-cache', [
+      'policy',
+      packageName,
+      '-t', preferences.selectedBranch
+    ]);
 
     var stdOut = "";
     var stdErr = '';

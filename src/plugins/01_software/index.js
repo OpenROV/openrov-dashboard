@@ -12,11 +12,12 @@ var showSerialScript = __dirname + '/scripts/' + (process.env.USE_MOCK === 'true
 module.exports = function(name, deps) {
   var app = deps.app;
   var dpkg = new Dpkg();
+  var preferences = new Preferences(function() { return deps.config; });
   var aptGet = new AptGet(deps.config);
-  var aptCache = new AptCache(cp);
+  var aptCache = new AptCache(cp, preferences);
   var packageManager = new PackageManager(dpkg, aptCache, aptGet);
   var software = new Software(packageManager);
-  var preferences = new Preferences(function() { return deps.config; });
+
   var aptGetUpdate = {running: false};
   var aptGetInstall = {running: false};
   var socket = { emit: function(string, data) { console.log('shouldn\'t go here!'); }, broadcast: { emit: function() { console.log('shouldn\'t go here!'); } }};
