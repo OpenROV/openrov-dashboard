@@ -27,8 +27,6 @@ var AptGet = function(config) {
           '--force-yes',
           '-o', 'Dpkg::Options::=--force-overwrite',
           'install',
-          '-t',
-          branch,
             packageName+'='+version]);
       handleClientProcess(aptGetProcess, resolve, reject, notify);
     });
