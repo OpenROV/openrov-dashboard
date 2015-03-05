@@ -1,33 +1,33 @@
-angular.module('Software.services', []).
-  factory('softwareApiService', function($http) {
+var SoftwareApiService = [ '$http', '$q', function($http, $q) {
 
     var software = {};
 
-    software.loadInstalledSoftware = function() {
+    function getPackageName(showIndividualPackages) {
+      var packageName = "openrov-rov-suite*";
+      if (showIndividualPackages) {
+        packageName = "openrov-*";
+      }
+      return packageName;
+    }
+
+    software.loadInstalledSoftware = function(showIndividualPackages) {
       return $http({
         method: 'GET',
-        url: 'plugin/software/installed/openrov-*'
+        url: 'plugin/software/installed/' + getPackageName(showIndividualPackages)
       });
     };
 
-    software.getUpdates = function(packageName, branch) {
+    software.getUpdates = function(packageName) {
       return $http({
         method: 'GET',
-        url: 'plugin/software/packages/updates/' + packageName + '/' + branch
+        url: 'plugin/software/updates/' + packageName
       });
     };
 
-    software.getAll = function(packageName, branch, onlyLatest) {
+    software.getPreviousVersions = function(showIndividualPackages) {
       return $http({
         method: 'GET',
-        url: 'plugin/software/packages/all/' + packageName + '/' + branch + '/' + onlyLatest
-      });
-    };
-
-    software.getLatestVersions = function(packageName, branch, onlyUpdates) {
-      return $http({
-        method: 'GET',
-        url: 'plugin/software/latestversion/' + packageName + '/' + branch + '/' + onlyUpdates
+        url: 'plugin/software/previous/' + getPackageName(showIndividualPackages)
       });
     };
 
@@ -67,16 +67,4 @@ angular.module('Software.services', []).
     };
 
     return software;
-  })
-  .factory('reportingService', function($http) {
-    var reporting = {};
-
-    reporting.report = function (istalledPackages, rovInformation, location) {
-      return $http({
-        method: 'POST',
-        url: 'http://build.openrov.com/reporting/reportRov',
-        data: {installedPackages: istalledPackages, rovInformation: rovInformation, location: location}
-      });
-    };
-    return reporting;
-  });
+  } ];

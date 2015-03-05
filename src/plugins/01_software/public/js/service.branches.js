@@ -1,5 +1,4 @@
-angular.module('DashboardApp.services', []).
-  factory('BranchesApiService', function($q, $http) {
+var BranchesApiService = ['$q', '$http', function($q, $http) {
 
     var software = {};
 
@@ -11,4 +10,4 @@ angular.module('DashboardApp.services', []).
     };
 
     return software;
-  });
+  }];
