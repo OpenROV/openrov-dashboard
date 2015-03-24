@@ -97,24 +97,24 @@ function policyExample(buffer) {
     "Candidate: 2.5.1-pre-release.26.448f366",
     "Version table:",
     "  2.5.1-pre-release.26.448f366 0",
-    "    500 http://build.openrov.com/debian/ pre-release/debian armhf Packages",
+    "    500 http://deb-repo.openrov.com/ pre-release/debian armhf Packages",
     "  2.5.1-pre-release.21.2f75718 0",
-    "    500 http://build.openrov.com/debian/ pre-release/debian armhf Packages",
+    "    500 http://deb-repo.openrov.com/ pre-release/debian armhf Packages",
     "openrov-mjpeg-streamer:",
     "Installed: 2.0.1-7",
     "Candidate: 2.0.1-7",
     "Version table:",
     "  *** 2.0.1-7 0",
-    "    500 http://build.openrov.com/debian/ stable/debian armhf Packages",
+    "    500 http://deb-repo.openrov.com/ stable/debian armhf Packages",
     "    100 /var/lib/dpkg/status",
     "  2.0-6 0",
-    "    500 http://build.openrov.com/debian/ stable/debian armhf Packages",
+    "    500 http://deb-repo.openrov.com/ stable/debian armhf Packages",
     "openrov-test:",
     "Installed: (none)",
     "Candidate: 0.0.1-1",
     "Version table:",
     "  0.0.1-1 0",
-    "    500 http://build.openrov.com/debian/ pre-release/debian armhf Packages"
+    "    500 http://deb-repo.openrov.com/ pre-release/debian armhf Packages"
   ];
     lines.forEach(function(line){
       buffer.push(line + "\n");

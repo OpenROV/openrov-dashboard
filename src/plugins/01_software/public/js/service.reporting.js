@@ -4,7 +4,7 @@ var ReportingService = ['$http', function($http) {
   reporting.report = function (istalledPackages, rovInformation, location) {
     return $http({
       method: 'POST',
-      url: 'http://build.openrov.com/reporting/reportRov',
+      url: 'http://updates.openrov.com/reporting/reportRov',
       data: {installedPackages: istalledPackages, rovInformation: rovInformation, location: location}
     });
   };

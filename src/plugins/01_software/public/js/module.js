@@ -13,7 +13,7 @@ angular.module('DashboardApp.Software', [
 
       $sceDelegateProvider
         .resourceUrlWhitelist(
-        ['self', 'http://build.openrov.com/**']);
+        ['self', 'http://deb-repo.openrov.com/**']);
   })
   .value('cgBusyDefaults',{
     message:'Loading...',
@@ -22,4 +22,3 @@ angular.module('DashboardApp.Software', [
     delay: 50,
     minDuration: 700
   });
-
