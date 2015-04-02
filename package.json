@@ -2,7 +2,7 @@
   "name": "OpenROV-Dashboard",
   "author": "OpenROV team (http://www.openrov.com)",
   "description": "The ROV control panel for interacting with other services on the ROV",
-  "version": "1.0.0",
+  "version": "30.1.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/OpenROV/openrov-dashboard.git"
