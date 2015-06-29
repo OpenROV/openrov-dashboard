@@ -39,7 +39,7 @@ routesConfig.setup(app, assets);
 socketConfig.setup(deps);
 
 var loader = new PluginLoader();
-loader.loadPlugins(path.join(__dirname, 'plugins'), '/plugin', deps, addPluginAssets);
+loader.loadPlugins(path.join(__dirname, 'plugins'), 'plugin', deps, addPluginAssets);
 
 console.log('Started listening on port: ' + config.port);
 
@@ -51,6 +51,6 @@ function addPluginAssets(result) {
   assets.plugins = assets.plugins.concat(result.plugins);
   result.assets.forEach(
     function(asset) {
-      app.use(asset.path, express.static(asset.assets));
+      app.use('/' + asset.path, express.static(asset.assets));
     });
 }

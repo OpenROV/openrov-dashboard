@@ -1,7 +1,8 @@
 var __dashboard;
 var __socket;
 $(function() {
-  __socket = io.connect();
+  __socket = io.connect(window.location.protocol + '//' +
+                        window.location.host+ ':3080');
   __dashboard  = new Dashboard(__socket);
 
 });

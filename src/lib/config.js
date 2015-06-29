@@ -27,7 +27,7 @@ nconf.env(); //Also look for overrides in environment settings
 
 // Do not change these values in this file for an individual ROV, use the ./etc/rovconfig.json instead
 nconf.defaults({
-  port: 80,
+  port: 3080,
   proxy: undefined,
   aws: { bucket: 'openrov-deb-repository', region: 'us-west-2'},
   aptGetSourcelists : '/etc/apt/sources.list.d'
