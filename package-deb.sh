@@ -20,6 +20,8 @@ then
   ARCH="armhf"
 fi
 
+CLEANGIT_BRANCH = `echo ${GIT_BRANCH} | sed 's|/|_/g'`
+
 if [ "$GIT_BRANCH" = "master" ]
 then
   PACKAGE_VERSION="$VERSION_NUMBER~~"
