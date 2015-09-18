@@ -42,4 +42,4 @@ fpm -f -m info@openrov.com -s dir -t deb -a $ARCH \
   --before-remove=./install_lib/openrov-dashboard-beforeremove.sh \
   --before-install=./install_lib/openrov-dashboard-beforeinstall.sh \
 	--description "OpenROV Dashboard" \
-	.=/opt/openrov/cockpit
+	.=/opt/openrov/dashboard
