@@ -20,7 +20,7 @@ then
   ARCH="armhf"
 fi
 
-CLEANGIT_BRANCH = `echo ${GIT_BRANCH} | sed 's|/|_/g'`
+CLEANGIT_BRANCH = `echo "${GIT_BRANCH}"" | sed 's|//|_|g'`
 
 if [ "$GIT_BRANCH" = "master" ]
 then
