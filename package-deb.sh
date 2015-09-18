@@ -5,10 +5,6 @@ gem install fpm
 
 #Install dependencies
 npm install
-pushd src/static
-npm install --loglevel error
-npm run bower
-popd
 
 VERSION_NUMBER="`cat package.json | grep version | grep -o '[0-9]\.[0-9]\.[0-9]\+'`"
 GIT_COMMIT="`git rev-parse --short HEAD`"
