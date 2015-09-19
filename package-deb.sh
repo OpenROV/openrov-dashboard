@@ -5,6 +5,7 @@ gem install fpm
 
 #Install dependencies
 npm install
+npm run-script bower
 
 VERSION_NUMBER="`cat package.json | grep version | grep -o '[0-9]*\.[0-9]*\.[0-9]\+'`"
 GIT_COMMIT="`git rev-parse --short HEAD`"
