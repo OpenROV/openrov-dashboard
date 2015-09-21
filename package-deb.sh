@@ -4,7 +4,7 @@ set -ex
 gem install fpm
 
 #Install dependencies
-npm install
+npm install --production
 npm run-script bower
 
 VERSION_NUMBER="`cat package.json | grep version | grep -o '[0-9]*\.[0-9]*\.[0-9]\+'`"
