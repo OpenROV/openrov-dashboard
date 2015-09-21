@@ -6,6 +6,7 @@ gem install fpm
 #Install dependencies
 npm install --production
 npm run-script bower
+git clean -d -x -f -e node_modules
 
 VERSION_NUMBER="`cat package.json | grep version | grep -o '[0-9]*\.[0-9]*\.[0-9]\+'`"
 GIT_COMMIT="`git rev-parse --short HEAD`"
