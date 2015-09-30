@@ -15,7 +15,7 @@ if (!fs.existsSync(configDir)) {
   fs.mkdirSync(configDir)
 }
 
-nconf.arg().env('__'); //Also look for overrides in environment settings
+nconf.argv().env('__'); //Also look for overrides in environment settings
 
 // Will essentially rewrite the file when a change to the defaults are made if there is a parsing error.
 try {
