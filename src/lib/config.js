@@ -9,11 +9,13 @@ var nconf = require('nconf');
 var argv = require('optimist').argv;
 var fs = require('fs');
 
-var configDir = './etc/';
+var configDir = '/etc/';
 
 if (!fs.existsSync(configDir)) {
   fs.mkdirSync(configDir)
 }
+
+nconf.argv().env('__'); //Also look for overrides in environment settings
 
 // Will essentially rewrite the file when a change to the defaults are made if there is a parsing error.
 try {
@@ -22,7 +24,6 @@ try {
   console.log('Unable to load the configuration file, resetting to defaults');
   console.log(err);
 }
-nconf.env(); //Also look for overrides in environment settings
 
 
 // Do not change these values in this file for an individual ROV, use the ./etc/rovconfig.json instead

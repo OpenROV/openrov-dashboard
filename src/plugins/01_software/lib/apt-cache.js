@@ -123,7 +123,7 @@ var AptCache = function(childProcess, preferences) {
   function getBranch(line) {
     var parts = line.trim().split(' ');
     if (parts.length == 5) {
-      return parts[2].split('/')[0];
+      return parts[2].split('/')[1];
     }
   }
 
