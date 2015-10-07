@@ -20,7 +20,8 @@
     "q-io": "~1.11.5",
     "socket.io": "~1.1.0",
     "sync": "",
-    "bower": "^1.3.10"
+    "bower": "^1.3.10",
+    "systemd": "git://github.com/plietar/node-systemd"
   },
   "bundleDependencies": [
     "express"

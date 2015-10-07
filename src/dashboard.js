@@ -1,8 +1,8 @@
 var config = require('./lib/config');
 var express = require('express');
 var app = express();
-var SD_LISTEN_FDS_START = 3;
-var server = app.listen(process.env.LISTEN_FDS > 0 ? SD_LISTEN_FDS_START : config.port);
+require('systemd');
+var server = app.listen(process.env.LISTEN_FDS > 0 ? 'systemd' : config.port);
 var io = require('socket.io').listen(server, {log:false, origins:'*:*'});
 var path = require('path');
 var DashboardEngine = require(config.DashboardEnginePath);
@@ -42,7 +42,7 @@ socketConfig.setup(deps);
 var loader = new PluginLoader();
 loader.loadPlugins(path.join(__dirname, 'plugins'), 'plugin', deps, addPluginAssets);
 
-console.log('Started listening on port: ' + config.port);
+console.log('Started listening on port: ' + (process.env.LISTEN_FDS > 0 ? 'systemd' : config.port));
 
 // Load the plugins
 var util = require('util');
