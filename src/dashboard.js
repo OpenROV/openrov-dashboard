@@ -1,7 +1,8 @@
 var config = require('./lib/config');
 var express = require('express');
 var app = express();
-var server = app.listen(config.port);
+var SD_LISTEN_FDS_START = 3;
+var server = app.listen(process.env.LISTEN_FDS > 0 ? SD_LISTEN_FDS_START : config.port);
 var io = require('socket.io').listen(server, {log:false, origins:'*:*'});
 var path = require('path');
 var DashboardEngine = require(config.DashboardEnginePath);
