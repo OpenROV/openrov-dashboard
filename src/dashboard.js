@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 require('systemd');
 var server = app.listen(process.env.LISTEN_FDS > 0 ? 'systemd' : config.port);
-var io = require('socket.io').listen(server, {log:false, origins:'*:*'});
+var io = require('socket.io').listen(server, { log: false, origins: '*:*', path:'/dashboardsocket' });
 var path = require('path');
 var DashboardEngine = require(config.DashboardEnginePath);
 var PluginLoader = require('./lib/PluginLoader');

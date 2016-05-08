@@ -3,7 +3,7 @@
   <head>
         <title>OpenROV Dashboard MOCK</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/bootstrap-responsive.css" rel="stylesheet">        
+        <link href="css/bootstrap-responsive.css" rel="stylesheet">
         <link rel="stylesheet" href="themes/OpenROV/css/style.css">
         <link href="css/ui-lightness/jquery-ui-1.8.23.custom.css" rel="stylesheet" />
   </head>
@@ -26,33 +26,33 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Main ROW -->
         <div id="main-row" class="container-fluid full-height">
           <div class="row">
             <span class="span4">
-              Cockpit: <span data-bind="text: statusCockpit()"></span> 
+              Cockpit: <span data-bind="text: statusCockpit()"></span>
               <button class="btn" data-bind="click: startCockpit">Cockpit Running</button>
               <button class="btn" data-bind="click: stopCockpit">Cockpit Stopped</button>
             </span>
           </div>
           <div class="row">
             <span class="span4">
-              Cloud9: <span data-bind="text: statusCloud9()"></span> 
+              Cloud9: <span data-bind="text: statusCloud9()"></span>
               <button class="btn" data-bind="click: startCloud9">Cloud9 Running</button>
               <button class="btn" data-bind="click: stopCloud9">Cloud9 Stopped</button>
             </span>
           </div>
         	<div class="row">
         		<span class="span4">
-        			Samba: <span data-bind="text: statusSamba()"></span> 
+        			Samba: <span data-bind="text: statusSamba()"></span>
         			<button class="btn" data-bind="click: startSamba">Samba Running</button>
         			<button class="btn" data-bind="click: stopSamba">Samba Stopped</button>
         		</span>
         	</div>
 		</div>
-        
-        
+
+
         <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
@@ -63,7 +63,7 @@
         <script type='text/javascript' src='js/libs/knockout-2.1.0.js'></script>
         <script type='text/javascript' src='mockJs/MockViewModel.js'></script>
     	<script type='text/javascript' src="js/blackbox.js"></script>
-	    <script src="/socket.io/socket.io.js"></script>
+	    <script src="dashboardsocket/socket.io.js"></script>
 
         <script>
       		var viewmodel;

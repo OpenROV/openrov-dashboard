@@ -2,7 +2,7 @@ var __dashboard;
 var __socket;
 $(function() {
   __socket = io.connect(window.location.protocol + '//' +
-                        window.location.host+ ':3080');
+                 window.location.hostname+ ':' +  window.location.port,{path:'/dashboardsocket'});
   __dashboard  = new Dashboard(__socket);
 
 });
@@ -18,4 +18,3 @@ angular.module('DashboardApp', [
   })
   .value('DashboardAccess', function() { return __dashboard  })
   .value('SocketAccess', function() { return __socket; });
-
